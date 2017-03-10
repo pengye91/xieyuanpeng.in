@@ -28,8 +28,8 @@ func (this AuthAPI) Register(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
-	// Insert
-	if err := Db.C("auth").Insert(&usr); err != nil {
+	// Insert Visitor
+	if err := Db.C("auth").Insert(&visitorInfo); err != nil {
 		// Is a duplicate key, but we don't know which one
 		ctx.JSON(iris.StatusOK, models.Err("5"))
 		if Db.IsDup(err) {
@@ -38,17 +38,15 @@ func (this AuthAPI) Register(ctx *iris.Context) {
 	} else {
 		ctx.JSON(iris.StatusOK, iris.Map{"response": true})
 	}
-
 	Db.Close()
-
 }
 
 func (this AuthAPI) Login(ctx *iris.Context) {
 
-	result := models.User{}
+	visitorInfo := models.VisitorBasic{}
 
-	_email := string(ctx.FormValue("email"))
-	_pass := string(ctx.FormValue("pass"))
+	_email := string(ctx.JsonValue("email"))
+	_pass := string(ctx.JsonValue("pass"))
 
 	Db := db.MgoDb{}
 	Db.Init()
@@ -59,7 +57,7 @@ func (this AuthAPI) Login(ctx *iris.Context) {
 	}
 
 	pass := libs.Password{}
-	var cp = pass.Compare(result.Pass, _pass)
+	var cp = pass.Compare(visitorInfo.Pass, _pass)
 
 	if cp {
 		token := pass.Token()
