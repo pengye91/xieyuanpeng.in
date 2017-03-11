@@ -5,7 +5,7 @@ import (
 )
 
 type Comment struct {
-	Id          string       `json:"string,id" bson:"_id"  form:"id"`
+	Id          string       `json:"string,id" bson:"id"  form:"id"`
 	By          VisitorBasic `json:"string,by" bson:"by"  form:"by"`
 	WordContent string       `json:"string,word_content" bson:"word_content"  form:"word_content"`
 	PicPath     string       `json:"string,pic_path" bson:"pic_path"  form:"pic_path"`

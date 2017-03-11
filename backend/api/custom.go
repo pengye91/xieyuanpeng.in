@@ -2,8 +2,8 @@ package api
 
 import (
 	"gopkg.in/kataras/iris.v5"
-	"github.com/pengye91/xieyuanpeng.in/mongo/backend/db"
-	"github.com/pengye91/xieyuanpeng.in/mongo/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/db"
+	"github.com/pengye91/xieyuanpeng.in/backend/models"
 )
 
 type CustomAPI struct {

@@ -1,26 +1,23 @@
 package main
 
 import (
-	"github.com/iris-contrib/middleware/cors"
 	"github.com/iris-contrib/middleware/logger"
-	"github.com/kataras/go-template/html"
-	"github.com/kataras/iris"
+	"gopkg.in/kataras/iris.v5"
 
-	"github.com/pengye91/xieyuanpeng.in/mongo/backend/api"
-	"github.com/pengye91/xieyuanpeng.in/mongo/backend/db"
-	"github.com/pengye91/xieyuanpeng.in/mongo/backend/routes"
+	"github.com/pengye91/xieyuanpeng.in/backend/api"
+	"github.com/pengye91/xieyuanpeng.in/backend/db"
 )
 
 func main() {
 	// set the favicon
-	iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
+	//iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
 
 	// set static folder(s)
-	iris.Static("/public", "../frontend/public", 1)
+	//iris.Static("/public", "../frontend/public", 1)
 
 	// set the global middlewares
 	iris.Use(logger.New())
-	iris.Use(cors.Default())
+	//iris.Use(cors.Default())
 
 	// set the custom errors
 	iris.OnError(iris.StatusNotFound, func(ctx *iris.Context) {
@@ -34,14 +31,14 @@ func main() {
 	// DB Main
 	DbMain()
 	// register the routes & the public API
-	registerRoutes()
+	//registerRoutes()
 	registerAPI()
 
 	// start the server
 	iris.Listen(":8080")
 }
 
-func registerRoutes() {
+/* func registerRoutes() {
 	// register index using a 'Handler'
 	iris.Handle("GET", "/", routes.Index())
 
@@ -55,11 +52,12 @@ func registerRoutes() {
 	// user-profile is the custom,optional, route's Name: with this we can use the {{ url "user-profile" $username}} inside userlist.html
 
 	iris.Get("/all", routes.UserList)
-}
+} */
 
 func registerAPI() {
 	// this is other way to declare routes using the 'API'
 	auth := new(api.AuthAPI)
+	visitors := new(api.UserAPI)
 
 	// Custom handler
 	iris.Handle("GET", "/v1/blog/news", api.CustomAPI{})
@@ -69,15 +67,17 @@ func registerAPI() {
 	iris.Get("/v1/auth/check", auth.Check)
 	iris.Get("/v1/auth/session", auth.Session)
 	// Api handler
-	iris.API("/v1/users", api.UserAPI{})
-
+	iris.Get("/v1/visitors", visitors.GetVisitors)
+	iris.Get("/v1/visitors/:id", visitors.GetById)
+	iris.Put("/v1/visitors/:id", visitors.PutOrPostById)
+	iris.Post("/v1/visitors/:id", visitors.Post)
 }
 
 func DbMain() {
-	// Database Main Conexion
 	Db := db.MgoDb{}
 	Db.Init()
 	// index keys
-	//	keys := []string{"email"}
-	//	Db.Index("auth", keys)
+	keys := []string{"email", "id", "name"}
+	Db.Index("auth", keys)
+	Db.Index("people", keys)
 }
