@@ -1,11 +1,11 @@
 package api
 
 import (
-	"github.com/kataras/iris"
+	"gopkg.in/kataras/iris.v5"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/iris-contrib/examples/AIO_examples/mongo/backend/db"
-	"github.com/iris-contrib/examples/AIO_examples/mongo/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/mongo/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/mongo/backend/db"
 )
 
 type UserAPI struct {
@@ -14,35 +14,31 @@ type UserAPI struct {
 
 // GET /users
 func (this UserAPI) Get() {
-
 	Db := db.MgoDb{}
 	Db.Init()
 
-	result := []models.User{}
-	if err := Db.C("people").Find(nil).All(&result); err != nil {
+	visitors := []models.Visitor{}
+	if err := Db.C("people").Find(nil).All(&visitors); err != nil {
 		this.JSON(iris.StatusOK, models.Err("1"))
 		return
 	} else {
-		this.JSON(iris.StatusOK, &result)
+		this.JSON(iris.StatusOK, &visitors)
 	}
 
 	Db.Close()
-
 }
 
 // GET /users/:param1
 func (this UserAPI) GetBy(id string) {
-
 	Db := db.MgoDb{}
 	Db.Init()
+	visitor := models.Visitor{}
 
-	result := models.User{}
-
-	if err := Db.C("people").Find(bson.M{"id": id}).One(&result); err != nil {
+	if err := Db.C("people").Find(bson.M{"id": id}).One(&visitor); err != nil {
 		this.JSON(iris.StatusOK, models.Err("1"))
 		return
 	} else {
-		this.JSON(iris.StatusOK, &result)
+		this.JSON(iris.StatusOK, &visitor)
 	}
 
 	Db.Close()

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/kataras/iris"
+	"gopkg.in/kataras/iris.v5"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/pengye91/xieyuanpeng.in/mongo/backend/db"
@@ -13,17 +13,21 @@ type AuthAPI struct {
 	*iris.Context
 }
 
+type LoginInfo struct {
+	Email  string `json:"email" bson:"email"`
+	Password string `json:"password" bson:"password"`
+}
+
 func (this AuthAPI) Register(ctx *iris.Context) {
 	visitorInfo := models.VisitorBasic{}
-	err := ctx.ReadJson(&visitorInfo)
+	err := ctx.ReadJSON(&visitorInfo)
 	if err != nil {
 		ctx.JSON(iris.StatusOK, models.Err("4"))
-		//		panic(err.Error())
 		return
 	}
 
 	pass := libs.Password{}
-	visitorInfo.Pass = pass.Gen(string(ctx.JsonValue("pass")))
+	visitorInfo.Pass = pass.Gen(visitorInfo.Pass)
 
 	Db := db.MgoDb{}
 	Db.Init()
@@ -42,11 +46,15 @@ func (this AuthAPI) Register(ctx *iris.Context) {
 }
 
 func (this AuthAPI) Login(ctx *iris.Context) {
-
-	visitorInfo := models.VisitorBasic{}
-
-	_email := string(ctx.JsonValue("email"))
-	_pass := string(ctx.JsonValue("pass"))
+	result := models.VisitorBasic{}
+	loginInfo := LoginInfo{}
+	err := ctx.ReadJSON(&loginInfo)
+	if err != nil {
+		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+		return
+	}
+	_email := string(loginInfo.Email)
+	_pass := string(loginInfo.Password)
 
 	Db := db.MgoDb{}
 	Db.Init()
@@ -57,7 +65,7 @@ func (this AuthAPI) Login(ctx *iris.Context) {
 	}
 
 	pass := libs.Password{}
-	var cp = pass.Compare(visitorInfo.Pass, _pass)
+	var cp = pass.Compare(result.Pass, _pass)
 
 	if cp {
 		token := pass.Token()
@@ -67,9 +75,7 @@ func (this AuthAPI) Login(ctx *iris.Context) {
 	} else {
 		ctx.JSON(iris.StatusOK, models.Err("7"))
 	}
-
 	Db.Close()
-
 }
 
 func (this AuthAPI) Check(ctx *iris.Context) {
