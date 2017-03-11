@@ -11,8 +11,8 @@ type (
 		Name      string    `json:"name" bson:"name"  form:"name"`
 		Email     string    `json:"email" bson:"email"  form:"email"`
 		Pass      string    `json:"pass" bson:"pass" form:"pass"`
-		CreatedAt time.Time `json:"created_at,omitempty, string" bson:"created_at" form:"created_at"`
-		UpdatedAt time.Time `json:"updated_at,omitempty, string" bson:"updated_at" form:"updated_at"`
+		CreatedAt time.Time `json:"created_at,omitempty" bson:"created_at" form:"created_at"`
+		UpdatedAt time.Time `json:"updated_at,omitempty" bson:"updated_at" form:"updated_at"`
 	}
 
 	Visitor struct {

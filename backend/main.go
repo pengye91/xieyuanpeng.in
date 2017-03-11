@@ -69,8 +69,8 @@ func registerAPI() {
 	// Api handler
 	iris.Get("/v1/visitors", visitors.GetVisitors)
 	iris.Get("/v1/visitors/:id", visitors.GetById)
-	iris.Put("/v1/visitors/:id", visitors.PutOrPostById)
-	iris.Post("/v1/visitors/:id", visitors.Post)
+	iris.Put("/v1/visitors/:id", visitors.PutById)
+	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
 }
 
 func DbMain() {

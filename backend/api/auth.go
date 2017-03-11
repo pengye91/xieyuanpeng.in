@@ -7,8 +7,8 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,8 +17,8 @@ type AuthAPI struct {
 }
 
 type LoginInfo struct {
-	LoginId  string `json:"logId"`
-	Pass string `json:"pass"`
+	LoginId string `json:"logId"`
+	Pass    string `json:"pass"`
 }
 
 func (this AuthAPI) Register(ctx *iris.Context) {
@@ -48,6 +48,14 @@ func (this AuthAPI) Register(ctx *iris.Context) {
 			ctx.JSON(iris.StatusOK, models.Err("6"))
 		}
 	} else {
+		visitor := models.Visitor{}
+		visitor.Basic = visitorInfo
+		visitor.Id = visitorInfo.Id
+		insertToPeopleErr := Db.C("people").Insert(&visitor)
+		if insertToPeopleErr != nil {
+			ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+			return
+		}
 		ctx.JSON(iris.StatusOK, visitorInfo)
 	}
 	Db.Close()

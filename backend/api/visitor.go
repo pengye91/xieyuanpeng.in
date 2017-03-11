@@ -4,17 +4,16 @@ import (
 	"gopkg.in/kataras/iris.v5"
 	"gopkg.in/mgo.v2/bson"
 
+	"fmt"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"time"
-	"strconv"
 )
 
 type UserAPI struct {
 	*iris.Context
 }
 
-// GET /users
 func (this UserAPI) GetVisitors(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
@@ -30,15 +29,14 @@ func (this UserAPI) GetVisitors(ctx *iris.Context) {
 	Db.Close()
 }
 
-// GET /users/:param1
 func (this UserAPI) GetById(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
-	visitor := models.VisitorBasic{}
+	visitor := models.Visitor{}
 	id := ctx.Param("id")
 
 	if err := Db.C("people").Find(bson.M{"id": id}).One(&visitor); err != nil {
-		ctx.JSON(iris.StatusOK, models.Err("1"))
+		ctx.JSON(iris.StatusNotFound, models.Err("1"))
 		return
 	} else {
 		ctx.JSON(iris.StatusOK, visitor)
@@ -46,8 +44,7 @@ func (this UserAPI) GetById(ctx *iris.Context) {
 	Db.Close()
 }
 
-// PUT /users/:param1
-func (this UserAPI) PutOrPostById(ctx *iris.Context) {
+func (this UserAPI) PutById(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
@@ -57,64 +54,32 @@ func (this UserAPI) PutOrPostById(ctx *iris.Context) {
 	if err := ctx.ReadJSON(&visitorInfo); err != nil {
 		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 		return
+	} else {
+		fmt.Printf("%v\n", visitorInfo)
 	}
 
 	c := Db.C("people")
 	colQuerier := bson.M{"id": id}
 
 	// Update
-	if count, _ := c.FindId(id).Count(); count != 0 {
+	if count, countErr := c.Find(bson.M{"id": id}).Count(); count != 0 {
 		change := bson.M{"$set": bson.M{
-			"name":       visitorInfo.Name,
-			"email":      visitorInfo.Email,
-			"updated_at": time.Now(),
-		}}
+				"basic.name":       visitorInfo.Name,
+				"basic.email":      visitorInfo.Email,
+				"basic.updated_at": time.Now(),
+			}}
 		err := c.Update(colQuerier, change)
 		if err != nil {
-			ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+			//ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+			panic(err)
 		} else {
 			println(visitorInfo.Name + " has been inserted to database")
-			ctx.JSON(iris.StatusOK, iris.Map{"response": true})
+			ctx.JSON(iris.StatusOK, visitorInfo)
 		}
 	} else {
-		// Post
-		visitorNumber, _ := Db.C("people").Count()
-		println(visitorNumber)
-		visitorInfo.Id = strconv.Itoa(visitorNumber + 1)
-		visitorInfo.CreatedAt = time.Now()
-		visitorInfo.UpdatedAt = time.Now()
-		// Insert
-		if err := Db.C("people").Insert(&visitorInfo); err != nil {
-			ctx.JSON(iris.StatusOK, models.Err("5"))
-		} else {
-			ctx.JSON(iris.StatusOK, iris.Map{"response": true})
-		}
-		Db.Close()
+		//ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+		panic(countErr)
 	}
-}
-
-// POST /users/:param1
-func (this UserAPI) Post(ctx *iris.Context) {
-	visitorInfo := models.VisitorBasic{}
-
-	if err := ctx.ReadJSON(&visitorInfo); err != nil {
-		ctx.JSON(iris.StatusBadRequest, models.Err("4"))
-		return
-	}
-	Db := db.MgoDb{}
-	Db.Init()
-
-	visitorNumber, _ := Db.C("people").Count()
-	visitorInfo.Id = strconv.Itoa(visitorNumber + 1)
-	visitorInfo.CreatedAt = time.Now()
-	visitorInfo.UpdatedAt = time.Now()
-	// Insert
-	if err := Db.C("people").Insert(&visitorInfo); err != nil {
-		ctx.JSON(iris.StatusOK, models.Err("5"))
-	} else {
-		ctx.JSON(iris.StatusOK, &visitorInfo)
-	}
-	Db.Close()
 }
 
 // DELETE /users/:param1
@@ -127,6 +92,6 @@ func (this UserAPI) DeleteById(ctx *iris.Context) {
 	if err := Db.C("people").Remove(bson.M{"id": id}); err != nil {
 		ctx.JSON(iris.StatusBadRequest, models.Err("1"))
 	} else {
-		ctx.JSON(iris.StatusOK, iris.Map{"response": true})
+		ctx.JSON(iris.StatusOK, iris.Map{"response": "successfully delete"})
 	}
 }
