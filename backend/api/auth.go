@@ -93,6 +93,7 @@ func (this AuthAPI) Login(ctx *iris.Context) {
 	if cp {
 		token := pass.Token()
 		ctx.Session().Set("login", "true")
+		ctx.Session().Set("visitor", result.Id)
 		ctx.Session().Set("token", token)
 		ctx.JSON(iris.StatusOK, iris.Map{"response": true, "token": token})
 	} else {
@@ -118,7 +119,6 @@ func (this AuthAPI) Check(ctx *iris.Context) {
 }
 
 func (this AuthAPI) Session(ctx *iris.Context) {
-
 	login := ctx.Session().GetString("login")
 	token := ctx.Session().GetString("token")
 

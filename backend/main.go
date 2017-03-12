@@ -27,37 +27,20 @@ func main() {
 	iris.OnError(iris.StatusInternalServerError, func(ctx *iris.Context) {
 		ctx.Render("errors/500.html", nil, iris.RenderOptions{"layout": iris.NoLayout})
 	})
-
 	// DB Main
 	DbMain()
 	// register the routes & the public API
 	//registerRoutes()
 	registerAPI()
-
 	// start the server
 	iris.Listen(":8080")
 }
-
-/* func registerRoutes() {
-	// register index using a 'Handler'
-	iris.Handle("GET", "/", routes.Index())
-
-	// this is other way to declare a route
-	// using a 'HandlerFunc'
-	iris.Get("/about", routes.About)
-
-	// Dynamic route
-
-	iris.Get("/profile/:username", routes.Profile)("user-profile")
-	// user-profile is the custom,optional, route's Name: with this we can use the {{ url "user-profile" $username}} inside userlist.html
-
-	iris.Get("/all", routes.UserList)
-} */
 
 func registerAPI() {
 	// this is other way to declare routes using the 'API'
 	auth := new(api.AuthAPI)
 	visitors := new(api.UserAPI)
+	comments := new(api.CommentApi)
 
 	// Custom handler
 	iris.Handle("GET", "/v1/blog/news", api.CustomAPI{})
@@ -71,6 +54,8 @@ func registerAPI() {
 	iris.Get("/v1/visitors/:id", visitors.GetById)
 	iris.Put("/v1/visitors/:id", visitors.PutById)
 	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
+	// Comment handler
+	iris.Post("/v1/comments", comments.PostComment)
 }
 
 func DbMain() {
