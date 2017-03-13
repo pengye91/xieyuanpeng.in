@@ -41,6 +41,7 @@ func registerAPI() {
 	auth := new(api.AuthAPI)
 	visitors := new(api.UserAPI)
 	comments := new(api.CommentApi)
+	pictures := new(api.PictureAPI)
 
 	// Custom handler
 	iris.Handle("GET", "/v1/blog/news", api.CustomAPI{})
@@ -56,6 +57,9 @@ func registerAPI() {
 	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
 	// Comment handler
 	iris.Post("/v1/comments", comments.PostComment)
+	iris.Put("/v1/comments/:id", comments.PutCommentToPic)
+	iris.Post("/v1/pictures", pictures.PostPicToMain)
+	iris.Get("/v1/pictures", pictures.GetAllPics)
 }
 
 func DbMain() {

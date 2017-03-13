@@ -70,6 +70,36 @@ func (this CommentApi) PostComment(ctx *iris.Context) {
 	Db.Close()
 }
 
-//func (this CommentApi) PutComment(ctx *iris.Context) {
-//
-//}
+func (this CommentApi) PutCommentToPic(ctx *iris.Context) {
+	// TODO: authentication
+	id := ctx.Param("id")
+	comment := models.Comment{}
+	if err := ctx.ReadJSON(&comment); err != nil {
+		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+	}
+	Db := db.MgoDb{}
+	Db.Init()
+	visitor := models.Visitor{}
+
+	query := bson.M{"comments.id": id}
+	update := bson.M{
+		"$set": bson.M{
+			"comments.$.word_content": comment.WordContent,
+			"comments.$.contain_pic_path": comment.ContainPicPath,
+			"comments.$.published_at": time.Now(),
+			"comments.$.modified_at": time.Now(),
+		},
+	}
+
+	if err := Db.C("people").Update(query, update); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	} else {
+		Db.C("people").Find(bson.M{"comments.id": id}).One(&visitor)
+		ctx.JSON(iris.StatusOK, visitor.Comments)
+	}
+	Db.Close()
+}
+
+func (this CommentApi) DeleteComment(ctx *iris.Context) {
+
+}
