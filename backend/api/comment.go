@@ -13,7 +13,7 @@ type CommentApi struct {
 	*iris.Context
 }
 
-func (this CommentApi) GetVisitorComments(ctx *iris.Context) {
+func (this CommentApi) GetAllComments(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 

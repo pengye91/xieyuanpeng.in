@@ -6,6 +6,7 @@ import (
 	"time"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"strconv"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type PictureAPI struct {
@@ -44,8 +45,33 @@ func (this PictureAPI) PostPicToMain(ctx *iris.Context) {
 	if err := Db.C("picture").Insert(&pic); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	} else {
-		ctx.JSON(iris.StatusOK, pic)
+		ctx.JSON(iris.StatusCreated, pic)
 	}
 	Db.Close()
 }
 
+func (this PictureAPI) AddCommentToPic(ctx *iris.Context) {
+	// TODO: all visitors should can add comment to pic?
+	Db := db.MgoDb{}
+	Db.Init()
+
+	picId := ctx.Param("id")
+	comment := models.Comment{}
+
+	if err := ctx.ReadJSON(&comment); err != nil {
+		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
+	}
+
+	query := bson.M{"id": picId}
+	update := bson.M{
+		"$push": bson.M{
+			"comments": comment,
+		},
+	}
+	if err := Db.C("picture").Update(query, update); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, comment)
+
+	Db.Close()
+}
