@@ -26,25 +26,21 @@ func (this CommentApi) GetAllComments(ctx *iris.Context) {
 	Db.Close()
 }
 
-func (this CommentApi) PostComment(ctx *iris.Context) {
+func (this CommentApi) PostCommentToPic(ctx *iris.Context) {
 	// TODO: a minxin function like login_required()
 
 	Db := db.MgoDb{}
 	Db.Init()
 	if ctx.Session().GetString("login") == "true" {
-		comment := models.Comment{}
+		comment := CommentAlias{}
 		if err := ctx.ReadJSON(&comment); err != nil {
 			ctx.JSON(iris.StatusBadRequest, models.Err("1"))
 		} else {
 			visistorId := ctx.Session().GetString("visitor")
 			visitor := models.Visitor{}
 			Db.C("people").Find(bson.M{"id": visistorId}).One(&visitor)
-			commentId := strconv.Itoa(len(visitor.Comments) + 1)
-			comment.Id = commentId
 			comment.ById = visistorId
-			comment.CreatedAt = time.Now()
-			comment.PublishedAt = time.Now()
-			comment.ModifiedAt = time.Now()
+			comment.CommentPreCreateSave(ctx)
 
 			query := bson.M{"id": visistorId}
 			appendComment := bson.M{
@@ -98,7 +94,7 @@ func (this CommentApi) DeleteComment(ctx *iris.Context) {
 
 }
 
-func (comment *CommentAlias) PreCreateSave(ctx *iris.Context) {
+func (comment *CommentAlias) CommentPreCreateSave(ctx *iris.Context) {
 	// TODO: add a global chan to count comment number and other number
 	Db := db.MgoDb{}
 	Db.Init()

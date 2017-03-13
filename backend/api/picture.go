@@ -13,6 +13,8 @@ type PictureAPI struct {
 	*iris.Context
 }
 
+type PictureAlias models.Picture
+
 func (this PictureAPI) GetAllPics(ctx *iris.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
@@ -62,7 +64,7 @@ func (this PictureAPI) AddCommentToPic(ctx *iris.Context) {
 		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 	}
 
-	comment.PreCreateSave(ctx)
+	comment.CommentPreCreateSave(ctx)
 	comment.UnderPic = picId
 
 	picQuery := bson.M{"id": picId}
@@ -83,6 +85,7 @@ func (this PictureAPI) AddCommentToPic(ctx *iris.Context) {
 	Db.Close()
 }
 
+// Delete picture by Id but remain all comments
 func (this PictureAPI) DeletePic(ctx *iris.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
@@ -98,5 +101,27 @@ func (this PictureAPI) DeletePic(ctx *iris.Context) {
 	}
 	ctx.JSON(iris.StatusOK, picture)
 
+	Db.Close()
+}
+
+func (this PictureAPI) UpdatePic(ctx *iris.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+
+	Db.Close()
+}
+
+func (this PictureAPI) GetPicComments(ctx *iris.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+
+	picId := ctx.Param("id")
+
+	pic := models.Picture{}
+
+	if err := Db.C("picture").Find(bson.M{"id": picId}).One(&pic); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, pic.Comments)
 	Db.Close()
 }

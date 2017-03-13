@@ -56,14 +56,15 @@ func registerAPI() {
 	iris.Put("/v1/visitors/:id", visitors.PutById)
 	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
 	// Comment handler
-	iris.Post("/v1/comments", comments.PostComment)
+	//iris.Post("/v1/comments", comments.PostComment)
 	iris.Get("/v1/comments", comments.GetAllComments)
-	iris.Put("/v1/comments/:id", comments.PutCommentToPic)
+	//iris.Put("/v1/comments/:id", comments.PutCommentToPic)
 	// Pictures handler
 	iris.Post("/v1/pictures", pictures.PostPicToMain)
 	iris.Get("/v1/pictures", pictures.GetAllPics)
 	iris.Delete("/v1/pictures/:id", pictures.DeletePic)
 	iris.Put("/v1/pictures/:id/comments", pictures.AddCommentToPic)
+	iris.Get("/v1/pictures/:id/comments", pictures.GetPicComments)
 }
 
 func DbMain() {
