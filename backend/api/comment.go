@@ -13,22 +13,16 @@ type CommentApi struct {
 	*iris.Context
 }
 
+type CommentAlias models.Comment
+
 func (this CommentApi) GetAllComments(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
-
-	visitor := models.Visitor{}
-
-	if ctx.Session().GetString("login") == "true" {
-		visitorId := ctx.Session().GetString("visitor")
-		if err := Db.C("people").Find(bson.M{"id": visitorId}).One(&visitor); err != nil {
-			ctx.JSON(iris.StatusNotFound, models.Err("5"))
-		} else {
-			ctx.JSON(iris.StatusOK, visitor.Comments)
-		}
-	} else {
-		ctx.JSON(iris.StatusForbidden, iris.Map{"detail": "You should login first to see your comments"})
+	comments := []models.Comment{}
+	if err := Db.C("comment").Find(nil).All(&comments); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
+	ctx.JSON(iris.StatusOK, comments)
 	Db.Close()
 }
 
@@ -102,4 +96,21 @@ func (this CommentApi) PutCommentToPic(ctx *iris.Context) {
 
 func (this CommentApi) DeleteComment(ctx *iris.Context) {
 
+}
+
+func (comment *CommentAlias) PreCreateSave(ctx *iris.Context) {
+	// TODO: add a global chan to count comment number and other number
+	Db := db.MgoDb{}
+	Db.Init()
+
+	commentNumber, err := Db.C("comment").Count()
+	if err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	comment.Id = strconv.Itoa(commentNumber + 1)
+	comment.CreatedAt = time.Now()
+	comment.PublishedAt = time.Now()
+	comment.ModifiedAt = time.Now()
+
+	Db.Close()
 }

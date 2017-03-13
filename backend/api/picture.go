@@ -56,22 +56,47 @@ func (this PictureAPI) AddCommentToPic(ctx *iris.Context) {
 	Db.Init()
 
 	picId := ctx.Param("id")
-	comment := models.Comment{}
+	comment := CommentAlias{}
 
 	if err := ctx.ReadJSON(&comment); err != nil {
 		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 	}
 
-	query := bson.M{"id": picId}
+	comment.PreCreateSave(ctx)
+	comment.UnderPic = picId
+
+	picQuery := bson.M{"id": picId}
 	update := bson.M{
 		"$push": bson.M{
-			"comments": comment,
+			"comments": &comment,
 		},
 	}
-	if err := Db.C("picture").Update(query, update); err != nil {
+	if err := Db.C("comment").Insert(&comment); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	// TODO: there should be a visitorQuery to push comments to visitor doc
+	if err := Db.C("picture").Update(picQuery, update); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
 	ctx.JSON(iris.StatusOK, comment)
+
+	Db.Close()
+}
+
+func (this PictureAPI) DeletePic(ctx *iris.Context) {
+	// TODO: add admin authentication
+	Db := db.MgoDb{}
+	Db.Init()
+	PicId := ctx.Param("id")
+
+	picture := models.Picture{}
+	if err := Db.C("picture").Find(bson.M{"id": PicId}).One(&picture); err != nil {
+		ctx.JSON(iris.StatusNotFound, models.Err("5"))
+	}
+	if err:= Db.C("picture").Remove(bson.M{"id": PicId}); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, picture)
 
 	Db.Close()
 }
