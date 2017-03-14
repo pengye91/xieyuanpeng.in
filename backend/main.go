@@ -56,14 +56,15 @@ func registerAPI() {
 	iris.Put("/v1/visitors/:id", visitors.PutById)
 	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
 	// Comment handler
-	//iris.Post("/v1/comments", comments.PostComment)
+	//iris.Post("/v1/comments", comments.PostCommentToPic)
 	iris.Get("/v1/comments", comments.GetAllComments)
 	//iris.Put("/v1/comments/:id", comments.PutCommentToPic)
 	// Pictures handler
 	iris.Post("/v1/pictures", pictures.PostPicToMain)
 	iris.Get("/v1/pictures", pictures.GetAllPics)
+	iris.Get("/v1/pictures/:id", pictures.GetPicById)
 	iris.Delete("/v1/pictures/:id", pictures.DeletePic)
-	iris.Put("/v1/pictures/:id/comments", pictures.AddCommentToPic)
+	iris.Post("/v1/pictures/:id/comments", pictures.PostCommentToPic)
 	iris.Get("/v1/pictures/:id/comments", pictures.GetPicComments)
 }
 
@@ -71,7 +72,9 @@ func DbMain() {
 	Db := db.MgoDb{}
 	Db.Init()
 	// index keys
-	keys := []string{"email", "id", "name"}
+	keys := []string{"id"}
 	Db.Index("auth", keys)
 	Db.Index("people", keys)
+	Db.Index("picture", keys)
+	Db.Index("comment", keys)
 }

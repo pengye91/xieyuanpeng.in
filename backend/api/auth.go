@@ -7,7 +7,6 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -35,8 +34,7 @@ func (this AuthAPI) Register(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
-	visitorNumber, _ := Db.C("auth").Count()
-	visitorInfo.Id = strconv.Itoa(visitorNumber + 1)
+	visitorInfo.Id = bson.NewObjectId()
 	visitorInfo.CreatedAt = time.Now()
 	visitorInfo.UpdatedAt = time.Now()
 

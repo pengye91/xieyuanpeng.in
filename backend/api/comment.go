@@ -5,7 +5,6 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"gopkg.in/kataras/iris.v5"
 	"gopkg.in/mgo.v2/bson"
-	"strconv"
 	"time"
 )
 
@@ -18,7 +17,7 @@ type CommentAlias models.Comment
 func (this CommentApi) GetAllComments(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
-	comments := []models.Comment{}
+	comments := []CommentAlias{}
 	if err := Db.C("comment").Find(nil).All(&comments); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
@@ -26,37 +25,31 @@ func (this CommentApi) GetAllComments(ctx *iris.Context) {
 	Db.Close()
 }
 
-func (this CommentApi) PostCommentToPic(ctx *iris.Context) {
-	// TODO: a minxin function like login_required()
-
+func (this CommentApi) GetAllCommentsByPicId(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
-	if ctx.Session().GetString("login") == "true" {
-		comment := CommentAlias{}
-		if err := ctx.ReadJSON(&comment); err != nil {
-			ctx.JSON(iris.StatusBadRequest, models.Err("1"))
-		} else {
-			visistorId := ctx.Session().GetString("visitor")
-			visitor := models.Visitor{}
-			Db.C("people").Find(bson.M{"id": visistorId}).One(&visitor)
-			comment.ById = visistorId
-			comment.CommentPreCreateSave(ctx)
+	picId := ctx.Param("id")
+	comments := []CommentAlias{}
 
-			query := bson.M{"id": visistorId}
-			appendComment := bson.M{
-				"$push": bson.M{
-					"comments": comment,
-				},
-			}
-			err := Db.C("people").Update(query, appendComment)
-			if err != nil {
-				ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
-			}
-			ctx.JSON(iris.StatusCreated, comment)
-		}
-	} else {
-		ctx.JSON(iris.StatusForbidden, iris.Map{"detail": "you should login to post a comment."})
+	err := Db.C("comment").FindId(bson.M{"UnderPic": picId}).All(&comments)
+	if err != nil {
+		ctx.JSON(iris.StatusNotFound, models.Err("5"))
 	}
+	ctx.JSON(iris.StatusOK, comments)
+	Db.Close()
+}
+
+func (this CommentApi) GetAllCommentsByVisitorId(ctx *iris.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+	visitorId := ctx.Param("id")
+	comments := []CommentAlias{}
+
+	err := Db.C("comment").Find(bson.M{"ById": visitorId}).All(&comments)
+	if err != nil {
+		ctx.JSON(iris.StatusNotFound, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, comments)
 	Db.Close()
 }
 
@@ -74,10 +67,10 @@ func (this CommentApi) PutCommentToPic(ctx *iris.Context) {
 	query := bson.M{"comments.id": id}
 	update := bson.M{
 		"$set": bson.M{
-			"comments.$.word_content": comment.WordContent,
+			"comments.$.word_content":     comment.WordContent,
 			"comments.$.contain_pic_path": comment.ContainPicPath,
-			"comments.$.published_at": time.Now(),
-			"comments.$.modified_at": time.Now(),
+			"comments.$.published_at":     time.Now(),
+			"comments.$.modified_at":      time.Now(),
 		},
 	}
 
@@ -99,11 +92,12 @@ func (comment *CommentAlias) CommentPreCreateSave(ctx *iris.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
-	commentNumber, err := Db.C("comment").Count()
-	if err != nil {
-		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	visitorId := ctx.Session().GetString("visitor")
+
+	comment.Id = bson.NewObjectId()
+	if visitorId != "" {
+		comment.ById = visitorId
 	}
-	comment.Id = strconv.Itoa(commentNumber + 1)
 	comment.CreatedAt = time.Now()
 	comment.PublishedAt = time.Now()
 	comment.ModifiedAt = time.Now()

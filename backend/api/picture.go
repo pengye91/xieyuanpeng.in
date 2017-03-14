@@ -5,7 +5,6 @@ import (
 	"gopkg.in/kataras/iris.v5"
 	"time"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
-	"strconv"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -28,6 +27,21 @@ func (this PictureAPI) GetAllPics(ctx *iris.Context) {
 	Db.Close()
 }
 
+func (this PictureAPI) GetPicById(ctx *iris.Context) {
+	// TODO: add authentication
+	Db := db.MgoDb{}
+	Db.Init()
+	pic := models.Picture{}
+
+	picId := ctx.Param("id")
+
+	if err := Db.C("picture").FindId(bson.ObjectIdHex(picId)).One(&pic); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, pic)
+	Db.Close()
+}
+
 func (this PictureAPI) PostPicToMain(ctx *iris.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
@@ -37,12 +51,8 @@ func (this PictureAPI) PostPicToMain(ctx *iris.Context) {
 	if err := ctx.ReadJSON(&pic); err != nil {
 		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 	}
-	pictureNumber, picCountErr := Db.C("picture").Count()
-	if picCountErr != nil {
-		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
-	}
-	pic.Id = strconv.Itoa(pictureNumber + 1)
 	pic.CreatedAt = time.Now()
+	pic.Id = bson.NewObjectId()
 
 	if err := Db.C("picture").Insert(&pic); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
@@ -52,36 +62,42 @@ func (this PictureAPI) PostPicToMain(ctx *iris.Context) {
 	Db.Close()
 }
 
-func (this PictureAPI) AddCommentToPic(ctx *iris.Context) {
-	// TODO: all visitors should can add comment to pic?
+func (this PictureAPI) PostCommentToPic(ctx *iris.Context) {
+	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
 
-	picId := ctx.Param("id")
+	visitorId := ctx.Session().GetString("visitor")
+
 	comment := CommentAlias{}
 
+	picId := ctx.Param("id")
+
 	if err := ctx.ReadJSON(&comment); err != nil {
-		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
-	}
+		ctx.JSON(iris.StatusBadRequest, models.Err("1"))
+	} else {
+		comment.CommentPreCreateSave(ctx)
+		comment.UnderPic = picId
 
-	comment.CommentPreCreateSave(ctx)
-	comment.UnderPic = picId
+		if commentErr := Db.C("comment").Insert(&comment); commentErr != nil {
+			ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+		}
 
-	picQuery := bson.M{"id": picId}
-	update := bson.M{
-		"$push": bson.M{
-			"comments": &comment,
-		},
+		appendComment := bson.M{
+			"$push": bson.M{
+				"comments": comment,
+			},
+		}
+		if visitorId != "" {
+			if visitorErr := Db.C("people").UpdateId(bson.IsObjectIdHex(visitorId), appendComment); visitorErr != nil {
+				ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+			}
+		}
+		if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
+			ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+		}
+		ctx.JSON(iris.StatusCreated, comment)
 	}
-	if err := Db.C("comment").Insert(&comment); err != nil {
-		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
-	}
-	// TODO: there should be a visitorQuery to push comments to visitor doc
-	if err := Db.C("picture").Update(picQuery, update); err != nil {
-		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
-	}
-	ctx.JSON(iris.StatusOK, comment)
-
 	Db.Close()
 }
 
@@ -92,14 +108,10 @@ func (this PictureAPI) DeletePic(ctx *iris.Context) {
 	Db.Init()
 	PicId := ctx.Param("id")
 
-	picture := models.Picture{}
-	if err := Db.C("picture").Find(bson.M{"id": PicId}).One(&picture); err != nil {
-		ctx.JSON(iris.StatusNotFound, models.Err("5"))
-	}
-	if err:= Db.C("picture").Remove(bson.M{"id": PicId}); err != nil {
+	if err:= Db.C("picture").RemoveId(bson.ObjectIdHex(PicId)); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
-	ctx.JSON(iris.StatusOK, picture)
+	ctx.JSON(iris.StatusOK, iris.Map{"details": "deleted"})
 
 	Db.Close()
 }
@@ -119,7 +131,7 @@ func (this PictureAPI) GetPicComments(ctx *iris.Context) {
 
 	pic := models.Picture{}
 
-	if err := Db.C("picture").Find(bson.M{"id": picId}).One(&pic); err != nil {
+	if err := Db.C("picture").FindId(bson.IsObjectIdHex(picId)).One(&pic); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
 	ctx.JSON(iris.StatusOK, pic.Comments)

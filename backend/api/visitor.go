@@ -35,7 +35,7 @@ func (this UserAPI) GetById(ctx *iris.Context) {
 	visitor := models.Visitor{}
 	id := ctx.Param("id")
 
-	if err := Db.C("people").Find(bson.M{"id": id}).One(&visitor); err != nil {
+	if err := Db.C("people").Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&visitor); err != nil {
 		ctx.JSON(iris.StatusNotFound, models.Err("1"))
 		return
 	} else {
@@ -59,16 +59,15 @@ func (this UserAPI) PutById(ctx *iris.Context) {
 	}
 
 	c := Db.C("people")
-	colQuerier := bson.M{"id": id}
 
 	// Update
-	if count, countErr := c.Find(bson.M{"id": id}).Count(); count != 0 {
+	if count, countErr := c.FindId(bson.IsObjectIdHex(id)).Count(); count != 0 {
 		change := bson.M{"$set": bson.M{
-				"basic.name":       visitorInfo.Name,
-				"basic.email":      visitorInfo.Email,
-				"basic.updated_at": time.Now(),
-			}}
-		err := c.Update(colQuerier, change)
+			"basic.name":       visitorInfo.Name,
+			"basic.email":      visitorInfo.Email,
+			"basic.updated_at": time.Now(),
+		}}
+		err := c.UpdateId(bson.IsObjectIdHex(id), change)
 		if err != nil {
 			//ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 			panic(err)
@@ -89,7 +88,7 @@ func (this UserAPI) DeleteById(ctx *iris.Context) {
 
 	id := ctx.Param("id")
 
-	if err := Db.C("people").Remove(bson.M{"id": id}); err != nil {
+	if err := Db.C("people").RemoveId(bson.IsObjectIdHex(id)); err != nil {
 		ctx.JSON(iris.StatusBadRequest, models.Err("1"))
 	} else {
 		ctx.JSON(iris.StatusOK, iris.Map{"response": "successfully delete"})
