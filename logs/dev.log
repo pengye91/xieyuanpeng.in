@@ -1,0 +1,394 @@
+2017-03-18T17:19:34.933+0800	INFO	api/visitor.go:35	200 OK	{"url": "http://localhost:8080/v1/visitors"}
+2017-03-18T17:19:56.757+0800	INFO	api/visitor.go:35	200 OK	{"url": "http://localhost:8080/v1/visitors"}
+2017-03-18T17:20:01.506+0800	INFO	api/visitor.go:35	200 OK	{"url": "http://localhost:8080/v1/visitors"}
+2017-03-18T17:28:28.094+0800	INFO	api/visitor.go:35	200 OK	{"url": "http://localhost:8080/v1/visitors"}
+2017-03-18T17:35:00.816+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/2"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T17:39:44.085+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb7"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T17:49:04.808+0800	ERROR	api/visitor.go:50	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:50
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T17:49:54.762+0800	ERROR	api/visitor.go:50	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:50
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:06:42.267+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:07:05.755+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:10:33.191+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:12:34.564+0800	ERROR	api/visitor.go:52	500 Internal Server Error 	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdcb"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Errorw
+	/root/go/src/go.uber.org/zap/sugar.go:181
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:52
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:26:35.265+0800	WARN	api/visitor.go:59	404 Not Found	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdce7"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Warnw
+	/root/go/src/go.uber.org/zap/sugar.go:175
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:59
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
+2017-03-18T18:27:43.012+0800	WARN	api/visitor.go:59	404 Not Found	{"url": "http://localhost:8080/v1/visitors/58ccfe40d6ca3f34dc2bdce7"}
+go.uber.org/zap.Stack
+	/root/go/src/go.uber.org/zap/field.go:209
+go.uber.org/zap.(*Logger).check
+	/root/go/src/go.uber.org/zap/logger.go:273
+go.uber.org/zap.(*Logger).Check
+	/root/go/src/go.uber.org/zap/logger.go:146
+go.uber.org/zap.(*SugaredLogger).log
+	/root/go/src/go.uber.org/zap/sugar.go:223
+go.uber.org/zap.(*SugaredLogger).Warnw
+	/root/go/src/go.uber.org/zap/sugar.go:175
+github.com/pengye91/xieyuanpeng.in/backend/api.UserAPI.GetById
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/api/visitor.go:59
+github.com/pengye91/xieyuanpeng.in/backend/api.(UserAPI).GetById-fm
+	/root/go/src/github.com/pengye91/xieyuanpeng.in/backend/main.go:55
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Next
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:122
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:25
+github.com/iris-contrib/middleware/logger.(*loggerMiddleware).Serve-fm
+	/root/go/src/github.com/iris-contrib/middleware/logger/logger.go:58
+gopkg.in/kataras/iris%2ev5.HandlerFunc.Serve
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:246
+gopkg.in/kataras/iris%2ev5.(*Context).Do
+	/root/go/src/gopkg.in/kataras/iris.v5/context.go:112
+gopkg.in/kataras/iris%2ev5.(*serveMux).BuildHandler.func1
+	/root/go/src/gopkg.in/kataras/iris.v5/http.go:1112
+gopkg.in/kataras/iris%2ev5.(*Framework).Build.func1.1
+	/root/go/src/gopkg.in/kataras/iris.v5/iris.go:363
+github.com/valyala/fasthttp.(*Server).serveConn
+	/root/go/src/github.com/valyala/fasthttp/server.go:1554
+github.com/valyala/fasthttp.(*Server).(github.com/valyala/fasthttp.serveConn)-fm
+	/root/go/src/github.com/valyala/fasthttp/server.go:1268
+github.com/valyala/fasthttp.(*workerPool).workerFunc
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:210
+github.com/valyala/fasthttp.(*workerPool).getCh.func1
+	/root/go/src/github.com/valyala/fasthttp/workerpool.go:182
