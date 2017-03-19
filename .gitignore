@@ -16,3 +16,4 @@
 .glide/
 
 /backend/backend
+logs/
