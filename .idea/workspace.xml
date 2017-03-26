@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e306915b-def5-43e5-b783-84aa64626f99" name="Default" comment="" />
+    <list default="true" id="e306915b-def5-43e5-b783-84aa64626f99" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/app/actions/actions.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/app/app.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/app/components/home.jsx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/app/routes/router.jsx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/app/stores/store.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/jquery-2.2.4.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/modernizr-custom.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/moment-with-locales.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/pace.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/react-dom.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/react-with-addons.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/frontend/vendor/semantic.min.js" afterPath="" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -102,12 +115,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1490508993195</updated>
-      <workItem from="1490508995457" duration="65000" />
+      <workItem from="1490508995457" duration="589000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="65000" />
+    <option name="totallyTimeSpent" value="589000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1366" height="708" extended-state="0" />
