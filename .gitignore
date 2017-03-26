@@ -18,3 +18,5 @@
 
 /backend/backend
 logs/
+
+*/node_modules
