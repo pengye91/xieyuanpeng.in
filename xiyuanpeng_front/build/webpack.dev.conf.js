@@ -1,8 +1,8 @@
 var utils = require('./utils')
 var webpack = require('webpack')
-var config = require('../config')
+var config = require('../config/index')
 var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base.conf')
+var baseWebpackConfig = require('./webpack.base.conf.js')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 

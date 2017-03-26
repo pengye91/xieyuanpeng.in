@@ -1,7 +1,7 @@
 var path = require('path')
 var utils = require('./utils')
-var config = require('../config')
-var vueLoaderConfig = require('./vue-loader.conf')
+var config = require('../config/index')
+var vueLoaderConfig = require('./vue-loader.conf.js')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
