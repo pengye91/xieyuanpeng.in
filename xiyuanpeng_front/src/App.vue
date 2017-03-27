@@ -20,7 +20,7 @@ export default {
       this.$notify({
         title: 'Just a notify test',
         message: 'This is just a test notify.',
-        duration: 6000
+        duration: 5000
       })
     }
   }
