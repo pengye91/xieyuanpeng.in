@@ -68,24 +68,29 @@
       <div class="layout-nav">
         <Menu-item name="1">
           <Icon type="ios-navigate"></Icon>
-          导航一
+          项目一
+
         </Menu-item>
         <Menu-item name="2">
           <Icon type="ios-keypad"></Icon>
-          导航二
+          项目二
+
         </Menu-item>
         <Menu-item name="3">
           <Icon type="ios-analytics"></Icon>
           导航三
+
         </Menu-item>
         <Menu-item name="4">
           <Icon type="ios-paper"></Icon>
           导航四
+
         </Menu-item>
       </div>
-        <Input size="large" class="layout-search" placeholder="请输入搜索内容...">
-          <Button slot="append" icon="search"></Button>
-        </Input>
+      <Input size="large" class="layout-search"
+             placeholder="请输入搜索内容..." v-model="search">
+        <Button slot="append" icon="search"></Button>
+      </Input>
     </Menu>
     <div class="layout-content">
       <Row>
@@ -95,6 +100,7 @@
               <template slot="title">
                 <Icon type="ios-navigate"></Icon>
                 导航一
+
               </template>
               <Menu-item name="1-1">选项 1</Menu-item>
               <Menu-item name="1-2">选项 2</Menu-item>
@@ -104,6 +110,7 @@
               <template slot="title">
                 <Icon type="ios-keypad"></Icon>
                 导航二
+
               </template>
               <Menu-item name="2-1">选项 1</Menu-item>
               <Menu-item name="2-2">选项 2</Menu-item>
@@ -112,6 +119,7 @@
               <template slot="title">
                 <Icon type="ios-analytics"></Icon>
                 导航三
+
               </template>
               <Menu-item name="3-1">选项 1</Menu-item>
               <Menu-item name="3-2">选项 2</Menu-item>
@@ -119,7 +127,7 @@
           </Menu>
         </i-col>
         <i-col span="19">
-          <div class="layout-content-main">内容区域</div>
+          <div class="layout-content-main">{{ search }}</div>
         </i-col>
       </Row>
     </div>
@@ -129,6 +137,12 @@
   </div>
 </template>
 <script>
-  export default {}
+  export default {
+    data () {
+      return {
+        search: ''
+      }
+    }
+  }
 </script>
 
