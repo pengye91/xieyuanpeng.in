@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	Host         = "mongodb://localhost:27017"
+	Host         = "localhost:27017"
 	Database     = "xieyuanpeng"
-	AuthDatabase = "authdb"
+	AuthDatabase = "admin"
 	AuthUserName = "xyp"
 	AuthPassword = "xxyypp"
 )
@@ -26,9 +26,10 @@ type MgoDb struct {
 func init() {
 
 	if mainSession == nil {
+		url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
 
 		var err error
-		mainSession, err = mgo.Dial(Host)
+		mainSession, err = mgo.Dial(url)
 
 		if err != nil {
 			panic(err)

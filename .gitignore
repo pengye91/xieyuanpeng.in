@@ -5,6 +5,7 @@
 *.dll
 *.so
 *.dylib
+.idea/
 
 # Test binary, build with `go test -c`
 *.test
@@ -16,3 +17,7 @@
 .glide/
 
 /backend/backend
+logs/
+
+*/node_modules
+/xiyuanpeng_front/vendors/eleme-start/node_modules/
