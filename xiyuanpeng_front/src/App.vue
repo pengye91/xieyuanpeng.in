@@ -30,7 +30,7 @@
   }
 
   .layout-menu-left {
-    background: #464c5b;
+    /*background: #e2e2e2;*/
   }
 
   .layout-header {
@@ -42,7 +42,7 @@
   .layout-logo-left {
     width: 90%;
     height: 30px;
-    background: #5b6270;
+    background: #919191;
     border-radius: 3px;
     margin: 15px auto;
   }
@@ -63,7 +63,7 @@
   <div class="layout" :class="{'layout-hide-text': spanLeft < 5}">
     <Row type="flex">
       <i-col :span="spanLeft" class="layout-menu-left">
-        <Menu active-name="1" theme="dark" width="auto">
+        <Menu active-name="1" theme="primary" width="auto">
           <div class="layout-logo-left"></div>
           <Menu-item name="1">
             <Icon type="ios-navigate" :size="iconSize"></Icon>
