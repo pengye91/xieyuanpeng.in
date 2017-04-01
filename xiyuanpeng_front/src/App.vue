@@ -61,30 +61,19 @@
 </style>
 <template>
   <div class="layout">
-    <Menu mode="horizontal" theme="dark" active-name="1">
+    <Menu mode="horizontal" theme="light" active-name="1">
       <div class="layout-logo">
         <img src="./assets/logo.png" alt="logo" height="40" width="40">
       </div>
       <div class="layout-nav">
         <Menu-item name="1">
-          <Icon type="ios-navigate"></Icon>
-          项目一
-
+          技术博客
         </Menu-item>
         <Menu-item name="2">
-          <Icon type="ios-keypad"></Icon>
-          项目二
-
-        </Menu-item>
-        <Menu-item name="3">
-          <Icon type="ios-analytics"></Icon>
-          导航三
-
+          摄影作品
         </Menu-item>
         <Menu-item name="4">
-          <Icon type="ios-paper"></Icon>
-          导航四
-
+          联系我
         </Menu-item>
       </div>
       <Input size="large" class="layout-search"
@@ -95,34 +84,34 @@
     <div class="layout-content">
       <Row>
         <i-col span="3">
-          <Menu active-name="1-2" width="auto" :open-names="['1']">
+          <Menu active-name="1-2" :open-names="['1']">
             <Submenu name="1">
               <template slot="title">
-                <Icon type="ios-navigate"></Icon>
-                导航一
-
+                <Icon type="document-text"></Icon>
+                技术博客
               </template>
-              <Menu-item name="1-1">选项 1</Menu-item>
-              <Menu-item name="1-2">选项 2</Menu-item>
-              <Menu-item name="1-3">选项 3</Menu-item>
+              <Menu-item name="1-1">Python</Menu-item>
+              <Menu-item name="1-2">Django</Menu-item>
+              <Menu-item name="1-3">Golang</Menu-item>
+              <Menu-item name="1-4">杂</Menu-item>
             </Submenu>
             <Submenu name="2">
               <template slot="title">
                 <Icon type="ios-keypad"></Icon>
-                导航二
-
+                摄影作品
               </template>
-              <Menu-item name="2-1">选项 1</Menu-item>
-              <Menu-item name="2-2">选项 2</Menu-item>
+              <Menu-item name="2-1">项目 1</Menu-item>
+              <Menu-item name="2-2">项目 2</Menu-item>
             </Submenu>
             <Submenu name="3">
               <template slot="title">
                 <Icon type="ios-analytics"></Icon>
-                导航三
-
+                联系我
               </template>
-              <Menu-item name="3-1">选项 1</Menu-item>
-              <Menu-item name="3-2">选项 2</Menu-item>
+              <Menu-item name="3-1">
+                <Icon type="social-github" size="18"></Icon>
+              </Menu-item>
+              <Menu-item name="3-2">wechat</Menu-item>
             </Submenu>
           </Menu>
         </i-col>
