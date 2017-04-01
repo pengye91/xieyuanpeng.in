@@ -16,14 +16,13 @@
   }
 
   .layout-search {
-    width: 200px;
-    /*height: 10px;*/
+    width: 15%;
     /*background: #5b6270;*/
     /*border-radius: 10px;*/
     float: right;
     position: relative;
-    top: 12px;
-    right: 30px;
+    top: auto;
+    right: 3%;
   }
 
   .layout-nav {
@@ -73,17 +72,16 @@
           摄影作品
         </Menu-item>
         <Menu-item name="4">
-          联系我
+          联系我吧
         </Menu-item>
       </div>
-      <Input size="large" class="layout-search"
-             placeholder="请输入搜索内容..." v-model="search">
-        <Button slot="append" icon="search"></Button>
-      </Input>
+      <Input size="large" class="layout-search" icon="search"
+             placeholder="请输入搜索内容..." v-model="search"></Input>
+        <!--<Button slot="append" icon="search"></Button>-->
     </Menu>
     <div class="layout-content">
       <Row>
-        <i-col span="3">
+        <i-col span="5">
           <Menu active-name="1-2" :open-names="['1']">
             <Submenu name="1">
               <template slot="title">
@@ -106,7 +104,7 @@
             <Submenu name="3">
               <template slot="title">
                 <Icon type="ios-analytics"></Icon>
-                联系我
+                联系我吧
               </template>
               <Menu-item name="3-1">
                 <Icon type="social-github" size="18"></Icon>
@@ -115,7 +113,7 @@
             </Submenu>
           </Menu>
         </i-col>
-        <i-col span="19">
+        <i-col span="18">
           <div class="layout-content-main">{{ search }}</div>
         </i-col>
       </Row>
