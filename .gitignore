@@ -20,4 +20,5 @@
 logs/
 
 */node_modules
+xiyuanpeng_front/vendors/*
 /xiyuanpeng_front/vendors/eleme-start/node_modules/
