@@ -1,13 +1,11 @@
 <template>
-  <!--<div class="top-box">-->
-    <router-view></router-view>
-  <!--</div>-->
+    <Layout></Layout>
 </template>
 
-<!--<script>-->
-  <!--import Layout from './components/Layout'-->
-<!---->
-  <!--export default {-->
-    <!--components: { Layout }-->
-  <!--}-->
-<!--//</script>-->
+<script>
+  import Layout from './components/Layout'
+
+  export default {
+    components: {Layout}
+  }
+</script>

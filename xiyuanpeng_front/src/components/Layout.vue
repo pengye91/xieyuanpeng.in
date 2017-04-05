@@ -17,9 +17,9 @@
 
   .ivu-input-wrapper {
     width: 15%;
-    float: right;
+    float: left;
     top: auto;
-    right: 3%;
+    left: 8%;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
@@ -50,15 +50,8 @@
     left: 40px;
   }
 
-  .layout-search {
-    width: 15%;
-    float: right;
-    top: auto;
-    right: 3%;
-  }
-
   .layout-nav li {
-    left: 25%;
+    left: 15%;
     font-size: 15px;
     float: left;
     padding: 0 40px;
@@ -95,6 +88,11 @@
     padding: 10px 0 20px;
     color: #9ea7b4;
   }
+
+  .login {
+    float: right;
+    left: 10%;
+  }
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
@@ -108,22 +106,30 @@
       <div class="layout-logo">
         <img src="../assets/logo.png" alt="logo" height="40" width="40">
       </div>
+      <Input size="large" icon="search"
+             placeholder="请输入搜索内容..." v-model="search"></Input>
       <div class="layout-nav">
         <Menu-item name="blog">
           技术博客
         </Menu-item>
-        <Menu-item name="2">
+        <Menu-item name="photography">
           摄影作品
         </Menu-item>
-        <Menu-item name="3">
+        <Menu-item name="contact-me">
           联系我
         </Menu-item>
       </div>
-      <Input size="large" icon="search"
-             placeholder="请输入搜索内容..." v-model="search"></Input>
+      <div class="login">
+        <Button shape="circle" @click="register">
+          注册
+        </Button>
+        <Button shape="circle" @click="login">
+          登录
+        </Button>
+      </div>
     </Menu>
     <div class="layout-content">
-      <Row>
+      <Row type="flex">
         <i-col span="5">
           <Menu active-name="2-1" :open-names="['2']"
                 class="layout-left" width="70%">
@@ -180,6 +186,12 @@
     methods: {
       menuItemRoute (key) {
         this.$router.push(key)
+      },
+      login () {
+        this.$router.push('blog')
+      },
+      register () {
+        this.$router.push('blog')
       }
     }
   }

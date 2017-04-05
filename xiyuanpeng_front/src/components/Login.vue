@@ -1,19 +1,29 @@
 <template>
-  <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-    <Form-item prop="user">
-      <Input type="text" v-model="formInline.user" placeholder="Username">
-      <Icon type="ios-person-outline" slot="prepend"></Icon>
-      </Input>
+  <div style="margin-left: 25%; margin-top: 4%">
+  <Form ref="formInline" :model="formInline" :rules="ruleInline" labelWidth="100">
+    <Form-item prop="user" label="用户名">
+      <Row>
+        <Col span="10">
+        <Input type="text" v-model="formInline.user" placeholder="Username">
+        <Icon type="ios-person-outline" slot="prepend"></Icon>
+        </Input>
+        </Col>
+      </Row>
     </Form-item>
-    <Form-item prop="password">
-      <Input type="password" v-model="formInline.password" placeholder="Password">
-      <Icon type="ios-locked-outline" slot="prepend"></Icon>
-      </Input>
+    <Form-item prop="password" label="密码">
+      <Row>
+        <Col span="10">
+        <Input type="password" v-model="formInline.password" placeholder="Password">
+        <Icon type="ios-locked-outline" slot="prepend"></Icon>
+        </Input>
+        </Col>
+      </Row>
     </Form-item>
     <Form-item>
       <Button type="primary" @click="handleSubmit('formInline')">登录</Button>
     </Form-item>
   </Form>
+  </div>
 </template>
 <script>
   export default {
