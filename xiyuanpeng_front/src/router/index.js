@@ -11,13 +11,6 @@ export default new Router({
       path: '/blog',
       name: 'blog',
       component: Blog
-      // children: [
-      //   {
-      //     path: 'blog',
-      //     name: 'Blog',
-      //     component: Blog
-      //   }
-      // ]
     }
   ]
 })
