@@ -58,10 +58,10 @@
   }
 
   .layout-content {
-    min-height: 200px;
-    margin: 10px;
+    height: 100%;
+    padding: 70px 10px 10px 10px;
     overflow: hidden;
-    background: #fff;
+    background: transparent;
     border-radius: 4px;
   }
 
@@ -72,19 +72,28 @@
   .layout-copy {
     text-align: center;
     padding: 10px 0 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     color: #9ea7b4;
   }
+
+
 
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
     line-height: 56px !important;
   }
+  html, body, .layout {
+    height: 100%;
+  }
 </style>
 
 <template>
   <div class="layout">
-      <Menu mode="horizontal" theme="light" @on-select="menuItemRoute">
+      <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
+            @on-select="menuItemRoute" :activeName="currentPage">
         <Row>
         <Col span="1" offset="1">
           <div class="layout-logo">
@@ -121,39 +130,19 @@
     </Row>
       </Menu>
     <div class="layout-content">
-      <Row type="flex">
-        <Col span="3">
+      <Row type="flex" style="height: 100%; background: #fff">
+        <Col span="3" style="border-right: ">
           <Menu active-name="2-1" :open-names="['2']"
-                class="layout-left" width="100%">
-            <Submenu name="1">
+                style="height: 100%" width="100%">
+            <!--<Submenu name="1">-->
               <template slot="title">
                 <Icon type="ios-book" size="16"></Icon>
                 技术博客
               </template>
-              <Menu-item name="python">Python</Menu-item>
-              <Menu-item name="django">Django</Menu-item>
-              <Menu-item name="golang">Golang</Menu-item>
-              <Menu-item name="杂">杂</Menu-item>
-            </Submenu>
-            <Submenu name="2">
-              <template slot="title">
-                <Icon type="images" size="15"></Icon>
-                摄影作品
-              </template>
-              <Menu-item name="2-1">项目 1</Menu-item>
-              <Menu-item name="2-2">项目 2</Menu-item>
-            </Submenu>
-            <Submenu name="3">
-              <template slot="title">
-                <Icon type="android-contact" size="16"></Icon>
-                联系我
-              </template>
-              <Menu-item name="3-1">
-                <Icon type="social-github" size="14"></Icon>
-                github
+              <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
+                <Icon type="ios-book" size="16"></Icon>
+                {{ item }}
               </Menu-item>
-              <Menu-item name="3-2">wechat</Menu-item>
-            </Submenu>
           </Menu>
         </Col>
         <Col span="18">
@@ -172,12 +161,19 @@
   export default {
     data () {
       return {
-        search: ''
+        search: '',
+        currentPage: 'blog',
+        sideMenu: {
+          'blog': ['python', 'golang', 'django', '杂'],
+          'photography': ['项目1', '项目2'],
+          'contact-me': ['github', 'wechat']
+        }
       }
     },
     methods: {
       menuItemRoute (key) {
         this.$router.push(key)
+        this.currentPage = key
       },
       login () {
         this.$router.push('blog')
