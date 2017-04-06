@@ -22,10 +22,6 @@
     right: 3%;
   }
 
-  /*.ivu-input-wrapper-large .ivu-input-icon {*/
-    /*line-height: 60px;*/
-  /*}*/
-
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
     border-bottom: 0px;
     height: 59px;
@@ -99,6 +95,12 @@
     color: #9ea7b4;
   }
 </style>
+<style>
+  #input-save .ivu-input-icon {
+    line-height: 60px;
+  }
+</style>
+
 <template>
   <div class="layout">
     <Menu mode="horizontal" theme="light">
@@ -116,24 +118,24 @@
           联系我
         </Menu-item>
       </div>
-      <Input size="large" icon="search"
+      <Input id="input-save" size="large" icon="search"
              placeholder="请输入搜索内容..." v-model="search"></Input>
     </Menu>
     <div class="layout-content">
       <Row>
-        <i-col span="5">
-          <Menu active-name="2-1" :open-names="['2']"
-                class="layout-left" width="70%">
+        <i-col span="3">
+          <Menu @on-select="menuItemRoute" width="100%" active-name="blog" :open-names="['2']"
+                @on-open-change="menuItemRoute" class="layout-left" >
             <Submenu name="1">
               <template slot="title">
                 <Icon type="ios-book" size="16"></Icon>
                 技术博客
 
               </template>
-              <Menu-item name="1-1">Python</Menu-item>
-              <Menu-item name="1-2">Django</Menu-item>
-              <Menu-item name="1-3">Golang</Menu-item>
-              <Menu-item name="1-4">杂</Menu-item>
+              <Menu-item name="python">Python</Menu-item>
+              <Menu-item name="django">Django</Menu-item>
+              <Menu-item name="golang">Golang</Menu-item>
+              <Menu-item name="杂">杂</Menu-item>
             </Submenu>
             <Submenu name="2">
               <template slot="title">
@@ -141,26 +143,27 @@
                 摄影作品
 
               </template>
-              <Menu-item name="2-1">项目 1</Menu-item>
-              <Menu-item name="2-2">项目 2</Menu-item>
+              <Menu-item name="blog">项目 1</Menu-item>
+              <Menu-item name="p2" @on-select="menuItemRoute">项目 2</Menu-item>
             </Submenu>
             <Submenu name="3">
               <template slot="title">
-                <Icon type="android-contact" size="16"></Icon>
+                <Icon type="android-contact" size="16" ></Icon>
                 联系我吧
 
               </template>
-              <Menu-item name="3-1">
+              <Menu-item name="github">
                 <Icon type="social-github" size="14"></Icon>
                 github
 
               </Menu-item>
-              <Menu-item name="3-2">wechat</Menu-item>
+              <Menu-item name="wechat">wechat</Menu-item>
             </Submenu>
           </Menu>
         </i-col>
         <i-col span="18">
-          <div class="layout-content-main">{{ search }}</div>
+          <router-view>
+          </router-view>
         </i-col>
       </Row>
     </div>
@@ -175,6 +178,12 @@
     data () {
       return {
         search: ''
+      }
+    },
+    methods: {
+      menuItemRoute (key) {
+        this.$router.push(key)
+        console.log(key)
       }
     }
   }
