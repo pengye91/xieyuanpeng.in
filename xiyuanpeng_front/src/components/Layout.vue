@@ -15,23 +15,26 @@
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
+    text-align: center;
+    font-weight: bold;
     border-bottom: 0px;
     height: 59px;
     background: #f6f6f6 none repeat scroll 0 0;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item-selected {
-    background: #e6e6e6;
-  }
-
-  .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item-active {
     background: #e6e6e6 !important;
+    font-weight: bold;
   }
 
-  /*vertical*/
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: #cbcbcb;
     border-right: 0px;
+    font-weight: bold;
+  }
+
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item:hover {
+    font-weight: bold;
   }
 
   .layout-logo {
