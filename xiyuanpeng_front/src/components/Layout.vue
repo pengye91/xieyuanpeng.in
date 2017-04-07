@@ -82,12 +82,12 @@
   }
 
 
-
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
     line-height: 56px !important;
   }
+
   html, body, .layout {
     height: 100%;
   }
@@ -95,76 +95,85 @@
 
 <template>
   <div class="layout">
-      <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
-            @on-select="menuItemRoute" :activeName="currentPage">
-        <Row>
+    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
+          @on-select="menuItemRoute" :activeName="currentPage">
+      <Row>
         <Col span="1" offset="1">
-          <div class="layout-logo">
-            <img src="../assets/logo.png" alt="logo" height="40" width="40">
-          </div>
+        <div class="layout-logo">
+          <img src="../assets/logo.png" alt="logo" height="40" width="40">
+        </div>
         </Col>
         <Col span="3" offset="1">
-          <Input size="large" icon="search"
-                 placeholder="请输入搜索内容..." v-model="search"></Input>
+        <Input size="large" icon="search"
+               placeholder="请输入搜索内容..." :value="search" @input="searchTest"></Input>
         </Col>
         <Col span="14" offset="1">
-          <div class="layout-nav">
-            <Menu-item name="blog">
-              技术博客
-            </Menu-item>
-            <Menu-item name="photography">
-              摄影作品
-            </Menu-item>
-            <Menu-item name="contact-me">
-              联系我
-            </Menu-item>
-          </div>
+        <div class="layout-nav">
+          <Menu-item name="blog">
+            技术博客
+
+          </Menu-item>
+          <Menu-item name="photography">
+            摄影作品
+
+          </Menu-item>
+          <Menu-item name="contact-me">
+            联系我
+
+          </Menu-item>
+        </div>
         </Col>
         <Col span="3">
-          <div class="login">
-            <Button shape="circle" @click="register">
-              注册
-            </Button>
-            <Button shape="circle" @click="login">
-              登录
-            </Button>
-          </div>
+        <div class="login">
+          <Button shape="circle" @click="register">
+            注册
+
+          </Button>
+          <Button shape="circle" @click="login">
+            登录
+
+          </Button>
+        </div>
         </Col>
-    </Row>
-      </Menu>
+      </Row>
+    </Menu>
     <div class="layout-content">
       <Row type="flex" style="height: 100%; background: #fff">
         <Col span="3">
-          <Menu active-name="2-1" :open-names="['2']"
-                style="height: 100%" width="100%">
-            <!--<Submenu name="1">-->
-              <template slot="title">
-                <Icon type="ios-book" size="16"></Icon>
-                技术博客
-              </template>
-              <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
-                <Icon type="ios-book" size="16"></Icon>
-                {{ item }}
-              </Menu-item>
-          </Menu>
+        <Menu active-name="2-1" :open-names="['2']"
+              style="height: 100%" width="100%">
+          <!--<Submenu name="1">-->
+          <template slot="title">
+            <Icon type="ios-book" size="16"></Icon>
+            技术博客
+
+          </template>
+          <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
+            <Icon type="ios-book" size="16"></Icon>
+            {{ item }}
+
+          </Menu-item>
+        </Menu>
         </Col>
         <Col span="18">
-          <div class="layout-content-main">
-            <router-view></router-view>
-          </div>
+        <div class="layout-content-main">
+          <router-view></router-view>
+        </div>
         </Col>
       </Row>
     </div>
     <div class="layout-copy">
       &copy; XieYuanpeng.in
+
     </div>
   </div>
 </template>
 <script>
+  import store from '../store'
   export default {
     data () {
       return {
-        search: '',
+        search: store.search,
         currentPage: 'blog',
         sideMenu: {
           'blog': ['python', 'golang', 'django', '杂'],
@@ -183,6 +192,11 @@
       },
       register () {
         this.$router.push('blog')
+      },
+      searchTest (value) {
+        this.search = value
+        store.search = value
+        console.log(store)
       }
     }
   }

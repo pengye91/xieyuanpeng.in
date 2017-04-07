@@ -19,6 +19,7 @@
 </template>
 <script>
   import showdown from 'showdown'
+  import store from '../store'
   let converter = new showdown.Converter()
   export default {
     data () {
@@ -36,7 +37,7 @@
             { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
           ]
         },
-        message: converter.makeHtml('#hello, markdown')
+        message: converter.makeHtml('#' + store.search)
       }
     },
     methods: {
