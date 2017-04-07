@@ -13,9 +13,13 @@
     <Form-item>
       <Button type="primary" @click="handleSubmit('formInline')">登录</Button>
     </Form-item>
+    <div v-html="message">
+  </div>
   </Form>
 </template>
 <script>
+  import showdown from 'showdown'
+  let converter = new showdown.Converter()
   export default {
     data () {
       return {
@@ -31,7 +35,8 @@
             { required: true, message: '请填写密码', trigger: 'blur' },
             { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
           ]
-        }
+        },
+        message: converter.makeHtml('#hello, markdown')
       }
     },
     methods: {

@@ -1,0 +1,18 @@
+package: .
+import:
+- package: github.com/iris-contrib/middleware
+  subpackages:
+  - logger
+- package: github.com/pengye91/xieyuanpeng.in
+  subpackages:
+  - backend/api
+  - backend/db
+  - backend/libs
+  - backend/models
+  - backend/utils
+- package: go.uber.org/zap
+- package: golang.org/x/crypto/bcrypt
+- package: gopkg.in/kataras/iris.v5
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson

@@ -134,7 +134,7 @@
       </Menu>
     <div class="layout-content">
       <Row type="flex" style="height: 100%; background: #fff">
-        <Col span="3" style="border-right: ">
+        <Col span="3">
           <Menu active-name="2-1" :open-names="['2']"
                 style="height: 100%" width="100%">
             <!--<Submenu name="1">-->
