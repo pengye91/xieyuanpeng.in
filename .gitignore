@@ -20,4 +20,8 @@
 logs/
 
 */node_modules
+xiyuanpeng_front/vendors/*
 /xiyuanpeng_front/vendors/eleme-start/node_modules/
+/xiyuanpeng_front/vendors/
+将删除 backend/routes/
+!/xiyuanpeng_front/vendors/eleme-start/
