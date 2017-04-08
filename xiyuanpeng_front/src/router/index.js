@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Blogs from '../components/Login'
+import Blog from '../components/Blog'
 
 Vue.use(Router)
 
@@ -10,7 +10,7 @@ export default new Router({
     {
       path: '/blog',
       name: 'blog',
-      component: Blogs
+      component: Blog
     }
   ]
 })
