@@ -37,6 +37,11 @@
     font-weight: bold;
   }
 
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item{
+    font-size: 15px;
+    padding-left: 25%;
+  }
+
   .layout-logo {
     position: relative;
     top: 10px;
@@ -111,28 +116,19 @@
         <div class="layout-nav">
           <Menu-item name="blog">
             技术博客
-
           </Menu-item>
           <Menu-item name="photography">
             摄影作品
-
           </Menu-item>
           <Menu-item name="contact-me">
             联系我
-
           </Menu-item>
         </div>
         </Col>
         <Col span="3">
         <div class="login">
-          <Button shape="circle" @click="register">
-            注册
-
-          </Button>
-          <Button shape="circle" @click="login">
-            登录
-
-          </Button>
+          <Register></Register>
+          <Login></Login>
         </div>
         </Col>
       </Row>
@@ -146,12 +142,10 @@
           <template slot="title">
             <Icon type="ios-book" size="16"></Icon>
             技术博客
-
           </template>
           <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
             <Icon type="ios-book" size="16"></Icon>
             {{ item }}
-
           </Menu-item>
         </Menu>
         </Col>
@@ -164,14 +158,18 @@
     </div>
     <div class="layout-copy">
       &copy; XieYuanpeng.in
-
     </div>
   </div>
 </template>
 <script>
 //  import { mapState, mapActions } from 'vuex'
   import {EventBus} from '../store/EventBus'
+  import Login from './Login'
+  import Register from './Register'
   export default {
+    components: {
+      Login, Register
+    },
     data () {
       return {
         currentPage: 'blog',
@@ -183,9 +181,7 @@
         searchText: ''
       }
     },
-//    computed: mapState(['searchText']),
     methods: {
-//      ...mapActions(['setSearchText']),
       menuItemRoute (key) {
         this.$router.push(key)
         this.currentPage = key
