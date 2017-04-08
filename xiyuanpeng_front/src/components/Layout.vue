@@ -105,7 +105,7 @@
         </Col>
         <Col span="3" offset="1">
         <Input size="large" icon="search"
-               placeholder="请输入搜索内容..." :value="search" @input="searchTest"></Input>
+               placeholder="请输入搜索内容..." :value="searchText" @input="setSearchText"></Input>
         </Col>
         <Col span="14" offset="1">
         <div class="layout-nav">
@@ -169,11 +169,10 @@
   </div>
 </template>
 <script>
-  import store from '../store'
+  import { mapState, mapActions } from 'vuex'
   export default {
     data () {
       return {
-        search: store.search,
         currentPage: 'blog',
         sideMenu: {
           'blog': ['python', 'golang', 'django', '杂'],
@@ -182,7 +181,9 @@
         }
       }
     },
+    computed: mapState(['searchText']),
     methods: {
+      ...mapActions(['setSearchText']),
       menuItemRoute (key) {
         this.$router.push(key)
         this.currentPage = key
@@ -193,10 +194,7 @@
       register () {
         this.$router.push('blog')
       },
-      searchTest (value) {
-        this.search = value
-        store.search = value
-        console.log(store)
+      searchTextTest (value) {
       }
     }
   }
