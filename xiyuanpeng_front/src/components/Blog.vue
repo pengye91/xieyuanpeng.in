@@ -13,38 +13,32 @@
     <Form-item>
       <Button type="primary" @click="handleSubmit('formInline')">登录</Button>
     </Form-item>
-    <div v-html="message">
+    <div v-html="search">
     </div>
   </Form>
 </template>
 <script>
   import showdown from 'showdown'
-  import { mapState } from 'vuex'
+  import {EventBus} from '../store/EventBus'
 
   let converter = new showdown.Converter()
   export default {
     data () {
       return {
+        searchMessage: '#',
         formInline: {
           user: '',
           password: ''
         },
         ruleInline: {
           user: [
-            { required: true, message: '请填写用户名', trigger: 'blur' }
+            {required: true, message: '请填写用户名', trigger: 'blur'}
           ],
           password: [
-            { required: true, message: '请填写密码', trigger: 'blur' },
-            { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+            {required: true, message: '请填写密码', trigger: 'blur'},
+            {type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur'}
           ]
         }
-      }
-    },
-    computed: {
-      ...mapState(['searchText']),
-      message () {
-        if (!this.searchText) return
-        return converter.makeHtml('#' + this.searchText)
       }
     },
     methods: {
@@ -56,6 +50,15 @@
             this.$Message.error('表单验证失败!')
           }
         })
+      }
+    },
+    computed: {
+      search () {
+        EventBus.$on('search-text', (searchText) => {
+          this.searchMessage = converter.makeHtml('#' + searchText)
+          console.log(this.searchMessage)
+        })
+        return this.searchMessage
       }
     }
   }

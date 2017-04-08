@@ -105,7 +105,7 @@
         </Col>
         <Col span="3" offset="1">
         <Input size="large" icon="search"
-               placeholder="请输入搜索内容..." :value="searchText" @input="setSearchText"></Input>
+               placeholder="请输入搜索内容..." :value="searchText" @input="searchNotify"></Input>
         </Col>
         <Col span="14" offset="1">
         <div class="layout-nav">
@@ -169,7 +169,8 @@
   </div>
 </template>
 <script>
-  import { mapState, mapActions } from 'vuex'
+//  import { mapState, mapActions } from 'vuex'
+  import {EventBus} from '../store/EventBus'
   export default {
     data () {
       return {
@@ -178,12 +179,13 @@
           'blog': ['python', 'golang', 'django', '杂'],
           'photography': ['项目1', '项目2'],
           'contact-me': ['github', 'wechat']
-        }
+        },
+        searchText: ''
       }
     },
-    computed: mapState(['searchText']),
+//    computed: mapState(['searchText']),
     methods: {
-      ...mapActions(['setSearchText']),
+//      ...mapActions(['setSearchText']),
       menuItemRoute (key) {
         this.$router.push(key)
         this.currentPage = key
@@ -194,7 +196,10 @@
       register () {
         this.$router.push('blog')
       },
-      searchTextTest (value) {
+      searchNotify (value) {
+        this.searchText = value
+        EventBus.$emit('search-text', this.searchText)
+        console.log(this.searchText)
       }
     }
   }
