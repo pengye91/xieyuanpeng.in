@@ -1,8 +1,8 @@
 <template>
   <span>
-    <Button type="circle" @click="modal6 = true">注册</Button>
+    <Button shape="circle" @click="modal = true">注册</Button>
     <Modal
-      v-model="modal6"
+      v-model="modal"
       title="对话框标题"
       :loading="loading"
       @on-ok="asyncOK">
@@ -14,14 +14,14 @@
   export default {
     data () {
       return {
-        modal6: false,
+        modal: false,
         loading: true
       }
     },
     methods: {
       asyncOK () {
         setTimeout(() => {
-          this.modal6 = false
+          this.modal = false
         }, 2000)
       }
     }
