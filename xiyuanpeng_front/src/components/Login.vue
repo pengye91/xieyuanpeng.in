@@ -1,13 +1,13 @@
 <template>
   <span>
-    <Button type="circle" @click="value = true">登录</Button>
-    <Modal
+    <Button shape="circle" @click="showModal">登录</Button>
+    <Modal1
       title="登录"
-      :value="value"
-      :loading="loading"
+      :value="modal"
       :maskClosable="maskClosable"
       ok-text="登录"
       :closable="closable"
+      @on-cancel="modal = false"
       @on-ok="handleSubmit('formInline')">
       <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
         <Form-item prop="user">
@@ -22,23 +22,25 @@
         </Form-item>
         <div v-html="search"></div>
       </Form>
-    </Modal>
+    </Modal1>
   </span>
 </template>
 <script>
 //  import LoginForm from './Blog'
   import showdown from 'showdown'
-  import {EventBus} from '../store/EventBus'
+  import { EventBus } from '../store/EventBus'
+  import Modal1 from './Modal'
 
   let converter = new showdown.Converter()
   export default {
-//    components: {
-//      LoginForm
-//    },
+    components: {
+      LoginForm,
+      Modal1
+    },
     data () {
       return {
-        value: false,
-        loading: false,
+        modal: false,
+        loading: true,
         closable: false,
 //        visible: true,
         maskClosable: false,
@@ -59,18 +61,19 @@
       }
     },
     methods: {
-      asyncOK () {
-        setTimeout(() => {
-          this.modal6 = false
-        }, 2000)
+      showModal () {
+        this.modal = true
       },
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
             this.value = true
             this.$Message.success('提交成功!')
+            this.loading = false
+            this.modal = false
           } else {
-            this.value = true
+            this.loading = false
+            this.modal = true
             this.$Message.error('表单验证失败!')
           }
         })
