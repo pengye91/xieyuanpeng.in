@@ -12,13 +12,14 @@
     font-size: 15px;
     padding-left: 45px;
     border-bottom: 0px;
+    text-align: center;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
-    text-align: center;
     font-weight: bold;
     border-bottom: 0px;
     height: 59px;
+    text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
   }
 

@@ -13,11 +13,14 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "axios": "^0.16.1",
     "iview": "^2.0.0-rc.9",
     "less": "^2.7.2",
     "less-loader": "^4.0.2",
     "showdown": "^1.6.4",
     "vue": "^2.2.2",
+    "vue-images": "^1.0.4",
+    "vue-img-loader": "^0.1.6",
     "vue-router": "^2.2.0",
     "vuex": "^2.2.1"
   },
