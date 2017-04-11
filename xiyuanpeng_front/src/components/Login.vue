@@ -1,12 +1,11 @@
 <template>
   <span>
-    <Button type="circle" @click="modal6 = true">登录</Button>
+    <Button type="circle" @click="value = true">登录</Button>
     <Modal
-      v-model="modal6"
       title="登录"
-      :visible="visible"
+      :value="value"
       :loading="loading"
-      maskClosable="maskClosable"
+      :maskClosable="maskClosable"
       ok-text="登录"
       :closable="closable"
       @on-ok="handleSubmit('formInline')">
@@ -27,21 +26,21 @@
   </span>
 </template>
 <script>
-  import LoginForm from './Blog'
+//  import LoginForm from './Blog'
   import showdown from 'showdown'
   import {EventBus} from '../store/EventBus'
 
   let converter = new showdown.Converter()
   export default {
-    components: {
-      LoginForm
-    },
+//    components: {
+//      LoginForm
+//    },
     data () {
       return {
-        modal6: false,
-        loading: true,
+        value: false,
+        loading: false,
         closable: false,
-        visible: true,
+//        visible: true,
         maskClosable: false,
         searchMessage: '',
         formInline: {
@@ -68,12 +67,10 @@
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
+            this.value = true
             this.$Message.success('提交成功!')
-            this.loading = false
           } else {
-            this.loading = false
-            this.modal6 = true
-            this.visible = true
+            this.value = true
             this.$Message.error('表单验证失败!')
           }
         })
