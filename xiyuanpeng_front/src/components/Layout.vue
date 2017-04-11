@@ -38,7 +38,7 @@
   }
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item{
-    font-size: 15px;
+    font-size: 13px;
     padding-left: 25%;
   }
 

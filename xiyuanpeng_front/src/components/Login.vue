@@ -26,7 +26,6 @@
   </span>
 </template>
 <script>
-//  import LoginForm from './Blog'
   import showdown from 'showdown'
   import { EventBus } from '../store/EventBus'
   import Modal1 from './Modal'
@@ -34,7 +33,6 @@
   let converter = new showdown.Converter()
   export default {
     components: {
-      LoginForm,
       Modal1
     },
     data () {

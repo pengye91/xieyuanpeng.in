@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/iris-contrib/middleware/logger"
+	"github.com/iris-contrib/middleware/cors"
 	"gopkg.in/kataras/iris.v5"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
@@ -17,7 +18,7 @@ func main() {
 
 	// set the global middlewares
 	iris.Use(logger.New())
-	//iris.Use(cors.Default())
+	iris.Use(cors.Default())
 
 	// set the custom errors
 	iris.OnError(iris.StatusNotFound, func(ctx *iris.Context) {
@@ -33,7 +34,7 @@ func main() {
 	//registerRoutes()
 	registerAPI()
 	// start the server
-	iris.Listen(":8080")
+	iris.Listen(":8000")
 }
 
 func registerAPI() {
