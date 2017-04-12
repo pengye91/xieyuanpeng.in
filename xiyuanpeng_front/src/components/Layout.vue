@@ -13,14 +13,21 @@
     padding-left: 45px;
     border-bottom: 0;
     text-align: center;
+    line-height: 40px;
+  }
+  .login {
+    line-height: 37px;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
     font-weight: bold;
     border-bottom: 0;
-    height: 59px;
+    height: 40px;
     text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
+  }
+  .ivu-menu-horizontal {
+    line-height: 38px;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item-selected {
@@ -45,7 +52,7 @@
 
   .layout-logo {
     position: relative;
-    top: 10px;
+    top: 1px;
     left: 15px;
   }
 
@@ -68,7 +75,7 @@
 
   .layout-content {
     height: 100%;
-    padding: 70px 10px 58px 10px;
+    padding: 40px 10px 30px 5px;
     background: transparent;
     border-radius: 4px;
   }
@@ -82,7 +89,7 @@
     text-align: center;
     z-index: 10;
     background: #fff;
-    padding: 10px 0 20px;
+    padding: 5px 0 5px;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -91,7 +98,10 @@
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
-    line-height: 56px !important;
+    line-height: 30px !important;
+  }
+  .ivu-input-large {
+    height: 20px;
   }
 
   html, body, .layout {
@@ -101,7 +111,7 @@
 
 <template>
   <div class="layout">
-    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
+    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px"
           @on-select="menuItemRoute">
       <Row>
         <Col span="1" offset="1">
