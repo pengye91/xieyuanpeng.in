@@ -61,7 +61,10 @@
       let preloader = new ImagePreloader()
       let urls = []
       let baseUrl = 'http://localhost:8000/static/images/'
-      let baseTestUrl = 'http://localhost:8000/test/images/第064期美女图片第/'
+      let baseTestUrl = 'http://localhost:8000/test/images/第064期美女图片第'
+      let baseTestUrl1 = 'http://localhost:8000/test/images/第67期第'
+      let baseTestUrl2 = 'http://localhost:8000/test/images/第70期第'
+      let baseTestUrl3 = 'http://localhost:8000/test/images/'
       let imgs = []
       axios.get('http://localhost:8000/v1/pictures')
         .then(function (response) {
@@ -70,10 +73,20 @@
             urls.push(baseUrl + imgs[i].path)
           }
           let j = 1
-          for (j = 1; j < 100; j++) {
+          for (j = 1; j < 210; j++) {
             let u = ''
-            u = j.toString() + '.jpg'
+            let u2 = ''
+            let u1 = ''
+            let u3 = ''
+            u = j.toString() + '张.jpg'
+            u1 = j.toString() + '张.jpg'
+            u2 = j.toString() + '张.jpg'
+            u3 = j.toString() + '.jpg'
+
             urls.push(baseTestUrl + u)
+            urls.push(baseTestUrl1 + u1)
+            urls.push(baseTestUrl2 + u2)
+            urls.push(baseTestUrl3 + u3)
           }
           preloader.onProgress = function (info) {
             console.log('image with source %s is loaded with status %s', info.value.src, info.status)
