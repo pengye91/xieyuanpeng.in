@@ -75,12 +75,13 @@
 
   .layout-content {
     height: 100%;
-    padding: 40px 10px 30px 5px;
+    padding: 42px 10px 30px 5px;
     background: transparent;
     border-radius: 4px;
   }
 
   .layout-content-main {
+    min-height: 100%;
     padding: 10px;
     background: white;
   }

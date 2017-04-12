@@ -6,6 +6,7 @@ import (
 	"gopkg.in/kataras/iris.v5"
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"fmt"
 )
 
 type PictureAPI struct {
@@ -110,6 +111,23 @@ func (this PictureAPI) DeletePic(ctx *iris.Context) {
 
 	if err := Db.C("picture").RemoveId(bson.ObjectIdHex(PicId)); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(iris.StatusOK, iris.Map{"details": "deleted"})
+
+	Db.Close()
+}
+
+
+// Delete all pics
+func (this PictureAPI) DeletePics(ctx *iris.Context) {
+	// TODO: add admin authentication
+	Db := db.MgoDb{}
+	Db.Init()
+
+	if changeInfo, err := Db.C("picture").RemoveAll(nil); err != nil {
+		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
+	} else {
+		fmt.Printf("%v\n", *changeInfo)
 	}
 	ctx.JSON(iris.StatusOK, iris.Map{"details": "deleted"})
 

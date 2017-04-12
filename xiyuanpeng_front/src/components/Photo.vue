@@ -2,16 +2,26 @@
   <div>
     <Row>
       <Col span="1" offset="2">
-      <Button type="text" icon="chevron-left" size="large" @click="pre"></Button>
+      <Button type="text" icon="chevron-left" size="large" @click="pre" style="margin-top: 400%;"></Button>
       </Col>
       <Col span="15">
-      <img :src="imgSrc" :alt="src" width="70%" height="430px"
-           style="box-shadow: 10px 10px 10px #484848; margin: auto; display: block">
+      <img :src="imgSrc" :alt="src" width="100%" height="430px"
+           style="box-shadow: 7px 7px 7px #484848; margin: auto; display: block">
       </Col>
-      <Col span="2" offset="1">
+      <Col span="2" >
       <Button type="text" icon="chevron-right" size="large" style="margin-top: 200%;" @click="next"></Button>
       </Col>
     </Row>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
+    <div>哈哈</div>
     <div>哈哈</div>
     <div>哈哈</div>
     <div>哈哈</div>
@@ -39,19 +49,14 @@
     },
     computed: {
       myImages () {
-        axios.get('http://localhost:8000/v1/pictures')
-          .then(function (response) {
-            console.log(response)
-            return response
-          })
-//        return [
-//          {
-//            'imageUrl': 'http://localhost:8000/static/images/' + this.imgUrl
-//          },
-//          {
-//            'imageUrl': 'http://localhost:8000/static/images/2.jpg'
-//          }
-//        ]
+        return [
+          {
+            'imageUrl': 'http://localhost:8000/static/images/' + this.imgUrl
+          },
+          {
+            'imageUrl': 'http://localhost:8000/static/images/2.jpg'
+          }
+        ]
       },
       imgSrc () {
         return 'http://localhost:8000/static/images/' + this.src.toString() + '.jpg'
@@ -60,8 +65,10 @@
     mounted: () => {
       axios.get('http://localhost:8000/v1/pictures')
         .then(function (response) {
+          let images = []
+          images = response.data
           console.log(response)
-          return response
+          return images
         })
     },
     methods: {
@@ -74,6 +81,8 @@
     }
   }
 </script>
-<style>
-  @import "../../node_modules/vue-images/dist/vue-images.css";
+<style scoped>
+  .ivu-btn-large {
+    font-size: 30px;
+  }
 </style>

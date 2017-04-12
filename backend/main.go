@@ -65,6 +65,7 @@ func registerAPI() {
 	iris.Get("/v1/pictures", pictures.GetAllPics)
 	iris.Get("/v1/pictures/:id", pictures.GetPicById)
 	iris.Delete("/v1/pictures/:id", pictures.DeletePic)
+	iris.Delete("/v1/pictures", pictures.DeletePics)
 	iris.Post("/v1/pictures/:id/comments", pictures.PostCommentToPic)
 	iris.Get("/v1/pictures/:id/comments", pictures.GetPicComments)
 }
