@@ -8,7 +8,7 @@
       <img :src="imgSrc" :alt="src" width="100%" height="430px"
            style="box-shadow: 7px 7px 7px #484848; margin: auto; display: block">
       </Col>
-      <Col span="2" >
+      <Col span="2">
       <Button type="text" icon="chevron-right" size="large" style="margin-top: 200%;" @click="next"></Button>
       </Col>
     </Row>
@@ -33,18 +33,13 @@
 </template>
 <script>
   import axios from 'axios'
+  import ImagePreloader from 'image-preloader'
   export default {
     data () {
       return {
         imgUrl: '1.jpg',
         src: 1,
-        allImgs: () => {
-          axios.get('http://localhost:8000/v1/pictures')
-            .then(function (response) {
-              console.log(response)
-              return response
-            })
-        }
+        images: []
       }
     },
     computed: {
@@ -63,13 +58,32 @@
       }
     },
     mounted: () => {
+      let preloader = new ImagePreloader()
+      let urls = []
+      let baseUrl = 'http://localhost:8000/static/images/'
+      let baseTestUrl = 'http://localhost:8000/test/images/第064期美女图片第/'
+      let imgs = []
       axios.get('http://localhost:8000/v1/pictures')
         .then(function (response) {
-          let images = []
-          images = response.data
-          console.log(response)
-          return images
-        })
+          imgs = response.data
+          for (let i in imgs) {
+            urls.push(baseUrl + imgs[i].path)
+          }
+          let j = 1
+          for (j = 1; j < 100; j++) {
+            let u = ''
+            u = j.toString() + '.jpg'
+            urls.push(baseTestUrl + u)
+          }
+          preloader.onProgress = function (info) {
+            console.log('image with source %s is loaded with status %s', info.value.src, info.status)
+          }
+          preloader.preload(urls)
+            .then(function (status) {
+              console.log('all done!', status)
+            })
+        }
+        )
     },
     methods: {
       next () {

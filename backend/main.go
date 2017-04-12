@@ -15,6 +15,7 @@ func main() {
 
 	// set static folder(s)
 	iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
+	iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
 
 	// set the global middlewares
 	iris.Use(logger.New())
