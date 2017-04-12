@@ -16,9 +16,9 @@ type UserAPI struct {
 }
 
 var (
-	logger, _ = utils.MyDevLogger()
+	logger, _    = utils.MyDevLogger()
 	errLogger, _ = utils.MyErrLogger()
-	sugar     = logger.Sugar()
+	sugar        = logger.Sugar()
 	errSugar = errLogger.Sugar()
 )
 
@@ -32,8 +32,9 @@ func (this UserAPI) GetVisitors(ctx *iris.Context) {
 		return
 	} else {
 		ctx.JSON(iris.StatusOK, &visitors)
-		errSugar.Infow("200 OK",
-			"url", ctx.URI(),
+		sugar.Infow(
+			"200 OK",
+			"url", ctx.PathString(),
 		)
 	}
 
@@ -46,10 +47,10 @@ func (this UserAPI) GetById(ctx *iris.Context) {
 	visitor := models.Visitor{}
 	id := ctx.Param("id")
 	if !bson.IsObjectIdHex(ctx.Param("id")) {
-		errSugar.Errorw(
-			"500 Internal Server Error ",
-			"url", ctx.URI(),
-		)
+		//errSugar.Errorw(
+		//	"500 Internal Server Error ",
+		//	"url", ctx.URI(),
+		//)
 		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 	} else {
 		if err := Db.C("people").Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&visitor); err != nil {

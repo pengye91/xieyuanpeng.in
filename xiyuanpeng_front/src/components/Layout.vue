@@ -11,13 +11,13 @@
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item {
     font-size: 15px;
     padding-left: 45px;
-    border-bottom: 0px;
+    border-bottom: 0;
     text-align: center;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
     font-weight: bold;
-    border-bottom: 0px;
+    border-bottom: 0;
     height: 59px;
     text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
@@ -30,7 +30,7 @@
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: #cbcbcb;
-    border-right: 0px;
+    border-right: 0;
     font-weight: bold;
   }
 
@@ -68,26 +68,26 @@
 
   .layout-content {
     height: 100%;
-    padding: 70px 10px 10px 10px;
-    overflow: hidden;
+    padding: 70px 10px 58px 10px;
     background: transparent;
     border-radius: 4px;
   }
 
   .layout-content-main {
     padding: 10px;
+    background: white;
   }
 
   .layout-copy {
     text-align: center;
+    z-index: 10;
+    background: #fff;
     padding: 10px 0 20px;
     position: fixed;
     bottom: 0;
     width: 100%;
-    color: #9ea7b4;
+    color: #828a97;
   }
-
-
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
@@ -102,7 +102,7 @@
 <template>
   <div class="layout">
     <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
-          @on-select="menuItemRoute" :activeName="currentPage">
+          @on-select="menuItemRoute">
       <Row>
         <Col span="1" offset="1">
         <div class="layout-logo">
@@ -115,15 +115,15 @@
         </Col>
         <Col span="14" offset="1">
         <div class="layout-nav">
-          <Menu-item name="blog">
+          <MyMenuItem name="blog" to="/blog">
             技术博客
-          </Menu-item>
-          <Menu-item name="photography">
+          </MyMenuItem>
+          <MyMenuItem name="photography" to="/photography">
             摄影作品
-          </Menu-item>
-          <Menu-item name="contact-me">
+          </MyMenuItem>
+          <MyMenuItem name="contact-me" to="/contact-me">
             联系我
-          </Menu-item>
+          </MyMenuItem>
         </div>
         </Col>
         <Col span="3">
@@ -135,7 +135,7 @@
       </Row>
     </Menu>
     <div class="layout-content">
-      <Row type="flex" style="height: 100%; background: #fff">
+      <Row type="flex" style="height: 100%;">
         <Col span="3">
         <Menu active-name="2-1" :open-names="['2']"
               style="height: 100%" width="100%">
@@ -144,13 +144,13 @@
             <Icon type="ios-book" size="16"></Icon>
             技术博客
           </template>
-          <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
+          <MyMenuItem v-for="item in sideMenu[currentPage]" :name="item" :key="item" :to="item">
             <Icon type="ios-book" size="16"></Icon>
             {{ item }}
-          </Menu-item>
+          </MyMenuItem>
         </Menu>
         </Col>
-        <Col span="18">
+        <Col span="21" style="overflow: auto">
         <div class="layout-content-main">
           <router-view></router-view>
         </div>
@@ -167,9 +167,10 @@
   import {EventBus} from '../store/EventBus'
   import Login from './Login'
   import Register from './Register'
+  import MyMenuItem from './MyMenuItem'
   export default {
     components: {
-      Login, Register
+      Login, Register, MyMenuItem
     },
     data () {
       return {
@@ -184,8 +185,8 @@
     },
     methods: {
       menuItemRoute (key) {
-        this.$router.push(key)
         this.currentPage = key
+        console.log(this.currentPage)
       },
       login () {
         this.$router.push('blog')

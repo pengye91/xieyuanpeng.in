@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/iris-contrib/middleware/logger"
 	"github.com/iris-contrib/middleware/cors"
+	"github.com/iris-contrib/middleware/logger"
 	"gopkg.in/kataras/iris.v5"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/api"

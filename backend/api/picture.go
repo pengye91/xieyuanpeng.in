@@ -1,11 +1,11 @@
 package api
 
 import (
+	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"gopkg.in/kataras/iris.v5"
-	"time"
-	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type PictureAPI struct {
@@ -108,7 +108,7 @@ func (this PictureAPI) DeletePic(ctx *iris.Context) {
 	Db.Init()
 	PicId := ctx.Param("id")
 
-	if err:= Db.C("picture").RemoveId(bson.ObjectIdHex(PicId)); err != nil {
+	if err := Db.C("picture").RemoveId(bson.ObjectIdHex(PicId)); err != nil {
 		ctx.JSON(iris.StatusInternalServerError, models.Err("5"))
 	}
 	ctx.JSON(iris.StatusOK, iris.Map{"details": "deleted"})
