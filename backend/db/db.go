@@ -26,8 +26,8 @@ type MgoDb struct {
 func init() {
 
 	if mainSession == nil {
-		//url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
-		url := "mongodb://" + Host + "/" + AuthDatabase
+		url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
+		//url := "mongodb://" + Host + "/" + AuthDatabase
 
 		var err error
 		mainSession, err = mgo.Dial(url)

@@ -22,7 +22,7 @@
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
     font-weight: bold;
     border-bottom: 0;
-    height: 40px;
+    height: 39px;
     text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
   }
@@ -81,7 +81,7 @@
   }
 
   .layout-content-main {
-    min-height: 100%;
+    height: 100%;
     padding: 10px;
     background: white;
   }

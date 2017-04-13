@@ -1,37 +1,17 @@
 <template>
-  <div>
-    <Row>
-      <Col span="1" offset="2">
+    <Row type="flex" style="height: 100%">
+      <Col span="1" style="text-align: left">
       <Button type="text" icon="chevron-left" :disabled="leftDisabled"
-              size="large" @click="pre" style="margin-top: 400%;"></Button>
+              size="large" @click="pre" class="pre-button"></Button>
       </Col>
-      <Col span="15">
-      <img :src="imgSrc" :alt="src" width="100%" height="430px"
-           style="box-shadow: 7px 7px 7px #484848; margin: auto; display: block">
+      <Col span="22" style="height: 100%; text-align: center">
+      <img :src="imgSrc" :alt="src" class="img" >
       </Col>
-      <Col span="2">
+      <Col span="1">
       <Button type="text" icon="chevron-right" size="large" :disabled="rightDisabled"
-              style="margin-top: 200%;" @click="next"></Button>
+               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-    <div>哈哈</div>
-  </div>
 </template>
 <script>
   import axios from 'axios'
@@ -44,21 +24,11 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://localhost:8000/static/images/',
+        baseUrl: 'http://192.168.1.9:8000/static/images/',
         imgs: []
       }
     },
     computed: {
-      myImages () {
-        return [
-          {
-            'imageUrl': this.baseUrl + this.imgUrl
-          },
-          {
-            'imageUrl': 'http://localhost:8000/static/images/2.jpg'
-          }
-        ]
-      },
       leftDisabled () { return this.src === 1 },
       rightDisabled () { return this.imgs.length === this.src },
       imgSrc () {
@@ -66,16 +36,15 @@
       }
     },
     mounted () {
-      axios.get('http://localhost:8000/v1/pictures')
+      axios.get('http://192.168.1.9:8000/v1/pictures')
         .then((response) => {
           this.imgs = response.data
-          console.log(this.imgs)
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
           }
-          preloader.onProgress = function (info) {
-            console.log('image with source %s is loaded with status %s', info.value.src, info.status)
-          }
+//          preloader.onProgress = function (info) {
+//            console.log('image with source %s is loaded with status %s', info.value.src, info.status)
+//          }
           preloader.preload(this.urls)
             .then(function (status) {
               console.log('all done!', status)
@@ -95,6 +64,20 @@
 </script>
 <style scoped>
   .ivu-btn-large {
-    font-size: 30px;
+    font-size: 50px;
+  }
+  .img {
+    box-shadow: 7px 7px 7px #484848;
+    height: 95%;
+    width: auto;
+    max-width: 100%;
+  }
+  .pre-button{
+    height: 100%;
+    width: 100%;
+  }
+  .next-button{
+    height: 100%;
+    width: 100%;
   }
 </style>
