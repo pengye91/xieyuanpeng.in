@@ -11,15 +11,23 @@
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item {
     font-size: 15px;
     padding-left: 45px;
-    border-bottom: 0px;
+    border-bottom: 0;
+    text-align: center;
+    line-height: 40px;
+  }
+  .login {
+    line-height: 37px;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item:hover {
-    text-align: center;
     font-weight: bold;
-    border-bottom: 0px;
-    height: 59px;
+    border-bottom: 0;
+    height: 39px;
+    text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
+  }
+  .ivu-menu-horizontal {
+    line-height: 38px;
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item-selected {
@@ -29,7 +37,7 @@
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: #cbcbcb;
-    border-right: 0px;
+    border-right: 0;
     font-weight: bold;
   }
 
@@ -37,9 +45,14 @@
     font-weight: bold;
   }
 
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item{
+    font-size: 13px;
+    padding-left: 25%;
+  }
+
   .layout-logo {
     position: relative;
-    top: 10px;
+    top: 1px;
     left: 15px;
   }
 
@@ -62,30 +75,34 @@
 
   .layout-content {
     height: 100%;
-    padding: 70px 10px 10px 10px;
-    overflow: hidden;
+    padding: 42px 10px 30px 5px;
     background: transparent;
     border-radius: 4px;
   }
 
   .layout-content-main {
+    height: 100%;
     padding: 10px;
+    background: white;
   }
 
   .layout-copy {
     text-align: center;
-    padding: 10px 0 20px;
+    z-index: 10;
+    background: #fff;
+    padding: 5px 0 5px;
     position: fixed;
     bottom: 0;
     width: 100%;
-    color: #9ea7b4;
+    color: #828a97;
   }
-
-
 </style>
 <style>
   .ivu-input-wrapper-large .ivu-input-icon {
-    line-height: 56px !important;
+    line-height: 30px !important;
+  }
+  .ivu-input-large {
+    height: 20px;
   }
 
   html, body, .layout {
@@ -95,8 +112,8 @@
 
 <template>
   <div class="layout">
-    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0"
-          @on-select="menuItemRoute" :activeName="currentPage">
+    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px"
+          @on-select="menuItemRoute">
       <Row>
         <Col span="1" offset="1">
         <div class="layout-logo">
@@ -109,36 +126,27 @@
         </Col>
         <Col span="14" offset="1">
         <div class="layout-nav">
-          <Menu-item name="blog">
+          <MyMenuItem name="blog" to="/blog">
             技术博客
-
-          </Menu-item>
-          <Menu-item name="photography">
+          </MyMenuItem>
+          <MyMenuItem name="photography" to="/photography">
             摄影作品
-
-          </Menu-item>
-          <Menu-item name="contact-me">
+          </MyMenuItem>
+          <MyMenuItem name="contact-me" to="/contact-me">
             联系我
-
-          </Menu-item>
+          </MyMenuItem>
         </div>
         </Col>
         <Col span="3">
         <div class="login">
-          <Button shape="circle" @click="register">
-            注册
-
-          </Button>
-          <Button shape="circle" @click="login">
-            登录
-
-          </Button>
+          <Register></Register>
+          <Login></Login>
         </div>
         </Col>
       </Row>
     </Menu>
     <div class="layout-content">
-      <Row type="flex" style="height: 100%; background: #fff">
+      <Row type="flex" style="height: 100%;">
         <Col span="3">
         <Menu active-name="2-1" :open-names="['2']"
               style="height: 100%" width="100%">
@@ -146,16 +154,14 @@
           <template slot="title">
             <Icon type="ios-book" size="16"></Icon>
             技术博客
-
           </template>
-          <Menu-item v-for="item in sideMenu[currentPage]" :name="item" :key="item">
+          <MyMenuItem v-for="item in sideMenu[currentPage]" :name="item" :key="item" :to="item">
             <Icon type="ios-book" size="16"></Icon>
             {{ item }}
-
-          </Menu-item>
+          </MyMenuItem>
         </Menu>
         </Col>
-        <Col span="18">
+        <Col span="21" style="overflow: auto">
         <div class="layout-content-main">
           <router-view></router-view>
         </div>
@@ -164,14 +170,19 @@
     </div>
     <div class="layout-copy">
       &copy; XieYuanpeng.in
-
     </div>
   </div>
 </template>
 <script>
 //  import { mapState, mapActions } from 'vuex'
   import {EventBus} from '../store/EventBus'
+  import Login from './Login'
+  import Register from './Register'
+  import MyMenuItem from './MyMenuItem'
   export default {
+    components: {
+      Login, Register, MyMenuItem
+    },
     data () {
       return {
         currentPage: 'blog',
@@ -183,12 +194,10 @@
         searchText: ''
       }
     },
-//    computed: mapState(['searchText']),
     methods: {
-//      ...mapActions(['setSearchText']),
       menuItemRoute (key) {
-        this.$router.push(key)
         this.currentPage = key
+        console.log(this.currentPage)
       },
       login () {
         this.$router.push('blog')

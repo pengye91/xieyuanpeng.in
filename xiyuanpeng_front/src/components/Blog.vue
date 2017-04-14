@@ -25,7 +25,7 @@
   export default {
     data () {
       return {
-        searchMessage: '#',
+        searchMessage: '',
         formInline: {
           user: '',
           password: ''

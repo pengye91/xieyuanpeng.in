@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/iris-contrib/middleware/cors"
 	"github.com/iris-contrib/middleware/logger"
 	"gopkg.in/kataras/iris.v5"
 
@@ -13,11 +14,12 @@ func main() {
 	//iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
 
 	// set static folder(s)
-	//iris.Static("/public", "../frontend/public", 1)
+	iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
+	iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
 
 	// set the global middlewares
 	iris.Use(logger.New())
-	//iris.Use(cors.Default())
+	iris.Use(cors.Default())
 
 	// set the custom errors
 	iris.OnError(iris.StatusNotFound, func(ctx *iris.Context) {
@@ -33,7 +35,7 @@ func main() {
 	//registerRoutes()
 	registerAPI()
 	// start the server
-	iris.Listen(":8080")
+	iris.Listen(":8000")
 }
 
 func registerAPI() {
@@ -64,6 +66,7 @@ func registerAPI() {
 	iris.Get("/v1/pictures", pictures.GetAllPics)
 	iris.Get("/v1/pictures/:id", pictures.GetPicById)
 	iris.Delete("/v1/pictures/:id", pictures.DeletePic)
+	iris.Delete("/v1/pictures", pictures.DeletePics)
 	iris.Post("/v1/pictures/:id/comments", pictures.PostCommentToPic)
 	iris.Get("/v1/pictures/:id/comments", pictures.GetPicComments)
 }
