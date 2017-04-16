@@ -161,7 +161,7 @@
           </MyMenuItem>
         </Menu>
         </Col>
-        <Col span="21" style="overflow: auto">
+        <Col span="21" style="overflow: auto; height: 100%">
         <div class="layout-content-main">
           <router-view></router-view>
         </div>
