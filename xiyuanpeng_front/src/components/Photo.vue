@@ -10,16 +10,16 @@
       </Col>
       <Col span="1">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
-               @click="next" class="next-button"></Button>
+              @click="next" class="next-button"></Button>
       </Col>
     </Row>
     <Row type="flex" justify="center" align="bottom" class="slider">
-          <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
-            <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src = Number(img.title)}"
-            class="slider-img" :class="{'is-src': img.title == src}">
-          </div>
+      <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
+        <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src = Number(img.title)
+             class="slider-img" :class="{'is-src': img.title == src}">
+      </div>
     </Row>
-    </div>
+  </div>
 </template>
 <style scoped>
   .slider {
@@ -103,13 +103,15 @@
         return this.baseUrl + this.src.toString() + '.jpg'
       },
       sliderImgs () {
+        let base = 0
         if (this.src <= 4) {
-          return this.imgs.slice(0, 7)
+          base = 4
         } else if (this.src >= this.imgs.length - 3) {
-          return this.imgs.slice(this.imgs.length - 7, this.imgs.length)
+          base = this.imgs.length - 3
         } else {
-          return this.imgs.slice(this.src - 4, this.src + 3)
+          base = this.src
         }
+        return this.imgs.slice(base - 4, base + 3)
       }
     },
     mounted () {
@@ -120,9 +122,9 @@
             this.urls.push(this.baseUrl + this.imgs[i].path)
           }
           preloader.preload(this.urls)
-            .then(function (status) {
-              console.log('all done!', status)
-            })
+              .then(function (status) {
+                console.log('all done!', status)
+              })
         }
         )
     },
@@ -136,58 +138,3 @@
     }
   }
 </script>
-<style scoped>
-  .ivu-btn-large {
-    font-size: 70px;
-    transform: scale(0.8, 1);
-  }
-  .img {
-    box-shadow: 7px 7px 7px #484848;
-    height: 100%;
-    width: auto;
-    max-width: 100%;
-  }
-  .pre-button{
-    height: 100%;
-    width: 100%;
-  }
-  .next-button{
-    height: 100%;
-    width: 100%;
-  }
-  .is-src {
-    margin: 5px;
-    box-shadow: 6px 6px 4px #484848;
-  }
-  .grow div {
-    -webkit-transition: width 0.5s, height 0.5s; /* For Safari 3.1 to 6.0 */
-    transition: width 0.5s, height 0.5s;
-  }
-  .grow:hover div {
-    height: 100%;
-    padding-right: 100%;
-    width: 0;
-    position: relative;
-    margin: 0 3px 0 3px;
-  }
-  .grow:hover img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: 0 2px 0 2px;
-  }
-  .grow {
-    height: 10%;
-    text-align: center;
-  }
-  .slider-img {
-    width: 65%;
-    max-height: 90%;
-  }
-  .slider-img:hover {
-    margin: 5px;
-    box-shadow: 6px 6px 4px #1f3c48;
-  }
-</style>
