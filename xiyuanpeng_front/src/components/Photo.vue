@@ -15,7 +15,7 @@
     </Row>
     <Row type="flex" justify="center" align="bottom" class="slider">
           <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
-            <img :src="baseUrl + img.path" :alt="img.path"
+            <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src = Number(img.title)}"
             class="slider-img" :class="{'is-src': img.title == src}">
           </div>
     </Row>
@@ -103,15 +103,13 @@
         return this.baseUrl + this.src.toString() + '.jpg'
       },
       sliderImgs () {
-        let base = 0
         if (this.src <= 4) {
-          base = 4
+          return this.imgs.slice(0, 7)
         } else if (this.src >= this.imgs.length - 3) {
-          base = this.imgs.length - 3
+          return this.imgs.slice(this.imgs.length - 7, this.imgs.length)
         } else {
-          base = this.src
+          return this.imgs.slice(this.src - 4, this.src + 3)
         }
-        return this.imgs.slice(base - 4, base + 3)
       }
     },
     mounted () {
@@ -138,7 +136,6 @@
     }
   }
 </script>
-<<<<<<< HEAD
 <style scoped>
   .ivu-btn-large {
     font-size: 70px;
