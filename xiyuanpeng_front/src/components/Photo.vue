@@ -33,7 +33,7 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://192.168.1.8:8000/static/images/',
+        baseUrl: 'http://192.168.1.9:8000/static/images/',
         imgs: [],
         isHover: false
       }
@@ -57,7 +57,7 @@
       }
     },
     mounted () {
-      axios.get('http://192.168.1.8:8000/v1/pictures')
+      axios.get('http://192.168.1.9:8000/v1/pictures')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
@@ -111,13 +111,18 @@
     transition: width 0.5s, height 0.5s;
   }
   .grow:hover div {
-    height: 80px;
-    width: 80px;
+    height: 100%;
+    padding-right: 100%;
+    width: 0;
+    position: relative;
     margin: 0 3px 0 3px;
   }
   .grow:hover img {
-    height: 100%;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     margin: 0 2px 0 2px;
   }
   .grow {
