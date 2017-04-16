@@ -15,7 +15,7 @@
     </Row>
     <Row type="flex" justify="center" align="bottom" class="slider">
       <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
-        <img :src="baseUrl + img.path" :alt="img.path"
+        <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
              class="slider-img" :class="{'is-src': img.title == src}">
       </div>
     </Row>
