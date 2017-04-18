@@ -10,18 +10,76 @@
       </Col>
       <Col span="1">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
-               @click="next" class="next-button"></Button>
+              @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row type="flex" justify="center" align="bottom"
-         class="grow">
-      <Col span="1" v-for="img in sliderImgs" :key="img" style="max-height: 90%" >
-      <img :src="baseUrl + img.path" :alt="img.path" class="slider-img"
-           :class="{'is-src': img.title == src}">
-      </Col>
+    <Row type="flex" justify="center" align="bottom" class="slider">
+      <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
+        <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
+             class="slider-img" :class="{'is-src': img.title == src}">
+      </div>
     </Row>
-    </div>
+  </div>
 </template>
+<style scoped>
+  .slider {
+    height: 10%;
+    text-align: center;
+  }
+  .slider-img-div {
+    -webkit-transition: width 0.4s, height 0.4s; /* For Safari 3.1 to 6.0 */
+    transition: width 0.4s, height 0.4s;
+    height: 100%;
+    text-align: center;
+    width: 30px;
+    position: relative;
+    margin:0 2px 0 2px;
+  }
+  .slider:hover div {
+    max-height: 100%;
+    height: 5vw;
+    width: 5vw;
+    margin: 0 3px 0 3px;
+  }
+  .slider:hover img {
+    height: 100%;
+    width: 100%;
+    margin: 0 2px 0 2px;
+  }
+  .slider-img {
+    width: 100%;
+    max-height: 90%;
+    height: auto;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+  .slider-img:hover {
+    box-shadow: 6px 6px 4px #1f3c48;
+  }
+  .is-src {
+    bottom: 5px;
+    box-shadow: 4px 4px 3px #484848;
+  }
+  .img {
+    box-shadow: 7px 7px 7px #484848;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+  }
+  .pre-button{
+    height: 100%;
+    width: 100%;
+  }
+  .next-button{
+    height: 100%;
+    width: 100%;
+  }
+  .ivu-btn-large {
+    font-size: 70px;
+    transform: scale(0.8, 1);
+  }
+</style>
 <script>
   import axios from 'axios'
   import ImagePreloader from 'image-preloader'
@@ -33,7 +91,7 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://192.168.1.8:8000/static/images/',
+        baseUrl: 'http://192.168.1.9:8000/static/images/',
         imgs: [],
         isHover: false
       }
@@ -57,19 +115,16 @@
       }
     },
     mounted () {
-      axios.get('http://192.168.1.8:8000/v1/pictures')
+      axios.get('http://192.168.1.9:8000/v1/pictures')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
           }
-//          preloader.onProgress = function (info) {
-//            console.log('image with source %s is loaded with status %s', info.value.src, info.status)
-//          }
           preloader.preload(this.urls)
-            .then(function (status) {
-              console.log('all done!', status)
-            })
+              .then(function (status) {
+                console.log('all done!', status)
+              })
         }
         )
     },
@@ -83,53 +138,3 @@
     }
   }
 </script>
-<style scoped>
-  .ivu-btn-large {
-    font-size: 70px;
-    transform: scale(0.8, 1);
-  }
-  .img {
-    box-shadow: 7px 7px 7px #484848;
-    height: 100%;
-    width: auto;
-    max-width: 100%;
-  }
-  .pre-button{
-    height: 100%;
-    width: 100%;
-  }
-  .next-button{
-    height: 100%;
-    width: 100%;
-  }
-  .is-src {
-    margin: 5px;
-    box-shadow: 6px 6px 4px #484848;
-  }
-  .grow div {
-    -webkit-transition: width 0.5s, height 0.5s; /* For Safari 3.1 to 6.0 */
-    transition: width 0.5s, height 0.5s;
-  }
-  .grow:hover div {
-    height: 80px;
-    width: 80px;
-    margin: 0 3px 0 3px;
-  }
-  .grow:hover img {
-    height: 100%;
-    width: 100%;
-    margin: 0 2px 0 2px;
-  }
-  .grow {
-    height: 10%;
-    text-align: center;
-  }
-  .slider-img {
-    width: 65%;
-    max-height: 90%;
-  }
-  .slider-img:hover {
-    margin: 5px;
-    box-shadow: 6px 6px 4px #1f3c48;
-  }
-</style>
