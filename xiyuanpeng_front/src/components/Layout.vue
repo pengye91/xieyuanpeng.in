@@ -102,7 +102,7 @@
     line-height: 30px !important;
   }
   .ivu-input-large {
-    height: 20px;
+    height: 30px;
   }
 
   html, body, .layout {
@@ -145,7 +145,7 @@
         </Col>
       </Row>
     </Menu>
-          <router-view></router-view>
+    <router-view></router-view>
     <div class="layout-copy">
       &copy; XieYuanpeng.in
     </div>
