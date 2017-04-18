@@ -52,7 +52,7 @@
           parent = parent.$parent
           if (parent) name = parent.$options.name
         }
-
+        console.log(1)
         if (parent) {
           this.dispatch('Submenu', 'on-menu-item-select', this.name)
         } else {
