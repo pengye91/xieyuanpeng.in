@@ -1,5 +1,5 @@
-<template>
-  <div style="height: 100%">
+<template @keyup.left="pre" @keyup.right="next">
+  <div style="height: 100%" >
     <Row type="flex" style="height: 90%">
       <Col span="1" style="text-align: left">
       <Button type="text" icon="ios-arrow-left" :disabled="leftDisabled"
