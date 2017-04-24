@@ -31,12 +31,12 @@
     transition: width 0.4s, height 0.4s;
     height: 100%;
     text-align: center;
-    width: 30px;
+    width: 25px;
     position: relative;
     margin:0 2px 0 2px;
   }
   .slider:hover div {
-    max-height: 100%;
+    max-height: 98%;
     height: 5vw;
     width: 5vw;
     margin: 0 3px 0 3px;
