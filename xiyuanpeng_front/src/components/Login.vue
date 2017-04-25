@@ -67,7 +67,7 @@
         this.$refs[name].validate((valid) => {
           if (valid) {
             this.value = true
-            // this.loading = true
+            this.loading = true
             axios.post('http://localhost:8000/v1/auth/login', {
               logId: this.formInline.user,
               pass: this.formInline.password
