@@ -87,8 +87,8 @@ func getImgs(title string, imgChan chan string, wg *sync.WaitGroup) {
 		imgName := strings.Split(imgUrl, "/")[len(strings.Split(imgUrl, "/"))-1]
 		controlChan <- struct{}{}
 		wg1.Add(1)
-		go func(imgUrl string, wg *sync.WaitGroup) {
-			defer wg.Done()
+		go func(imgUrl string, wg2 *sync.WaitGroup) {
+			defer wg2.Add(-1)
 			client := &fasthttp.Client{}
 			req.SetRequestURI(imgUrl)
 			if clientDoErr := client.DoTimeout(req, resp, 30*time.Second); clientDoErr != nil {
