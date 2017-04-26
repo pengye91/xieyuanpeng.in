@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/iris-contrib/middleware/cors"
+	// "github.com/iris-contrib/middleware/cors"
 	"github.com/iris-contrib/middleware/logger"
+	// "github.com/iris-contrib/middleware/jwt"
 	"gopkg.in/kataras/iris.v5"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
@@ -19,7 +20,21 @@ func main() {
 
 	// set the global middlewares
 	iris.Use(logger.New())
-	iris.Use(cors.Default())
+	// myCorsConfig := cors.Options{}
+	// myCorsConfig.AllowedMethods = []string {
+		// "GET",
+		// "POST",
+		// "OPTIONS",
+		// "HEAD",
+		// "PUT",
+		// "PATCH",
+		// "DELETE",
+	// }
+	// myCorsConfig.AllowedHeaders = []string {
+		// "*",
+	// }
+	// myCorsConfig.OptionsPassthrough = true 
+	// iris.Use(cors.New(myCorsConfig))
 
 	// set the custom errors
 	iris.OnError(iris.StatusNotFound, func(ctx *iris.Context) {
@@ -48,7 +63,12 @@ func registerAPI() {
 	// Custom handler
 	iris.Handle("GET", "/v1/blog/news", api.CustomAPI{})
 	// Auth handler
-	iris.Post("/v1/auth/login", auth.Login)
+	iris.Any("/v1/auth/login", auth.Login)
+	// iris.Options("/v1/auth/login", func (ctx *iris.Context){
+		// ctx.WriteString("xixi")
+		// ctx.JSON(200, "xixi")
+	// })
+	// iris.Any("/v1/auth/login", auth.Login)
 	iris.Post("/v1/auth/register", auth.Register)
 	iris.Get("/v1/auth/check", auth.Check)
 	iris.Get("/v1/auth/session", auth.Session)

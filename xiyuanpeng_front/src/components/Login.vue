@@ -29,6 +29,7 @@
   import showdown from 'showdown'
   import { EventBus } from '../store/EventBus'
   import Modal1 from './Modal'
+  import axios from 'axios'
 
   let converter = new showdown.Converter()
   export default {
@@ -66,11 +67,23 @@
         this.$refs[name].validate((valid) => {
           if (valid) {
             this.value = true
-            this.$Message.success('提交成功!')
-            this.loading = false
-            this.modal = false
+            this.loading = true
+            axios.post('http://localhost:8000/v1/auth/login', {
+              logId: this.formInline.user,
+              pass: this.formInline.password
+            })
+            .then((response) => {
+              if (response.status === 200) {
+                console.log(response.data.token)
+                this.$Message.success('提交成功!')
+                this.loading = false
+                this.modal = false
+              } else {
+                console.log('wrong')
+              }
+            })
           } else {
-            this.loading = false
+            this.loading = true
             this.modal = true
             this.$Message.error('表单验证失败!')
           }
