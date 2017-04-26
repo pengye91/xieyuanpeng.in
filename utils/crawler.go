@@ -28,7 +28,6 @@ func main() {
 	mainWg := &sync.WaitGroup{}
 	mainWg.Add(1)
 	go getImgUrls(mainWg)
-	fmt.Println("test")
 	mainWg.Wait()
 	fmt.Println("Done")
 }
@@ -44,10 +43,11 @@ func getImgUrls(wg *sync.WaitGroup) {
 		go func() {
 			if err := os.Mkdir(BASEIMGPATH+title, os.ModePerm); err != nil {
 				fmt.Println("nothing hurt, just return")
+				return
 			}
 		}()
 		subWG1.Add(1)
-		func(url string, subwg *sync.WaitGroup) {
+		go func(url string, subwg *sync.WaitGroup) {
 			defer subwg.Done()
 			specPage, queryErr := goquery.NewDocument(url)
 			if queryErr != nil {
@@ -62,30 +62,27 @@ func getImgUrls(wg *sync.WaitGroup) {
 				}(&classChan)
 				// fmt.Printf("%v\n", classChan)
 			})
+			subWG2.Add(1)
+			go getImgs(title, &classChan, subWG2)
 		}(url, subWG1)
-		fmt.Printf("%v\n", classChan)
-		subWG2.Add(1)
-		go getImgs(title, &classChan, subWG2)
 	}
-	fmt.Println("new new new new")
+	fmt.Println("1")
 	subWG1.Wait()
+	fmt.Println("2")
 	subWG2.Wait()
-	// close(classChan)
-	fmt.Println("getImgUrls")
+	fmt.Println("3")
 }
 
 func getImgs(title string, imgChan *[]string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	// controlChan := make(chan struct{}, 10)
-	fmt.Printf("%v %s\n", *imgChan, "xixixi")
 	subWG := &sync.WaitGroup{}
 	for _, imgUrl := range *imgChan {
-		fmt.Println(imgUrl)
 		imgName := strings.Split(imgUrl, "/")[len(strings.Split(imgUrl, "/"))-1]
 		// controlChan <- struct{}{}
-		fmt.Println(title + "/" + imgName)
 		subWG.Add(1)
 		go func(imgUrl string) {
+			defer subWG.Done()
 			client := &fasthttp.Client{}
 			req.SetRequestURI(imgUrl)
 			if clientDoErr := client.DoTimeout(req, resp, 30*time.Second); clientDoErr != nil {
@@ -106,14 +103,12 @@ func getImgs(title string, imgChan *[]string, wg *sync.WaitGroup) {
 			fmt.Println("saving", BASEIMGPATH+title+"/"+imgName)
 			// <-controlChan
 			imgFile.Close()
-			fmt.Println("test test test test")
-			// subWG.Done()
 		}(imgUrl)
-		fmt.Println("test getImgs 1")
+		fmt.Println("4")
 	}
-	fmt.Println("test 2")
+	fmt.Println("5")
 	subWG.Wait()
-	fmt.Println("test getImgs")
+	fmt.Println("6")
 }
 
 func getUrls() {
