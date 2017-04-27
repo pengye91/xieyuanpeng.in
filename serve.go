@@ -1,21 +1,24 @@
 package main
 
 import (
-	"github.com/iris-contrib/middleware/cors"
-	"github.com/iris-contrib/middleware/logger"
-	"gopkg.in/kataras/iris.v5"
+	"gopkg.in/kataras/iris.v6"
+	"gopkg.in/kataras/iris.v6/adaptors/cors"
+	"gopkg.in/kataras/iris.v6/adaptors/httprouter"
 )
 
 func main() {
-	iris.Use(logger.New())
-	iris.Use(cors.Default())
-	iris.Post("/v1/auth/test1", func (ctx *iris.Context) {
-		ctx.JSON(200, "xixi")
-	})
-	iris.Get("/v1/auth/test", func (ctx *iris.Context) {
-		ctx.JSON(200, "xixi")
-	})
-	iris.Listen(":8001")
+	app := iris.New()
+	app.Adapt(
+		iris.DevLogger(),
+		httprouter.New(),
+		cors.New(
+			cors.Options{
+				AllowedOrigins: []string {"*"},
+				AllowedHeaders: []string{"*"},
+			},
+		),
+
+	)
 }
 
 

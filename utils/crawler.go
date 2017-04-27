@@ -2,17 +2,18 @@ package crawl
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"github.com/valyala/fasthttp"
 	"os"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/valyala/fasthttp"
 )
 
 const (
 	BASEURL     = "https://tuchong.com/267406/"
-	BASEIMGPATH = "../xiyuanpeng_front/public/images/"
+	BASEIMGPATH = "../xiyuanpeng_front/public/images2/"
 )
 
 var (
@@ -22,13 +23,92 @@ var (
 	imgUrlChan    = make(chan string, 10)
 )
 
-func crawl() {
-	generalWg := &sync.WaitGroup{}
+func main() {
 	go getUrls()
-	generalWg.Add(1)
-	go getImgUrls(generalWg)
-	fmt.Println("test")
-	generalWg.Wait()
+	mainWg := &sync.WaitGroup{}
+	mainWg.Add(1)
+	go getImgUrls(mainWg)
+	mainWg.Wait()
+	fmt.Println("Done")
+}
+
+func getImgUrls(wg *sync.WaitGroup) {
+	defer wg.Done()
+	subWG1 := &sync.WaitGroup{}
+	subWG2 := &sync.WaitGroup{}
+	for titlePair := range secondUrlChan {
+		// classChan := make(chan string)
+		classChan := []string{}
+		title, url := titlePair[0], titlePair[1]
+		go func() {
+			if err := os.Mkdir(BASEIMGPATH+title, os.ModePerm); err != nil {
+				fmt.Println("nothing hurt, just return")
+				return
+			}
+		}()
+		subWG1.Add(1)
+		go func(url string, subwg *sync.WaitGroup) {
+			defer subwg.Done()
+			specPage, queryErr := goquery.NewDocument(url)
+			if queryErr != nil {
+				fmt.Println(queryErr)
+				return
+			}
+			specPage.Find(".multi-photo-image").Each(func(i int, s *goquery.Selection) {
+				imgUrl, _ := s.Attr("src")
+				// classChan <- imgUrl
+				func(s *[]string) {
+					*s = append(*s, imgUrl)
+				}(&classChan)
+				// fmt.Printf("%v\n", classChan)
+			})
+			subWG2.Add(1)
+			go getImgs(title, &classChan, subWG2)
+		}(url, subWG1)
+	}
+	fmt.Println("1")
+	subWG1.Wait()
+	fmt.Println("2")
+	subWG2.Wait()
+	fmt.Println("3")
+}
+
+func getImgs(title string, imgChan *[]string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	// controlChan := make(chan struct{}, 10)
+	subWG := &sync.WaitGroup{}
+	for _, imgUrl := range *imgChan {
+		imgName := strings.Split(imgUrl, "/")[len(strings.Split(imgUrl, "/"))-1]
+		// controlChan <- struct{}{}
+		subWG.Add(1)
+		go func(imgUrl string) {
+			defer subWG.Done()
+			client := &fasthttp.Client{}
+			req.SetRequestURI(imgUrl)
+			if clientDoErr := client.DoTimeout(req, resp, 30*time.Second); clientDoErr != nil {
+				fmt.Println(clientDoErr)
+				return
+			}
+			imgBody := resp.Body()
+			imgFile, createErr := os.Create(BASEIMGPATH + title + "/" + imgName)
+			if createErr != nil {
+				fmt.Println(createErr)
+				return
+			}
+			_, writeErr := imgFile.Write(imgBody)
+			if writeErr != nil {
+				fmt.Println(writeErr)
+				return
+			}
+			fmt.Println("saving", BASEIMGPATH+title+"/"+imgName)
+			// <-controlChan
+			imgFile.Close()
+		}(imgUrl)
+		fmt.Println("4")
+	}
+	fmt.Println("5")
+	subWG.Wait()
+	fmt.Println("6")
 }
 
 func getUrls() {
@@ -49,69 +129,5 @@ func getUrls() {
 		titlePair[0], titlePair[1] = title, secondUrl
 		secondUrlChan <- titlePair
 	})
-}
-
-func getImgUrls(generalWg *sync.WaitGroup) {
-	defer generalWg.Done()
-	wg := &sync.WaitGroup{}
-	wg1 := &sync.WaitGroup{}
-	for titlePair := range secondUrlChan {
-		classChan := make(chan string, 10)
-		title, url := titlePair[0], titlePair[1]
-		wg.Add(1)
-		go func(url string) {
-			defer wg.Done()
-			specPage, queryErr := goquery.NewDocument(url)
-			if queryErr != nil {
-				fmt.Println(queryErr)
-				return
-			}
-			specPage.Find(".multi-photo-image").Each(func(i int, s *goquery.Selection) {
-				imgUrl, _ := s.Attr("src")
-				classChan <- imgUrl
-			})
-		}(url)
-		wg1.Add(1)
-		go getImgs(title, classChan, wg1)
-	}
-	wg.Wait()
-	wg1.Wait()
-	fmt.Println("getImgUrls")
-}
-
-func getImgs(title string, imgChan chan string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	controlChan := make(chan struct{}, 10)
-	wg1 := &sync.WaitGroup{}
-	for imgUrl := range imgChan {
-		imgName := strings.Split(imgUrl, "/")[len(strings.Split(imgUrl, "/"))-1]
-		controlChan <- struct{}{}
-		wg1.Add(1)
-		go func(imgUrl string, wg2 *sync.WaitGroup) {
-			defer wg2.Add(-1)
-			client := &fasthttp.Client{}
-			req.SetRequestURI(imgUrl)
-			if clientDoErr := client.DoTimeout(req, resp, 30*time.Second); clientDoErr != nil {
-				fmt.Println(clientDoErr)
-				return
-			}
-			imgBody := resp.Body()
-			imgFile, createErr := os.Create(BASEIMGPATH + title + "/" + imgName)
-			if createErr != nil {
-				fmt.Println(createErr)
-				return
-			}
-			_, writeErr := imgFile.Write(imgBody)
-			if writeErr != nil {
-				fmt.Println(writeErr)
-				return
-			}
-			defer imgFile.Close()
-			fmt.Println("saving", BASEIMGPATH+title+"/"+imgName)
-			<-controlChan
-		}(imgUrl, wg1)
-	}
-	fmt.Println("test getImgs")
-	wg1.Wait()
-	fmt.Println("test getImgs")
+	close(secondUrlChan)
 }
