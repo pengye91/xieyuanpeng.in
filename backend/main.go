@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "github.com/iris-contrib/middleware/cors"
+	"github.com/iris-contrib/middleware/cors"
 	"github.com/iris-contrib/middleware/logger"
 	// "github.com/iris-contrib/middleware/jwt"
 	"gopkg.in/kataras/iris.v5"
@@ -10,85 +10,82 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 )
 
+var (
+	MyCorsConfig *cors.Options
+	app          *iris.Framework
+	auth         *api.AuthAPI
+	visitors     *api.UserAPI
+	comments     *api.CommentApi
+	pictures     *api.PictureAPI
+)
+
+func init() {
+	MyCorsConfig = &cors.Options{
+		AllowedMethods: []string{"GET", "POST", "HEAD", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+		AllowedOrigins: []string{"*"},
+		Debug:          true,
+		OptionsPassthrough: false,
+	}
+	auth = new(api.AuthAPI)
+	visitors = new(api.UserAPI)
+	comments = new(api.CommentApi)
+	pictures = new(api.PictureAPI)
+}
+
 func main() {
 	// set the favicon
 	//iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
 
 	// set static folder(s)
-	iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
-	iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
 
 	// set the global middlewares
-	iris.Use(logger.New())
-	// myCorsConfig := cors.Options{}
-	// myCorsConfig.AllowedMethods = []string {
-		// "GET",
-		// "POST",
-		// "OPTIONS",
-		// "HEAD",
-		// "PUT",
-		// "PATCH",
-		// "DELETE",
-	// }
-	// myCorsConfig.AllowedHeaders = []string {
-		// "*",
-	// }
-	// myCorsConfig.OptionsPassthrough = true 
-	// iris.Use(cors.New(myCorsConfig))
+	app = iris.New()
+	app.Use(logger.New())
+	//app.Use(cors.New(*MyCorsConfig))
 
 	// set the custom errors
-	iris.OnError(iris.StatusNotFound, func(ctx *iris.Context) {
-		ctx.Render("errors/404.html", iris.Map{"Title": iris.StatusText(iris.StatusNotFound)})
-	})
+	//app.OnError(app.StatusNotFound, func(ctx *app.Context) {
+	//	ctx.Render("errors/404.html", app.Map{"Title": app.StatusText(app.StatusNotFound)})
+	//})
 
-	iris.OnError(iris.StatusInternalServerError, func(ctx *iris.Context) {
-		ctx.Render("errors/500.html", nil, iris.RenderOptions{"layout": iris.NoLayout})
-	})
+	//app.OnError(app.StatusInternalServerError, func(ctx *app.Context) {
+	//	ctx.Render("errors/500.html", nil, app.RenderOptions{"layout": app.NoLayout})
+	//})
 	// DB Main
 	DbMain()
-	// register the routes & the public API
-	//registerRoutes()
-	registerAPI()
-	// start the server
-	iris.Listen(":8000")
-}
 
-func registerAPI() {
-	// this is other way to declare routes using the 'API'
-	auth := new(api.AuthAPI)
-	visitors := new(api.UserAPI)
-	comments := new(api.CommentApi)
-	pictures := new(api.PictureAPI)
+	a := app.Party("/v1/auth", cors.New(*MyCorsConfig).Serve)
+	{
+		a.Post("/login", auth.Login)
+		a.Post("/register", auth.Register)
+		a.Get("/check", auth.Check)
+		a.Get("/session", auth.Session)
+	}
+	v := app.Party("/v1/visitors")
+	{
+		v.Get("/", visitors.GetVisitors)
+		v.Get("/:id", visitors.GetById)
+		v.Put("/:id", visitors.PutById)
+		v.Delete("/:id", visitors.DeleteById)
+	}
+	c := app.Party("/v1/comments")
+	{
+		c.Get("/", comments.GetAllComments)
+	}
+	p := app.Party("/v1/pictures")
+	{
+		p.Post("/", pictures.PostPicToMain)
+		p.Get("/", pictures.GetAllPics)
+		p.Get("/:id", pictures.GetPicById)
+		p.Delete("/:id", pictures.DeletePic)
+		p.Delete("/", pictures.DeletePics)
+		p.Post("/:id/comments", pictures.PostCommentToPic)
+		p.Get("/:id/comments", pictures.GetPicComments)
+	}
 
-	// Custom handler
-	iris.Handle("GET", "/v1/blog/news", api.CustomAPI{})
-	// Auth handler
-	iris.Any("/v1/auth/login", auth.Login)
-	// iris.Options("/v1/auth/login", func (ctx *iris.Context){
-		// ctx.WriteString("xixi")
-		// ctx.JSON(200, "xixi")
-	// })
-	// iris.Any("/v1/auth/login", auth.Login)
-	iris.Post("/v1/auth/register", auth.Register)
-	iris.Get("/v1/auth/check", auth.Check)
-	iris.Get("/v1/auth/session", auth.Session)
-	// visitors handler
-	iris.Get("/v1/visitors", visitors.GetVisitors)
-	iris.Get("/v1/visitors/:id", visitors.GetById)
-	iris.Put("/v1/visitors/:id", visitors.PutById)
-	iris.Delete("/v1/visitors/:id", visitors.DeleteById)
-	// Comment handler
-	//iris.Post("/v1/comments", comments.PostCommentToPic)
-	iris.Get("/v1/comments", comments.GetAllComments)
-	//iris.Put("/v1/comments/:id", comments.PutCommentToPic)
-	// Pictures handler
-	iris.Post("/v1/pictures", pictures.PostPicToMain)
-	iris.Get("/v1/pictures", pictures.GetAllPics)
-	iris.Get("/v1/pictures/:id", pictures.GetPicById)
-	iris.Delete("/v1/pictures/:id", pictures.DeletePic)
-	iris.Delete("/v1/pictures", pictures.DeletePics)
-	iris.Post("/v1/pictures/:id/comments", pictures.PostCommentToPic)
-	iris.Get("/v1/pictures/:id/comments", pictures.GetPicComments)
+	app.Listen(":8000")
+	app.StaticServe("../xiyuanpeng_front/public", "/static")
 }
 
 func DbMain() {

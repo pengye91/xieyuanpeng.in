@@ -1,4 +1,4 @@
-package main
+package crawl
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ var (
 	imgUrlChan    = make(chan string, 10)
 )
 
-func main() {
+func crawl() {
 	generalWg := &sync.WaitGroup{}
 	go getUrls()
 	generalWg.Add(1)
