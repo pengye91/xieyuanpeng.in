@@ -2,12 +2,14 @@ package main
 
 import (
 	// "github.com/iris-contrib/middleware/cors"
-	"github.com/iris-contrib/middleware/logger"
+	"github.com/labstack/echo"
 	// "github.com/iris-contrib/middleware/jwt"
 	"gopkg.in/kataras/iris.v5"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
+	"gopkg.in/kataras/iris.v6/middleware/logger"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -15,11 +17,11 @@ func main() {
 	//iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
 
 	// set static folder(s)
-	iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
-	iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
+	//iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
+	//iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
 
 	// set the global middlewares
-	iris.Use(logger.New())
+	//iris.Use(logger.New())
 	// myCorsConfig := cors.Options{}
 	// myCorsConfig.AllowedMethods = []string {
 		// "GET",
@@ -100,4 +102,20 @@ func DbMain() {
 	Db.Index("people", keys)
 	Db.Index("picture", keys)
 	Db.Index("comment", keys)
+}
+
+func Server() {
+	e := echo.New()
+
+	e.Static("/static", "../xiyuanpeng_front/public")
+	e.Static("/test", "../xiyuanpeng_front/src/assets")
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
+
+
+
+
+	e.Logger.Debug(e.Start(":8000"))
 }
