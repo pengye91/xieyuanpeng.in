@@ -1,5 +1,6 @@
 package main
 
+<<<<<<< HEAD
 //import (
 //	"github.com/iris-contrib/middleware/cors"
 //	"github.com/iris-contrib/middleware/logger"
@@ -96,6 +97,13 @@ package main
 //	Db.Index("picture", keys)
 //	Db.Index("comment", keys)
 //}
+=======
+import (
+	// "github.com/iris-contrib/middleware/cors"
+	"github.com/labstack/echo"
+	// "github.com/iris-contrib/middleware/jwt"
+	"gopkg.in/kataras/iris.v5"
+>>>>>>> 68f96db4e643ca3f0ee61e0addb9a5a29eaa8a1a
 
 import (
 	"github.com/gin-contrib/cors"
@@ -103,8 +111,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
+	"gopkg.in/kataras/iris.v6/middleware/logger"
+	"github.com/labstack/echo/middleware"
 )
 
+<<<<<<< HEAD
 var (
 	auth api.AuthAPI
 	//	visitors api.UserAPI
@@ -115,6 +126,33 @@ var (
 func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
+=======
+func main() {
+	// set the favicon
+	//iris.Favicon("../frontend/public/images/favicon.ico", "/favicon.ico")
+
+	// set static folder(s)
+	//iris.StaticFS("/static", "../xiyuanpeng_front/public", 1)
+	//iris.StaticFS("/test", "../xiyuanpeng_front/src/assets", 1)
+
+	// set the global middlewares
+	//iris.Use(logger.New())
+	// myCorsConfig := cors.Options{}
+	// myCorsConfig.AllowedMethods = []string {
+		// "GET",
+		// "POST",
+		// "OPTIONS",
+		// "HEAD",
+		// "PUT",
+		// "PATCH",
+		// "DELETE",
+	// }
+	// myCorsConfig.AllowedHeaders = []string {
+		// "*",
+	// }
+	// myCorsConfig.OptionsPassthrough = true 
+	// iris.Use(cors.New(myCorsConfig))
+>>>>>>> 68f96db4e643ca3f0ee61e0addb9a5a29eaa8a1a
 
 	//store := sessions.NewCookieStore([]byte("l6m#*tufy2^2k1yc-xx))6ondx33b!#hlq=wls0h@prwnfj*pc"))
 	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
@@ -148,4 +186,20 @@ func DbMain() {
 	//Db.Index("people", keys)
 	//Db.Index("picture", keys)
 	//Db.Index("comment", keys)
+}
+
+func Server() {
+	e := echo.New()
+
+	e.Static("/static", "../xiyuanpeng_front/public")
+	e.Static("/test", "../xiyuanpeng_front/src/assets")
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
+
+
+
+
+	e.Logger.Debug(e.Start(":8000"))
 }
