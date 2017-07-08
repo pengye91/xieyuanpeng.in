@@ -20,9 +20,6 @@
 logs/
 xiyuanpeng_front/vendors/*
 
-*/node_modules
-/xiyuanpeng_front/vendors/eleme-start/node_modules/
-/xiyuanpeng_front/vendors/
-/backend/db/db.go
-将删除 backend/routes/
-!/xiyuanpeng_front/vendors/eleme-start/
+/xieyuanpeng.in/xiyuanpeng_front/node_modules/*
+/xieyuanpeng.in/backend/db/db.go
+
