@@ -1,23 +1,18 @@
 package api
 
 import (
-	"net/http"
-	"strings"
-	"time"
+	"gopkg.in/kataras/iris.v5"
+	"gopkg.in/mgo.v2/bson"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"gopkg.in/mgo.v2/bson"
-	"fmt"
+	"strings"
+	"time"
 )
 
-var tk string
-
 type AuthAPI struct {
-	*gin.Context
+	*iris.Context
 }
 
 type LoginInfo struct {
@@ -25,11 +20,11 @@ type LoginInfo struct {
 	Pass    string `json:"pass"`
 }
 
-func (this AuthAPI) Register(ctx *gin.Context) {
+func (this AuthAPI) Register(ctx *iris.Context) {
 	visitorInfo := models.VisitorBasic{}
-	err := ctx.BindJSON(&visitorInfo)
+	err := ctx.ReadJSON(&visitorInfo)
 	if err != nil {
-		ctx.JSON(http.StatusOK, models.Err("4"))
+		ctx.JSON(iris.StatusOK, models.Err("4"))
 		return
 	}
 
@@ -46,10 +41,9 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 	// Insert Visitor
 	if err := Db.C("auth").Insert(&visitorInfo); err != nil {
 		// Is a duplicate key, but we don't know which one
-
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(iris.StatusOK, models.Err("5"))
 		if Db.IsDup(err) {
-			ctx.JSON(http.StatusOK, models.Err("6"))
+			ctx.JSON(iris.StatusOK, models.Err("6"))
 		}
 	} else {
 		visitor := models.Visitor{}
@@ -57,22 +51,20 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		visitor.Id = visitorInfo.Id
 		insertToPeopleErr := Db.C("people").Insert(&visitor)
 		if insertToPeopleErr != nil {
-			ctx.JSON(http.StatusBadRequest, models.Err("5"))
+			ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 			return
 		}
-		ctx.JSON(http.StatusOK, visitorInfo)
+		ctx.JSON(iris.StatusOK, visitorInfo)
 	}
 	Db.Close()
 }
 
-func (this AuthAPI) Login(ctx *gin.Context) {
-	session := sessions.Default(ctx)
-
+func (this AuthAPI) Login(ctx *iris.Context) {
 	result := models.VisitorBasic{}
 	loginInfo := LoginInfo{}
-	err := ctx.BindJSON(&loginInfo)
+	err := ctx.ReadJSON(&loginInfo)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 		return
 	}
 	_loginId := string(loginInfo.LoginId)
@@ -80,16 +72,15 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 
 	Db := db.MgoDb{}
 	Db.Init()
-	defer Db.Close()
 
 	if strings.Contains(_loginId, "@") {
 		if err := Db.C("auth").Find(bson.M{"email": _loginId}).One(&result); err != nil {
-			ctx.JSON(http.StatusNotFound, models.Err("1"))
+			ctx.JSON(iris.StatusNotFound, models.Err("1"))
 			return
 		}
 	} else {
 		if err := Db.C("auth").Find(bson.M{"name": _loginId}).One(&result); err != nil {
-			ctx.JSON(http.StatusNotFound, models.Err("1"))
+			ctx.JSON(iris.StatusNotFound, models.Err("1"))
 			return
 		}
 	}
@@ -99,87 +90,41 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 
 	if cp {
 		token := pass.Token()
-		session.Set("login", "true")
-		session.Set("visitor", result.Id.Hex())
-		session.Set("token", token)
-
-		if err := session.Save(); err != nil {
-			fmt.Printf("%s", err)
-		}
-
-		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
+		ctx.Session().Set("login", "true")
+		ctx.Session().Set("visitor", result.Id)
+		ctx.Session().Set("token", token)
+		time.Sleep(10*time.Second)
+		ctx.JSON(iris.StatusOK, iris.Map{"response": true, "token": token})
 	} else {
-		ctx.JSON(http.StatusBadRequest, models.Err("7"))
+		ctx.JSON(iris.StatusOK, models.Err("7"))
 	}
+	Db.Close()
 }
 
-func (this AuthAPI) Check(ctx *gin.Context) {
-	start := time.Now()
-	session := sessions.Default(ctx)
-	Db := db.MgoDb{}
-	Db.Init()
-	defer Db.Close()
+func (this AuthAPI) Check(ctx *iris.Context) {
 
-	//var p struct {
-	//	Pass string        `json:"pass" bson:"pass" form:"pass"`
-	//}
+	_pass := string(ctx.FormValue("pass"))
+	token := ctx.Session().GetString("token")
 
-	v := models.VisitorBasic{}
-
-	_pass := ctx.PostForm("pass")
-	token := session.Get("token").(string)
-	visitorId := session.Get("visitor").(string)
-	fmt.Printf("%s", visitorId)
-
-	if err := Db.C("auth").FindId(bson.ObjectIdHex(visitorId)).One(&v); err != nil {
-		panic(err)
-	}
-
-
-	//if err := Db.C("auth").FindId(bson.ObjectIdHex(visitorId)).Select(bson.M{"pass": 1}).One(&p); err != nil {
-	//	panic(err)
-	//}
-
-	passLib := libs.Password{}
-
-	cp := passLib.Compare(v.Pass, _pass)
-	fmt.Println(v.Pass)
+	pass := libs.Password{}
+	cp := pass.Compare(token, _pass)
 
 	if cp {
-		fmt.Println(time.Since(start))
-		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
+		ctx.JSON(iris.StatusOK, iris.Map{"response": true, "token": token})
 	} else {
-		ctx.JSON(http.StatusOK, models.Err("8"))
+		ctx.JSON(iris.StatusOK, models.Err("8"))
 	}
 
 }
 
-func (this AuthAPI) Session(ctx *gin.Context) {
-	session := sessions.Default(ctx)
-
-	login := session.Get("login").(string)
-	token := session.Get("token").(string)
+func (this AuthAPI) Session(ctx *iris.Context) {
+	login := ctx.Session().GetString("login")
+	token := ctx.Session().GetString("token")
 
 	if login == "true" {
-		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
+		ctx.JSON(iris.StatusOK, iris.Map{"response": true, "token": token})
 	} else {
-		ctx.JSON(http.StatusOK, models.Err("8"))
+		ctx.JSON(iris.StatusOK, models.Err("8"))
 	}
-
-}
-func Xixihaha(ctx *gin.Context) {
-
-	var userId string
-	session := sessions.Default(ctx)
-	user := session.Get("userID")
-	if user == nil {
-		fmt.Println("user is nil")
-	} else {
-		userId = user.(string)
-	}
-	session.Set("userID", "1234567890")
-	session.Save()
-
-	ctx.JSON(http.StatusOK, gin.H{"userId": userId})
 
 }
