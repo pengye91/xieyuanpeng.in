@@ -8,8 +8,8 @@ const (
 	Host         = "localhost:27017"
 	Database     = "xieyuanpeng"
 	AuthDatabase = "admin"
-	AuthUserName = "root"
-	AuthPassword = "2901307001"
+	AuthUserName = "xyp"
+	AuthPassword = "xxyypp"
 )
 
 var (
@@ -26,8 +26,8 @@ type MgoDb struct {
 func init() {
 
 	if mainSession == nil {
-		url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
-		//url := "mongodb://" + Host + "/" + AuthDatabase
+		//url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
+		url := "mongodb://" + Host + "/" + AuthDatabase
 
 		var err error
 		mainSession, err = mgo.Dial(url)
