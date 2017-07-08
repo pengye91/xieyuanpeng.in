@@ -1,0 +1,28 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Go template
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+.idea/
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
+
+/backend/backend
+logs/
+xiyuanpeng_front/vendors/*
+
+*/node_modules
+/xiyuanpeng_front/vendors/eleme-start/node_modules/
+/xiyuanpeng_front/vendors/
+/backend/db/db.go
+将删除 backend/routes/
+!/xiyuanpeng_front/vendors/eleme-start/
