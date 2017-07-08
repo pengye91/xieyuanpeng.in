@@ -7,12 +7,20 @@ import (
 	"fmt"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"time"
 )
 
 type UserAPI struct {
 	*iris.Context
 }
+
+var (
+	logger, _    = utils.MyDevLogger()
+	errLogger, _ = utils.MyErrLogger()
+	sugar        = logger.Sugar()
+	errSugar = errLogger.Sugar()
+)
 
 func (this UserAPI) GetVisitors(ctx *iris.Context) {
 	Db := db.MgoDb{}
@@ -24,6 +32,10 @@ func (this UserAPI) GetVisitors(ctx *iris.Context) {
 		return
 	} else {
 		ctx.JSON(iris.StatusOK, &visitors)
+		sugar.Infow(
+			"200 OK",
+			"url", ctx.PathString(),
+		)
 	}
 
 	Db.Close()
@@ -34,12 +46,23 @@ func (this UserAPI) GetById(ctx *iris.Context) {
 	Db.Init()
 	visitor := models.Visitor{}
 	id := ctx.Param("id")
-
-	if err := Db.C("people").Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&visitor); err != nil {
-		ctx.JSON(iris.StatusNotFound, models.Err("1"))
-		return
+	if !bson.IsObjectIdHex(ctx.Param("id")) {
+		//errSugar.Errorw(
+		//	"500 Internal Server Error ",
+		//	"url", ctx.URI(),
+		//)
+		ctx.JSON(iris.StatusBadRequest, models.Err("5"))
 	} else {
-		ctx.JSON(iris.StatusOK, visitor)
+		if err := Db.C("people").Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&visitor); err != nil {
+			sugar.Warnw(
+				"404 Not Found",
+				"url", ctx.URI(),
+			)
+			ctx.JSON(iris.StatusNotFound, models.Err("1"))
+			return
+		} else {
+			ctx.JSON(iris.StatusOK, visitor)
+		}
 	}
 	Db.Close()
 }

@@ -93,6 +93,7 @@ func (this AuthAPI) Login(ctx *iris.Context) {
 		ctx.Session().Set("login", "true")
 		ctx.Session().Set("visitor", result.Id)
 		ctx.Session().Set("token", token)
+		time.Sleep(10*time.Second)
 		ctx.JSON(iris.StatusOK, iris.Map{"response": true, "token": token})
 	} else {
 		ctx.JSON(iris.StatusOK, models.Err("7"))

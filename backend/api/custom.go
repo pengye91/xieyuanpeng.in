@@ -1,9 +1,9 @@
 package api
 
 import (
-	"gopkg.in/kataras/iris.v5"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"gopkg.in/kataras/iris.v5"
 )
 
 type CustomAPI struct {

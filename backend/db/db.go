@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	Host         = "mongodb://localhost:27017"
+	Host         = "localhost:27017"
 	Database     = "xieyuanpeng"
-	AuthDatabase = "authdb"
-	AuthUserName = "xyp"
-	AuthPassword = "xxyypp"
+	AuthDatabase = "admin"
+	AuthUserName = "root"
+	AuthPassword = "2901307001"
 )
 
 var (
@@ -26,9 +26,11 @@ type MgoDb struct {
 func init() {
 
 	if mainSession == nil {
+		url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
+		//url := "mongodb://" + Host + "/" + AuthDatabase
 
 		var err error
-		mainSession, err = mgo.Dial(Host)
+		mainSession, err = mgo.Dial(url)
 
 		if err != nil {
 			panic(err)
