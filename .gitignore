@@ -23,4 +23,4 @@ logs/
 /xieyuanpeng.in/xiyuanpeng_front/config/*
 /xieyuanpeng.in/xiyuanpeng_front/vendors/*
 /xieyuanpeng.in/backend/db/db.go
-
+*/vendors
