@@ -1,12 +1,12 @@
-<template @keyup.left="pre" @keyup.right="next">
-  <div style="height: 100%" >
+<template>
+  <div style="height: 100%">
     <Row type="flex" style="height: 90%">
       <Col span="1" style="text-align: left">
       <Button type="text" icon="ios-arrow-left" :disabled="leftDisabled"
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
       <Col span="22" style="height: 100%; text-align: center">
-      <img :src="imgSrc" :alt="src" class="img" >
+      <img :src="imgSrc" :alt="src" class="img">
       </Col>
       <Col span="1">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
@@ -19,62 +19,90 @@
              class="slider-img" :class="{'is-src': img.title == src}">
       </div>
     </Row>
+    <Row type="flex" justify="start" align="bottom" class="descriptions">
+      <Col span="8">
+      <Input type="textarea" :rows="2" placeholder="在此评论" v-model="newPicComment">
+      </Input>
+      </Col>
+      <Col span="1">
+      <Button type="primary" @click="commentOnPic">评论</Button>
+      </Col>
+    </Row>
+    <div>
+
+    </div>
   </div>
 </template>
 <style scoped>
+  .descriptions {
+    position: fixed;
+    left: 0px;
+    bottom: 50px;
+  }
+
   .slider {
-    height: 10%;
+    height: 6%;
     text-align: center;
   }
+
   .slider-img-div {
-    -webkit-transition: width 0.4s, height 0.4s; /* For Safari 3.1 to 6.0 */
-    transition: width 0.4s, height 0.4s;
+    -webkit-transition: width 0.2s, height 0.4s; /* For Safari 3.1 to 6.0 */
+    transition: width 0.2s, height 0.2s;
     height: 100%;
     text-align: center;
     width: 25px;
     position: relative;
-    margin:0 2px 0 2px;
+    margin: 0 2px 0 2px;
   }
+
   .slider:hover div {
-    max-height: 98%;
+    max-height: 90%;
     height: 5vw;
-    width: 5vw;
+    width: 2vw;
     margin: 0 3px 0 3px;
   }
+
   .slider:hover img {
-    height: 100%;
+    height: 95%;
     width: 100%;
     margin: 0 2px 0 2px;
   }
+
   .slider-img {
     width: 100%;
-    max-height: 90%;
+    max-height: 80%;
     height: auto;
     position: absolute;
     left: 0;
     bottom: 0;
   }
+
   .slider-img:hover {
     box-shadow: 6px 6px 4px #1f3c48;
   }
+
   .is-src {
     bottom: 5px;
     box-shadow: 4px 4px 3px #484848;
   }
+
   .img {
     box-shadow: 7px 7px 7px #484848;
     height: 100%;
     width: auto;
     max-width: 100%;
   }
-  .pre-button{
+
+  .pre-button {
     height: 100%;
     width: 100%;
   }
-  .next-button{
+
+  .next-button {
     height: 100%;
     width: 100%;
   }
+
   .ivu-btn-large {
     font-size: 70px;
     transform: scale(0.8, 1);
@@ -91,14 +119,19 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://192.168.1.9:8000/static/images/',
+        baseUrl: 'https://s3.ap-northeast-2.amazonaws.com/xyp-s3/public/images/',
         imgs: [],
-        isHover: false
+        isHover: false,
+        newPicComment: ''
       }
     },
     computed: {
-      leftDisabled () { return this.src === 1 },
-      rightDisabled () { return this.imgs.length === this.src },
+      leftDisabled () {
+        return this.src === 1
+      },
+      rightDisabled () {
+        return this.imgs.length === this.src
+      },
       imgSrc () {
         return this.baseUrl + this.src.toString() + '.jpg'
       },
@@ -115,25 +148,50 @@
       }
     },
     mounted () {
-      axios.get('http://192.168.1.9:8000/v1/pictures')
+      axios.get('http://localhost:8000/pics/')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
           }
           preloader.preload(this.urls)
-              .then(function (status) {
-                console.log('all done!', status)
-              })
-        }
-        )
+            .then(function (status) {
+              console.log('all done!', status)
+            })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    created: function () {
+      window.addEventListener('keydown', this.keyDown)
+      console.log('xixi')
+    },
+    beforeDestroy: function () {
+      window.removeEventListener('keydown', this.keyDown)
     },
     methods: {
       next () {
-        this.src = this.src + 1
+        this.rightDisabled ? null : (this.src = this.src + 1)
       },
       pre () {
-        this.src = this.src - 1
+        this.leftDisabled ? null : (this.src = this.src - 1)
+      },
+      commentOnPic () {
+        axios.post(`http://localhost:8000/pics/${this.imgs[this.src].id}/comments`, {'wordContent': this.newPicComment})
+          .then(response => {
+            console.log(response.data)
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      },
+      keyDown (e) {
+        if (e.keyCode === 39) {
+          this.next()
+        } else if (e.keyCode === 37) {
+          this.pre()
+        }
       }
     }
   }

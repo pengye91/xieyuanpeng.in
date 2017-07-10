@@ -141,3 +141,18 @@ func (this AuthAPI) Check(ctx *gin.Context) {
 	}
 
 }
+
+func (this AuthAPI) GetAllUsers(ctx *gin.Context) {
+	visitors := []models.VisitorBasic{}
+
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	if err := Db.C("auth").Find(nil).All(&visitors); err != nil {
+		ctx.JSON(http.StatusNotFound, models.Err("1"))
+		return
+	}
+	ctx.JSON(http.StatusOK, visitors)
+
+}
