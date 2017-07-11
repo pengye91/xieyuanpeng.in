@@ -1,7 +1,7 @@
 <style scoped>
   .layout {
     border: 1px solid #d7dde4;
-    background: #f5f7f9;
+    background-color: white;
   }
 
   .ivu-menu-item {
@@ -15,6 +15,7 @@
     text-align: center;
     line-height: 40px;
   }
+
   .login {
     line-height: 37px;
   }
@@ -26,6 +27,7 @@
     text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
   }
+
   .ivu-menu-horizontal {
     line-height: 38px;
   }
@@ -45,7 +47,7 @@
     font-weight: bold;
   }
 
-  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item{
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item {
     font-size: 13px;
     padding-left: 25%;
   }
@@ -101,6 +103,7 @@
   .ivu-input-wrapper-large .ivu-input-icon {
     line-height: 30px !important;
   }
+
   .ivu-input-large {
     height: 30px;
   }
@@ -152,14 +155,15 @@
   </div>
 </template>
 <script>
-//  import { mapState, mapActions } from 'vuex'
+  //  import { mapState, mapActions } from 'vuex'
   import {EventBus} from '../store/EventBus'
   import Login from './Login'
   import Register from './Register'
   import MyMenuItem from './MyMenuItem'
+  import Comment from './Comment.vue'
   export default {
     components: {
-      Login, Register, MyMenuItem
+      Login, Register, MyMenuItem, Comment
     },
     data () {
       return {

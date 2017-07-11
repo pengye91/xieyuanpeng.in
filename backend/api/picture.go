@@ -88,9 +88,10 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 		fmt.Println(err)
 		return
 	} else {
-		comment.UnderPic = picId
 		comment.Id = bson.NewObjectId()
-		//comment.WordContent = cmt.WordContent
+		comment.CreatedAt = time.Now()
+		comment.ModifiedAt = time.Now()
+		comment.PublishedAt = time.Now()
 
 		if commentErr := Db.C("comment").Insert(&comment); commentErr != nil {
 			//ctx.JSON(http.StatusInternalServerError, models.Err("5"))
@@ -133,7 +134,6 @@ func (this PictureAPI) DeletePic(ctx *gin.Context) {
 
 	Db.Close()
 }
-
 
 // Delete all pics
 func (this PictureAPI) DeletePics(ctx *gin.Context) {

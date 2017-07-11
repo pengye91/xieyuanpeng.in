@@ -39,6 +39,7 @@ func main() {
 	{
 		p.POST("/", pic.PostPicToMain)
 		p.GET("/", pic.GetAllPics)
+		p.GET("/:id", pic.GetPicById)
 		p.POST("/:id/comments", pic.PostCommentToPic)
 	}
 
