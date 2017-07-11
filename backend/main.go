@@ -15,6 +15,8 @@ func DbMain() {
 
 var (
 	auth = &api.AuthAPI{}
+	pic = &api.PictureAPI{}
+
 )
 
 func main() {
@@ -30,7 +32,16 @@ func main() {
 		a.POST("/register", auth.Register)
 		a.POST("/login", auth.Login)
 		a.POST("/check", auth.Check)
+		a.GET("/allusers", auth.GetAllUsers)
 	}
 
-	app.Run(":8080")
+	p := app.Group("/pics", session_middleware)
+	{
+		p.POST("/", pic.PostPicToMain)
+		p.GET("/", pic.GetAllPics)
+		p.GET("/:id", pic.GetPicById)
+		p.POST("/:id/comments", pic.PostCommentToPic)
+	}
+
+	app.Run(":8000")
 }

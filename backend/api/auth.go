@@ -23,7 +23,7 @@ type LoginInfo struct {
 }
 
 func (this AuthAPI) Register(ctx *gin.Context) {
-	//session := sessions.Default(ctx)
+	session := sessions.Default(ctx)
 
 	Db := db.MgoDb{}
 	Db.Init()
@@ -59,10 +59,13 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, models.Err("5"))
 			return
 		}
+		// auto login
+		session.Set("login", "true")
+		session.Set("visitor", visitorInfo.Id.String())
+		session.Save()
+
 		ctx.JSON(http.StatusOK, visitorInfo)
 	}
-
-	// auto login
 
 }
 
@@ -136,5 +139,20 @@ func (this AuthAPI) Check(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, models.Err("8"))
 	}
+
+}
+
+func (this AuthAPI) GetAllUsers(ctx *gin.Context) {
+	visitors := []models.VisitorBasic{}
+
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	if err := Db.C("auth").Find(nil).All(&visitors); err != nil {
+		ctx.JSON(http.StatusNotFound, models.Err("1"))
+		return
+	}
+	ctx.JSON(http.StatusOK, visitors)
 
 }
