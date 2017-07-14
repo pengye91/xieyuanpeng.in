@@ -71,7 +71,6 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 
 func (this AuthAPI) Login(ctx *gin.Context) {
 	session := sessions.Default(ctx)
-
 	result := models.VisitorBasic{}
 	loginInfo := LoginInfo{}
 	err := ctx.BindJSON(&loginInfo)
@@ -106,9 +105,10 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 		session.Set("login", "true")
 		session.Set("visitor", result.Id.String())
 		session.Save()
+		//time.Sleep(3 * time.Second)
 		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
 	} else {
-		ctx.JSON(http.StatusOK, models.Err("7"))
+		ctx.JSON(http.StatusBadRequest, models.Err("7"))
 	}
 }
 

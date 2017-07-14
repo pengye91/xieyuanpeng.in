@@ -22,7 +22,7 @@
       </Col>
     </Row>
     <comments v-if="comment.comments !== undefined" :picture="picture" :path="path + '.comments.'"
-              style="padding-left: 1%" :comments="comment.comments"></comments>
+              class="comment-comments" :comments="comment.comments"></comments>
   </div>
 </template>
 <script>
@@ -82,13 +82,16 @@
     position: relative;
     display: block;
     padding: 0.3% 0.8%;
-    margin-bottom: -1px;
     background-color: #fff;
     border: 1px solid #ddd
   }
 
   .reply-input {
-    padding-left: 2%;
+    padding-left: 1%;
+  }
+
+  .comment-comments {
+    padding: 0.1% 1% 0.1% 1%;
   }
 
 </style>

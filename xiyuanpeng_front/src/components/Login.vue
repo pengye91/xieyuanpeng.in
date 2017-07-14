@@ -6,6 +6,7 @@
       :value="modal"
       :maskClosable="maskClosable"
       ok-text="登录"
+      :loading="loading"
       :closable="closable"
       @on-cancel="modal = false"
       @on-ok="handleSubmit('formInline')">
@@ -27,7 +28,7 @@
 </template>
 <script>
   import showdown from 'showdown'
-  import { EventBus } from '../store/EventBus'
+  import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
   import axios from 'axios'
 
@@ -41,7 +42,6 @@
         modal: false,
         loading: true,
         closable: false,
-//        visible: true,
         maskClosable: false,
         searchMessage: '',
         formInline: {
@@ -68,22 +68,21 @@
           if (valid) {
             this.value = true
             this.loading = true
-            axios.post('http://localhost:8000/v1/auth/login', {
+            axios.post('http://localhost:8000/auth/login', {
               logId: this.formInline.user,
               pass: this.formInline.password
-            })
-            .then((response) => {
-              if (response.status === 200) {
-                console.log(response.data.token)
-                this.$Message.success('提交成功!')
-                this.loading = false
-                this.modal = false
-              } else {
-                console.log('wrong')
-              }
-            })
+            }, {withCredentials: true})
+              .then((response) => {
+                if (response.status === 200) {
+                  console.log(response.data)
+                  this.$Message.success('提交成功!')
+                  this.modal = false
+                } else {
+                  console.log('wrong')
+                }
+              })
           } else {
-            this.loading = true
+            this.loading = false
             this.modal = true
             this.$Message.error('表单验证失败!')
           }

@@ -25,11 +25,18 @@ func main() {
 	app := gin.Default()
 	xypConfig := cors.DefaultConfig()
 	xypConfig.AllowMethods = append(xypConfig.AllowMethods, "DELETE")
-	xypConfig.AllowAllOrigins = true
+	//xypConfig.AllowAllOrigins = true
+	xypConfig.AllowOrigins = []string{"http://localhost:8080"}
+	xypConfig.AllowCredentials = true
+	//xypConfig.AllowHeaders = []string{"*"}
 	corsMiddleware := cors.New(xypConfig)
 	app.Use(corsMiddleware)
 
 	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+	store.Options(sessions.Options{
+		Path: "/",
+		Domain: "localhost",
+	})
 	session_middleware := sessions.Sessions("sessionid", store)
 
 	a := app.Group("/auth", session_middleware)

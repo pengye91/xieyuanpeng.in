@@ -51,7 +51,7 @@
       </Col>
     </Row>
     <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" path="comments."
-              style="padding-bottom: 50px"></comments>
+              style="padding-bottom: 5%"></comments>
   </div>
 </template>
 <style scoped>
