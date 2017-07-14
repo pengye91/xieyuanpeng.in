@@ -160,10 +160,9 @@
   import Login from './Login'
   import Register from './Register'
   import MyMenuItem from './MyMenuItem'
-  import Comment from './Comment.vue'
   export default {
     components: {
-      Login, Register, MyMenuItem, Comment
+      Login, Register, MyMenuItem
     },
     data () {
       return {

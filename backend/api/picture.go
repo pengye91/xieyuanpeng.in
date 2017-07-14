@@ -70,21 +70,18 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 
 	//session := sessions.Default(ctx)
 
 	//visitorId := session.Get("visitor").(string)
 
-	comment := CommentAlias{}
-	//var cmt struct {
-	//	WordContent    string        `json:"wordContent" bson:"word_content"  form:"word_content"`
-	//}
+	comment := models.Comment{}
 
 	picId := ctx.Param("id")
 	fmt.Printf("%s\n", picId)
 
 	if err := ctx.BindJSON(&comment); err != nil {
-		//ctx.JSON(http.StatusBadRequest, models.Err("1"))
 		fmt.Println(err)
 		return
 	} else {
@@ -92,32 +89,22 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 		comment.CreatedAt = time.Now()
 		comment.ModifiedAt = time.Now()
 		comment.PublishedAt = time.Now()
-
-		if commentErr := Db.C("comment").Insert(&comment); commentErr != nil {
-			//ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-			//ctx.JSON(http.StatusInternalServerError, err)
-			//fmt.Println(err)
-			fmt.Printf("%s\n", err)
-		}
-
-		appendComment := bson.M{
-			"$push": bson.M{
-				"comments": comment,
-			},
-		}
-		//if visitorId != "" {
-		//	if visitorErr := Db.C("people").UpdateId(bson.IsObjectIdHex(visitorId), appendComment); visitorErr != nil {
-		//		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-		//	}
-		//}
-		if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
-			//ctx.JSON(http.StatusInternalServerError, picErr)
-			fmt.Printf("%s\n", picErr)
-			return
-		}
-		ctx.JSON(http.StatusCreated, comment)
 	}
-	Db.Close()
+
+	appendComment := bson.M{
+		"$push": bson.M{
+			comment.InternalPath: comment,
+		},
+	}
+
+	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
+		fmt.Printf("%s\n", picErr)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, comment)
+
 }
 
 // Delete picture by Id but remain all comments
@@ -171,4 +158,32 @@ func (this PictureAPI) GetPicComments(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, pic.Comments)
 	Db.Close()
+}
+
+func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	PicId := ctx.Param("id")
+	internalPath := ctx.Query("internalPath")
+	id := ctx.Query("id")
+
+	fmt.Println(id)
+	fmt.Println(internalPath)
+
+	deleteComment := bson.M{
+		"$pull": bson.M{
+			internalPath: bson.M{
+				"_id": bson.ObjectIdHex(id),
+			},
+		},
+	}
+
+	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), deleteComment); picErr != nil {
+		fmt.Printf("%s\n", picErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
+
 }

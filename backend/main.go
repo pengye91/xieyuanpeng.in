@@ -16,13 +16,18 @@ func DbMain() {
 var (
 	auth = &api.AuthAPI{}
 	pic = &api.PictureAPI{}
+	com = &api.CommentApi{}
 
 )
 
 func main() {
 	DbMain()
 	app := gin.Default()
-	app.Use(cors.Default())
+	xypConfig := cors.DefaultConfig()
+	xypConfig.AllowMethods = append(xypConfig.AllowMethods, "DELETE")
+	xypConfig.AllowAllOrigins = true
+	corsMiddleware := cors.New(xypConfig)
+	app.Use(corsMiddleware)
 
 	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 	session_middleware := sessions.Sessions("sessionid", store)
@@ -41,7 +46,19 @@ func main() {
 		p.GET("/", pic.GetAllPics)
 		p.GET("/:id", pic.GetPicById)
 		p.POST("/:id/comments", pic.PostCommentToPic)
+		p.POST("/:id/responses", com.PostCommentToCommentByPicId)
+		p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
 	}
 
+	c := app.Group("/coms", session_middleware)
+	{
+		c.GET("/:id/responses", com.GetAllResponsesByCommentId)
+		c.POST("/:id/responses", com.PostResponsesByCommentId)
+	}
+
+	r := app.Group("/resps", session_middleware)
+	{
+		r.POST("/:id/responses", com.PostResponsesToResponseByResponseId)
+	}
 	app.Run(":8000")
 }
