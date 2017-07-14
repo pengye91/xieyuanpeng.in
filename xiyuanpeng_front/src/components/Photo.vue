@@ -21,8 +21,8 @@
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
       <Col span="8" class="comment-box">
-      <Input type="textarea" :autosize="{minRows:14, maxRows:14}" placeholder="点击评论此图片" v-model="newPicComment"
-             @keyup.enter.native="commentOnPic">
+      <Input @keydown.left.native.stop="" @keydown.right.native.stop="" type="textarea"
+             :autosize="{minRows:14, maxRows:14}" placeholder="点击评论此图片" v-model="newPicComment">
       </Input>
       <Button type="primary" @click="commentOnPic" :disabled="commentIsEmpty" class="comment-button">评论</Button>
       </Col>
@@ -30,7 +30,7 @@
     <Row type="flex" justify="space-between" align="top"
          style="border-bottom: 0.5px solid lightgray; height: 5.5%; min-height: 28px; max-height: 44px">
       <Col span="4" class="description-bar">
-      <Button type="text" style="height: 26px; padding: 0 0 0 13px;">Title</Button>
+      <Button v-if="currentPic !== undefined" type="text" style="height: 26px; padding: 0 0 0 13px;">{{currentPic.title}}</Button>
       </Col>
       <Col span="2" offset="13" @click.native="()=>{liked=!liked}" class="description-bar">
       <Icon type="ios-eye" size="17" class="description-icon"></Icon>
@@ -45,7 +45,13 @@
       <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
       </Col>
     </Row>
-    <comment v-if="cComments !== undefined" :picture="currentPic" :comments="cComments"></comment>
+    <Row type="flex">
+      <Col span="4" id="comments" style="padding: 20px 20px 20px 20px; font-size: 28px">
+      评论
+      </Col>
+    </Row>
+    <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" path="comments."
+              style="padding-bottom: 5%"></comments>
   </div>
 </template>
 <style scoped>
@@ -96,7 +102,7 @@
   .slider:hover div {
     max-height: 95%;
     height: 5vw;
-    width: 2vw;
+    width: 3vw;
     margin: 0 3px 0 3px;
   }
 
@@ -149,7 +155,8 @@
 <script>
   import axios from 'axios'
   import ImagePreloader from 'image-preloader'
-  import Comment from './Comment.vue'
+  import Comments from './Comments.vue'
+  import {EventBus} from '../store/EventBus'
   let preloader = new ImagePreloader()
   export default {
     data () {
@@ -222,6 +229,16 @@
     },
     created: function () {
       window.addEventListener('keydown', this.keyDown)
+      EventBus.$on('delete-comment', (commentId) => {
+        console.log(this.cComments)
+        this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
+          if (value.id !== commentId) {
+            return value
+          }
+          return undefined
+        }).replace(/,?null/g, '').replace(/\[,/g, '['))
+        console.log(this.cComments)
+      })
     },
     beforeDestroy: function () {
       window.removeEventListener('keydown', this.keyDown)
@@ -234,10 +251,15 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        axios.post(`http://localhost:8000/pics/${this.currentPic.id}/comments`, {'wordContent': this.newPicComment})
+        axios.post(`http://localhost:8000/pics/${this.currentPic.id}/comments`, {
+          'wordContent': this.newPicComment,
+          'comments': [],
+          'internalPath': 'comments'
+        })
           .then(response => {
             this.cComments.push(response.data)
             console.log(response.data)
+            console.log(this.cComments)
             this.newPicComment = ''
             this.$Message.success('评论成功')
           })
@@ -258,7 +280,7 @@
       }
     },
     components: {
-      'comment': Comment
+      'comments': Comments
     }
   }
 </script>

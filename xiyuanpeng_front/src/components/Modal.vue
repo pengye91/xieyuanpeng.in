@@ -228,7 +228,6 @@
     watch: {
       value (val) {
         this.visible = val
-        console.log(val)
       },
       visible (val) {
         if (val === false) {
