@@ -251,11 +251,13 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        HTTP.post(`/pics/${this.currentPic.id}/comments`, {
-          'wordContent': this.newPicComment,
-          'comments': [],
-          'internalPath': 'comments'
-        })
+        HTTP.post(`/pics/${this.currentPic.id}/comments`,
+          {
+            'wordContent': this.newPicComment,
+            'comments': [],
+            'internalPath': 'comments'
+          }
+        )
           .then(response => {
             this.cComments.push(response.data)
             this.newPicComment = ''

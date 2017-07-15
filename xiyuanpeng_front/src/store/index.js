@@ -21,12 +21,13 @@ export default new Vuex.Store({
       pass: 'anon',
       updated_at: '2017-07-08T14:24:53.091+08:00'
     },
-    isLogin: false
-  },
-  getters: {
-    isLogin: {}
+    isLogin: false,
+    jwtToken: localStorage.getItem('jwtToken')
   },
   mutations: {
+    jwtTokenChange (state) {
+      state.jwtToken = localStorage.getItem('jwtToken')
+    },
     login (state, loginInfo) {
       state.user = loginInfo.user
       state.isLogin = loginInfo.isLogin
@@ -35,13 +36,20 @@ export default new Vuex.Store({
       let jwtToken = payload.jwtToken
       console.log(jwtDecode(jwtToken))
       if ((jwtToken !== null) && (jwtToken !== undefined)) {
-        if (jwtDecode(jwtToken).exp > Math.floor(Date.now() / 1000)) {
-          state.isLogin = true
-          state.user = jwtDecode(jwtToken).user
-        } else {
-          console.log('expired')
-          state.isLogin = false
+        try {
+          let jwtInfo = jwtDecode(jwtToken)
+          if (jwtInfo.exp > Math.floor(Date.now() / 1000)) {
+            state.isLogin = true
+            state.user = jwtInfo.user
+          } else {
+            console.log('expired')
+            state.isLogin = false
+          }
+        } catch (e) {
+          console.log(e)
         }
+      } else {
+        console.log('jwtToken === null')
       }
     }
   },
