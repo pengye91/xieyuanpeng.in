@@ -141,9 +141,12 @@
         </div>
         </Col>
         <Col span="3">
-        <div class="login">
+        <div v-if="!isLogin" class="register-login">
           <Register></Register>
           <Login></Login>
+        </div>
+        <div v-if="isLogin">
+          <User></User>
         </div>
         </Col>
       </Row>
@@ -159,10 +162,13 @@
   import {EventBus} from '../store/EventBus'
   import Login from './Login'
   import Register from './Register'
+  import User from './User'
   import MyMenuItem from './MyMenuItem'
+  import {mapState} from 'vuex'
+
   export default {
     components: {
-      Login, Register, MyMenuItem
+      Login, Register, MyMenuItem, User
     },
     data () {
       return {
@@ -174,6 +180,11 @@
         },
         searchText: ''
       }
+    },
+    computed: {
+      ...mapState([
+        'user', 'isLogin'
+      ])
     },
     methods: {
       menuItemRoute (key) {

@@ -1,6 +1,6 @@
 <template>
   <span>
-    <Button shape="circle" @click="showModal">登录</Button>
+    <Button shape="circle" @click="showModal">登录{{user.name}}{{isLogin?"true":"false"}}</Button>
     <Modal1
       title="登录"
       :value="modal"
@@ -10,7 +10,8 @@
       :closable="closable"
       @on-cancel="modal = false"
       @on-ok="handleSubmit('formInline')">
-      <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
+      <Form @keyup.enter.native="handleSubmit('formInline')" ref="formInline" :model="formInline" :rules="ruleInline"
+            inline>
         <Form-item prop="user">
         <Input type="text" v-model="formInline.user" placeholder="Username">
           <Icon type="ios-person-outline" slot="prepend"></Icon>
@@ -31,6 +32,9 @@
   import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
   import axios from 'axios'
+  import router from '../router/index'
+  import jwtDecode from 'jwt-decode'
+  import {mapState, mapMutations} from 'vuex'
 
   let converter = new showdown.Converter()
   export default {
@@ -60,6 +64,9 @@
       }
     },
     methods: {
+      ...mapMutations([
+        'login'
+      ]),
       showModal () {
         this.modal = true
       },
@@ -69,14 +76,20 @@
             this.value = true
             this.loading = true
             axios.post('http://localhost:8000/auth/login', {
-              logId: this.formInline.user,
-              pass: this.formInline.password
+              username: this.formInline.user,
+              password: this.formInline.password
             }, {withCredentials: true})
               .then((response) => {
                 if (response.status === 200) {
                   console.log(response.data)
-                  this.$Message.success('提交成功!')
                   this.modal = false
+                  this.$Message.success('提交成功!')
+                  let user
+                  user = jwtDecode(response.data.token).user
+                  this.login({user: user, isLogin: true})
+                  localStorage.setItem('jwt_token', response.data.token)
+                  router.push({name: 'wechat'})
+                  console.log(this.$route.path)
                 } else {
                   console.log('wrong')
                 }
@@ -96,7 +109,10 @@
           console.log(this.searchMessage)
         })
         return this.searchMessage
-      }
+      },
+      ...mapState([
+        'isLogin', 'user'
+      ])
     }
   }
 </script>

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
+
+	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 )
 
 func DbMain() {
@@ -15,34 +16,27 @@ func DbMain() {
 
 var (
 	auth = &api.AuthAPI{}
-	pic = &api.PictureAPI{}
-	com = &api.CommentApi{}
-
+	pic  = &api.PictureAPI{}
+	com  = &api.CommentApi{}
 )
 
 func main() {
 	DbMain()
 	app := gin.Default()
-	xypConfig := cors.DefaultConfig()
-	xypConfig.AllowMethods = append(xypConfig.AllowMethods, "DELETE")
-	//xypConfig.AllowAllOrigins = true
-	xypConfig.AllowOrigins = []string{"http://localhost:8080"}
-	xypConfig.AllowCredentials = true
-	//xypConfig.AllowHeaders = []string{"*"}
-	corsMiddleware := cors.New(xypConfig)
-	app.Use(corsMiddleware)
+	app.Use(middlewares.CORSMiddleware)
 
 	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 	store.Options(sessions.Options{
-		Path: "/",
+		Path:   "/",
 		Domain: "localhost",
 	})
 	session_middleware := sessions.Sessions("sessionid", store)
 
-	a := app.Group("/auth", session_middleware)
+	a := app.Group("/auth", session_middleware, )
 	{
 		a.POST("/register", auth.Register)
-		a.POST("/login", auth.Login)
+		a.POST("/login", middlewares.JWTAuthMiddleware.LoginHandler)
+		a.GET("/refresh_token", middlewares.JWTAuthMiddleware.RefreshHandler)
 		a.POST("/check", auth.Check)
 		a.GET("/allusers", auth.GetAllUsers)
 	}
@@ -52,7 +46,7 @@ func main() {
 		p.POST("/", pic.PostPicToMain)
 		p.GET("/", pic.GetAllPics)
 		p.GET("/:id", pic.GetPicById)
-		p.POST("/:id/comments", pic.PostCommentToPic)
+		p.POST("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.PostCommentToPic)
 		p.POST("/:id/responses", com.PostCommentToCommentByPicId)
 		p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
 	}

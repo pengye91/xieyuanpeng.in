@@ -16,6 +16,7 @@
     "axios": "^0.16.1",
     "image-preloader": "^1.1.1",
     "iview": "^2.0.0-rc.9",
+    "jwt-decode": "^2.2.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.2",
     "quill": "^1.2.4",

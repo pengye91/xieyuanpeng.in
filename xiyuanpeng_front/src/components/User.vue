@@ -1,6 +1,6 @@
 <template>
   <span>
-    <Button type="primary" shape="circle" @click="modal = true">注册</Button>
+    <Button shape="circle" @click="modal = true">{{ user.name }}</Button>
     <Modal
       v-model="modal"
       title="对话框标题"
@@ -11,12 +11,20 @@
   </span>
 </template>
 <script>
+  import {mapState} from 'vuex'
+
   export default {
     data () {
       return {
         modal: false,
         loading: true
       }
+    },
+    computed: {
+      ...mapState([
+        'user', 'isLogin'
+      ])
+
     },
     methods: {
       asyncOK () {
