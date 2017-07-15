@@ -153,10 +153,10 @@
   }
 </style>
 <script>
-  import axios from 'axios'
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
+  import {HTTP} from '../utils/http-common'
   let preloader = new ImagePreloader()
   export default {
     data () {
@@ -212,7 +212,7 @@
       }
     },
     mounted () {
-      axios.get('http://localhost:8000/pics/')
+      HTTP.get('/pics/')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
@@ -251,15 +251,13 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        axios.post(`http://localhost:8000/pics/${this.currentPic.id}/comments`, {
+        HTTP.post(`/pics/${this.currentPic.id}/comments`, {
           'wordContent': this.newPicComment,
           'comments': [],
           'internalPath': 'comments'
         })
           .then(response => {
             this.cComments.push(response.data)
-            console.log(response.data)
-            console.log(this.cComments)
             this.newPicComment = ''
             this.$Message.success('评论成功')
           })

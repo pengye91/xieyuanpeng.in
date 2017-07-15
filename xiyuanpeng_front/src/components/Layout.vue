@@ -141,6 +141,7 @@
         </div>
         </Col>
         <Col span="3">
+        {{ isLogin }}
         <div v-if="!isLogin" class="register-login">
           <Register></Register>
           <Login></Login>
@@ -180,6 +181,12 @@
         },
         searchText: ''
       }
+    },
+    mounted: function () {
+      this.$store.commit({
+        type: 'check',
+        jwtToken: localStorage.getItem('jwtToken')
+      })
     },
     computed: {
       ...mapState([

@@ -4,6 +4,7 @@ import * as actions from './actions'
 // import * as getters from './getters'
 // import mutations from './mutations'
 // import * as defaults from './defaults'
+import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 
 Vue.use(Vuex)
@@ -22,11 +23,26 @@ export default new Vuex.Store({
     },
     isLogin: false
   },
-  getters: {},
+  getters: {
+    isLogin: {}
+  },
   mutations: {
     login (state, loginInfo) {
       state.user = loginInfo.user
       state.isLogin = loginInfo.isLogin
+    },
+    check (state, payload) {
+      let jwtToken = payload.jwtToken
+      console.log(jwtDecode(jwtToken))
+      if ((jwtToken !== null) && (jwtToken !== undefined)) {
+        if (jwtDecode(jwtToken).exp > Math.floor(Date.now() / 1000)) {
+          state.isLogin = true
+          state.user = jwtDecode(jwtToken).user
+        } else {
+          console.log('expired')
+          state.isLogin = false
+        }
+      }
     }
   },
   actions,

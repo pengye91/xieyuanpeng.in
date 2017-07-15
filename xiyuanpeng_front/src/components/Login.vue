@@ -87,7 +87,7 @@
                   let user
                   user = jwtDecode(response.data.token).user
                   this.login({user: user, isLogin: true})
-                  localStorage.setItem('jwt_token', response.data.token)
+                  localStorage.setItem('jwtToken', response.data.token)
                   router.push({name: 'wechat'})
                   console.log(this.$route.path)
                 } else {
