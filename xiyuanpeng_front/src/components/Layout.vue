@@ -141,9 +141,12 @@
         </div>
         </Col>
         <Col span="3">
-        <div class="login">
+        <div v-if="" class="login">
           <Register></Register>
           <Login></Login>
+        </div>
+        <div>
+
         </div>
         </Col>
       </Row>
