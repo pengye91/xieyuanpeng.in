@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"net/http"
+	"strings"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
@@ -11,34 +12,40 @@ import (
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/mgo.v2/bson"
 )
+var user models.VisitorBasic
 
 var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 	Realm:      "xyp test",
 	Key:        []byte("secret key"),
 	Timeout:    time.Hour,
 	MaxRefresh: time.Hour,
-	Authenticator: func(userID string, password string, ctx *gin.Context) (string, bool) {
+	Authenticator: func(loginID string, password string, ctx *gin.Context) (string, bool) {
 		Db := &db.MgoDb{}
 		Db.Init()
 		defer Db.Close()
 
-		var ps struct {
-			Pass string        `json:"pass" bson:"pass" form:"pass"`
-		}
+		session := sessions.Default(ctx)
 
-		_pass := ctx.PostForm("pass")
-		if err := Db.C("auth").FindId(bson.ObjectIdHex(userID)).Select(bson.M{"pass": 1}).One(&ps); err != nil {
-			ctx.JSON(http.StatusNotFound, models.Err("1"))
-			return userID, false
+		if strings.Contains(loginID, "@") {
+			if err := Db.C("auth").Find(bson.M{"email": loginID}).One(&user); err != nil {
+				return loginID, false
+			}
+		} else {
+			if err := Db.C("auth").Find(bson.M{"name": loginID}).One(&user); err != nil {
+				return loginID, false
+			}
 		}
 
 		pass := libs.Password{}
-		cp := pass.Compare(ps.Pass, _pass)
+		cp := pass.Compare(user.Pass, password)
 
 		if cp {
-			return userID, true
+			session.Set("logined", "true")
+			session.Set("visitor", user.Id.String())
+			session.Save()
+			return user.Id.String(), true
 		} else {
-			return userID, false
+			return user.Id.String(), false
 		}
 	},
 	Authorizator: func(userID string, c *gin.Context) bool {
@@ -49,6 +56,9 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 			"code":    code,
 			"message": message,
 		})
+	},
+	PayloadFunc: func(userID string) map[string]interface{} {
+		return map[string]interface{}{"user": user}
 	},
 	TokenLookup:   "header:Authorization",
 	TokenHeadName: "Bearer",

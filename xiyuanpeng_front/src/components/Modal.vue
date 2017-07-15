@@ -29,7 +29,7 @@
     </span>
 </template>
 <script>
-  import { getScrollBarSize } from 'iview/src/utils/assist'
+  import {getScrollBarSize} from 'iview/src/utils/assist'
   import Locale from 'iview/src/mixins/locale'
 
   const prefixCls = 'ivu-modal'
