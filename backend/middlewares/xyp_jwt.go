@@ -19,8 +19,8 @@ const Month = 30 * 24 * time.Hour
 var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 	Realm:      "xyp test",
 	Key:        []byte("secret key"),
-	Timeout:    time.Minute,
-	MaxRefresh: time.Minute,
+	Timeout:    Month,
+	MaxRefresh: Month,
 	Authenticator: func(loginID string, password string, ctx *gin.Context) (string, bool) {
 		Db := &db.MgoDb{}
 		Db.Init()
