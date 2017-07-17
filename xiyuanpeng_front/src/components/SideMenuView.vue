@@ -1,22 +1,22 @@
 <template>
-    <div class="layout-content">
-      <Row type="flex" style="height: 100%;">
-        <Col span="3">
-        <Menu active-name="2-1" :open-names="['2']"
-              style="height: 100%" width="100%">
-          <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}">
-            <Icon type="ios-book" size="16"></Icon>
-            {{ item }}
-          </MyMenuItem>
-        </Menu>
-        </Col>
-        <Col span="21" style="overflow: auto; height: 100%">
-        <div class="layout-content-main">
-          <router-view></router-view>
-        </div>
-        </Col>
-      </Row>
-    </div>
+  <div class="layout-content">
+    <Row type="flex" style="height: 100%;">
+      <Col span="3">
+      <Menu active-name="2-1" :open-names="['2']"
+            style="height: 100%" width="100%">
+        <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}">
+          <Icon type="ios-book" size="16"></Icon>
+          {{ item }}
+        </MyMenuItem>
+      </Menu>
+      </Col>
+      <Col span="21" style="overflow: auto; height: 100%">
+      <div class="layout-content-main">
+        <router-view></router-view>
+      </div>
+      </Col>
+    </Row>
+  </div>
 </template>
 
 <script>
@@ -78,6 +78,7 @@
     text-align: center;
     line-height: 40px;
   }
+
   .login {
     line-height: 37px;
   }
@@ -89,6 +90,7 @@
     text-align: center;
     background: #f6f6f6 none repeat scroll 0 0;
   }
+
   .ivu-menu-horizontal {
     line-height: 38px;
   }
@@ -108,7 +110,7 @@
     font-weight: bold;
   }
 
-  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item{
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item {
     font-size: 13px;
     padding-left: 25%;
   }
@@ -164,6 +166,7 @@
   .ivu-input-wrapper-large .ivu-input-icon {
     line-height: 30px !important;
   }
+
   .ivu-input-large {
     height: 20px;
   }

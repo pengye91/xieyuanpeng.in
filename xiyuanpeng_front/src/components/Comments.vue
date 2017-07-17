@@ -11,11 +11,6 @@
   export default{
     name: 'comments',
     props: ['picture', 'comments', 'path'],
-    data () {
-      return {
-        replyToComment: false
-      }
-    },
     mounted () {
     },
     components: {

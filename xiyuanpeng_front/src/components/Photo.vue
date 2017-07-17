@@ -44,7 +44,7 @@
       <span v-if="currentPic !== undefined" class="description-number">{{ currentPic.like }}</span>
       </Col>
       <Col span="2" class="description-bar">
-      <router-link :to="'#picComments'">
+      <router-link to="#picComments">
         <Icon type="android-textsms" size="15" class="description-icon"></Icon>
         <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
       </router-link>
