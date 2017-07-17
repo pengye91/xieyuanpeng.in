@@ -1,15 +1,14 @@
 <template>
   <div>
-    <Row type="flex" class="list-group-item" align="middle" justify="space-between">
+    <Row type="flex" align="middle" justify="space-between">
       <Col span="20" style="font-size: 13px;">
       {{ comment.wordContent }}
-      {{ path }}
       </Col>
       <Col span="2">
-      <Button type="text" style="font-size: 13px" @click="deleteComment">删除</Button>
+      <Button type="text" @click="deleteComment">删除</Button>
       </Col>
       <Col span="2">
-      <Button type="text" style="font-size: 13px" @click="clickedReply=!clickedReply">点击回复</Button>
+      <Button type="text" @click="clickedReply=!clickedReply">点击回复</Button>
       </Col>
     </Row>
     <Row v-if="clickedReply" type="flex" justify="space-between" align="bottom">
@@ -61,6 +60,10 @@
           'wordContent': this.replyWordContent,
           'comments': [],
           'internalPath': this.path + '.comments'
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+          }
         })
           .then(response => {
             this.comment.comments.push(response.data)
@@ -80,10 +83,11 @@
 <style>
   .list-group-item {
     position: relative;
-    display: block;
-    padding: 0.3% 0.8%;
+    display: flex;
+    padding: 0.5% 0.8%;
     background-color: #fff;
-    border: 1px solid #ddd
+    border: 1px solid #ddd;
+    margin-bottom: 1px;
   }
 
   .reply-input {
@@ -91,7 +95,12 @@
   }
 
   .comment-comments {
-    padding: 0.1% 1% 0.1% 1%;
+    position: relative;
+    /*display: block;*/
+    padding: 0.5%;
+    margin-bottom: -1px;
+    background-color: #fff;
+    /*border: 1px solid #ddd*/
   }
 
 </style>

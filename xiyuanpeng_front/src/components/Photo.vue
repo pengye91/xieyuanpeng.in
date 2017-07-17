@@ -45,20 +45,22 @@
       </Col>
       <Col span="2" class="description-bar">
       <router-link to="#picComments">
-        <Icon type="android-textsms" size="15" class="description-icon"></Icon>
+        <Icon id="picComments" type="android-textsms" size="15" class="description-icon"></Icon>
         <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
       </router-link>
       </Col>
     </Row>
-    <div id="picComments">
-      <Row type="flex">
-        <Col span="4" style="padding: 20px 20px 20px 20px; font-size: 28px">
-        评论
-        </Col>
-      </Row>
-    </div>
-    <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
-              style="padding-bottom: 5%"></comments>
+    <Row type="flex" justify="start">
+      <Col span="4" offset="2" style="padding: 3% 20px 17px 20px; font-size: 28px">
+      评论
+      </Col>
+    </Row>
+    <Row type="flex" justify="center">
+      <Col span="20">
+        <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
+                style="padding-bottom: 5%"></comments>
+      </Col>
+    </Row>
   </div>
 </template>
 <style scoped>
@@ -80,7 +82,7 @@
   .comment-box {
     position: fixed;
     left: 2px;
-    width: 12.55%;
+    width: 12.2%;
     height: 50%;
     bottom: 50px;
   }

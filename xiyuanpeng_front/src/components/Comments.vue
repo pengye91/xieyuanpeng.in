@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row v-for="(comment, index) in comments" :key="comment">
+    <Row v-for="(comment, index) in comments" :key="comment" class="list-group-item">
       <comment :picture="picture" :comment="comment" :path="path + index"></comment>
     </Row>
   </div>
@@ -11,6 +11,11 @@
   export default{
     name: 'comments',
     props: ['picture', 'comments', 'path'],
+    data () {
+      return {
+        replyToComment: false
+      }
+    },
     mounted () {
     },
     components: {

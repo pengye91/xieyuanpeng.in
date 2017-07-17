@@ -1,6 +1,6 @@
 <style scoped>
   .layout {
-    border: 1px solid #d7dde4;
+    border: 0 solid #d7dde4;
     background-color: white;
   }
 
@@ -39,7 +39,7 @@
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: #cbcbcb;
-    border-right: 0;
+    border-right: 10px;
     font-weight: bold;
   }
 
