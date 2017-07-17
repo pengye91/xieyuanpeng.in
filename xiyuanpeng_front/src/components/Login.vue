@@ -1,6 +1,6 @@
 <template>
   <span>
-    <Button shape="circle" @click="showModal">登录{{user.name}}{{isLogin?"true":"false"}}</Button>
+    <Button shape="circle" @click="showModal">登录</Button>
     <Modal1
       title="登录"
       :value="modal"

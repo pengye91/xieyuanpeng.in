@@ -30,7 +30,10 @@
     <Row type="flex" justify="space-between" align="top"
          style="border-bottom: 0.5px solid lightgray; height: 5.5%; min-height: 28px; max-height: 44px">
       <Col span="4" class="description-bar">
-      <Button v-if="currentPic !== undefined" type="text" style="height: 26px; padding: 0 0 0 13px;">{{currentPic.title}}</Button>
+      <Button v-if="currentPic !== undefined" type="text"
+              style="height: 26px; padding: 0 0 0 13px;">
+        {{currentPic.title}}
+      </Button>
       </Col>
       <Col span="2" offset="13" @click.native="()=>{liked=!liked}" class="description-bar">
       <Icon type="ios-eye" size="17" class="description-icon"></Icon>
@@ -41,16 +44,20 @@
       <span v-if="currentPic !== undefined" class="description-number">{{ currentPic.like }}</span>
       </Col>
       <Col span="2" class="description-bar">
-      <Icon type="android-textsms" size="15" class="description-icon"></Icon>
-      <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
+      <router-link :to="'#picComments'">
+        <Icon type="android-textsms" size="15" class="description-icon"></Icon>
+        <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
+      </router-link>
       </Col>
     </Row>
-    <Row type="flex">
-      <Col span="4" id="comments" style="padding: 20px 20px 20px 20px; font-size: 28px">
-      评论
-      </Col>
-    </Row>
-    <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" path="comments."
+    <div id="picComments">
+      <Row type="flex">
+        <Col span="4" style="padding: 20px 20px 20px 20px; font-size: 28px">
+        评论
+        </Col>
+      </Row>
+    </div>
+    <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
               style="padding-bottom: 5%"></comments>
   </div>
 </template>
@@ -256,6 +263,10 @@
             'wordContent': this.newPicComment,
             'comments': [],
             'internalPath': 'comments'
+          }, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            }
           }
         )
           .then(response => {

@@ -36,17 +36,19 @@ export default new Vuex.Store({
       let jwtToken = payload.jwtToken
       console.log(jwtDecode(jwtToken))
       if ((jwtToken !== null) && (jwtToken !== undefined)) {
+        let jwtPayload
         try {
-          let jwtInfo = jwtDecode(jwtToken)
-          if (jwtInfo.exp > Math.floor(Date.now() / 1000)) {
-            state.isLogin = true
-            state.user = jwtInfo.user
-          } else {
-            console.log('expired')
-            state.isLogin = false
-          }
+          jwtPayload = jwtDecode(jwtToken)
         } catch (e) {
-          console.log(e)
+          console.log('decode wrong')
+          return
+        }
+        if (jwtPayload.exp > Math.floor(Date.now() / 1000)) {
+          state.isLogin = true
+          state.user = jwtPayload.user
+        } else {
+          console.log('expired')
+          state.isLogin = false
         }
       } else {
         console.log('jwtToken === null')

@@ -23,13 +23,3 @@
     }
   }
 </script>
-<style>
-  .list-group-item {
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #b8fffa;
-    border: 1px solid #ddd
-  }
-</style>
