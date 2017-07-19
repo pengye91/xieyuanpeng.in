@@ -34,8 +34,29 @@
 
 
 <script>
+  import {HTTP} from '../../config/http-common'
+
   export default {
     data () {
+//      const passwordCheck = (rule, password2, callback) => {
+//        if (password2 !== this.formValidate.password1) {
+//          callback(new Error('两次密码输入不一致!'))
+//        }
+//      }
+
+      const usernameCheck = (rule, username, callback) => {
+        HTTP.get(
+          `/users/auto-search?username=${username}`
+        )
+          .then(response => {
+            if (response.status === 404) {
+              callback()
+            } else if (response.status === 200) {
+              callback(new Error('该用户名已被注册，换一个吧'))
+            }
+          })
+      }
+
       return {
         modal: false,
         loading: true,
@@ -51,7 +72,8 @@
 
         ruleValidate: {
           username: [
-            {required: true, message: '用户姓名不能为空', trigger: 'blur'}
+            {required: true, message: '用户姓名不能为空', trigger: 'blur'},
+            {validator: usernameCheck, trigger: 'blur'}
           ],
           email: [
             {required: true, message: '邮箱不能为空', trigger: 'blur'},
