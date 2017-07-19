@@ -51,16 +51,19 @@
       </Col>
     </Row>
     <Row type="flex" justify="start">
-      <Col span="4" offset="2" style="padding: 3% 20px 17px 20px; font-size: 28px">
+      <Col span="4" style="padding: 3% 20px 17px 20px; font-size: 28px">
       评论
       </Col>
     </Row>
     <Row type="flex" justify="center">
-      <Col span="20">
-        <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
+      <Col span="24">
+      <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
                 style="padding-bottom: 5%"></comments>
       </Col>
     </Row>
+    <div style="height: 7%">
+
+    </div>
   </div>
 </template>
 <style scoped>
@@ -165,8 +168,10 @@
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
-  import {HTTP} from '../utils/http-common'
+  import {HTTP} from '../../config/http-common'
   let preloader = new ImagePreloader()
+  import {mapState} from 'vuex'
+
   export default {
     data () {
       return {
@@ -218,7 +223,10 @@
           base = this.src
         }
         return this.imgs.slice(base - 4, base + 3)
-      }
+      },
+      ...mapState([
+        'user', 'isLogin'
+      ])
     },
     mounted () {
       HTTP.get('/pics/')
@@ -248,6 +256,16 @@
         }).replace(/,?null/g, '').replace(/\[,/g, '['))
         console.log(this.cComments)
       })
+      EventBus.$on('edit-comment', (changedComment) => {
+        this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
+          if (value.id !== changedComment.id) {
+            return value
+          } else {
+            return changedComment
+          }
+        }))
+        console.log(this.cComments)
+      })
     },
     beforeDestroy: function () {
       window.removeEventListener('keydown', this.keyDown)
@@ -260,17 +278,15 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        HTTP.post(`/pics/${this.currentPic.id}/comments`,
+        HTTP.post(
+          `/pics/${this.currentPic.id}/comments`,
           {
             'wordContent': this.newPicComment,
+            'byId': this.user.id,
+            'byName': this.user.name,
             'comments': [],
-            'internalPath': 'comments'
-          }, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
-            }
-          }
-        )
+            'internalPath': ''
+          })
           .then(response => {
             this.cComments.push(response.data)
             this.newPicComment = ''

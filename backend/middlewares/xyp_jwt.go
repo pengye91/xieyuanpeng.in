@@ -12,6 +12,7 @@ import (
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/mgo.v2/bson"
 )
+
 var user models.VisitorBasic
 
 const Month = 30 * 24 * time.Hour
@@ -25,7 +26,6 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 		Db := &db.MgoDb{}
 		Db.Init()
 		defer Db.Close()
-
 		session := sessions.Default(ctx)
 
 		if strings.Contains(loginID, "@") {

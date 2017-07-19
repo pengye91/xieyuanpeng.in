@@ -147,6 +147,7 @@
         </div>
         <div v-if="isLogin">
           <User></User>
+          <Logout></Logout>
         </div>
         </Col>
       </Row>
@@ -163,12 +164,13 @@
   import Login from './Login'
   import Register from './Register'
   import User from './User'
+  import Logout from './Logout.vue'
   import MyMenuItem from './MyMenuItem'
   import {mapState} from 'vuex'
 
   export default {
     components: {
-      Login, Register, MyMenuItem, User
+      Login, Register, MyMenuItem, User, Logout
     },
     data () {
       return {

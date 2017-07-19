@@ -1,6 +1,9 @@
 var merge = require('webpack-merge')
 var prodEnv = require('./prod.env.js')
+var http = require('./http-common')
+
 
 module.exports = merge(prodEnv, {
-  NODE_ENV: '"development"'
+  BASE_URL: 'http://localhost:8000',
+  NODE_ENV: '"development"',
 })
