@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"gopkg.in/mgo.v2/bson"
-	"fmt"
 )
 
 type AuthAPI struct {
@@ -55,8 +55,7 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 		return
 	} else {
-
-		// TODO: auto login.
+		// TODO: auto login after registration.
 		session.Set("login", "true")
 		session.Set("visitor", visitor.Id.String())
 		session.Save()
@@ -64,9 +63,8 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		UsernameSet[visitor.Name] = true
 		EmailSet[visitor.Email] = true
 
-		ctx.JSON(http.StatusOK, visitor)
+		ctx.JSON(http.StatusCreated, visitor)
 	}
-
 }
 
 func (this AuthAPI) Login(ctx *gin.Context) {
@@ -119,7 +117,7 @@ func (this AuthAPI) Check(ctx *gin.Context) {
 	defer Db.Close()
 
 	var ps struct {
-		Pass string        `json:"pass" bson:"pass" form:"pass"`
+		Pass string `json:"pass" bson:"pass" form:"pass"`
 	}
 
 	_pass := string(ctx.PostForm("pass"))
@@ -180,7 +178,7 @@ func AutoSearch(ctx *gin.Context) {
 				username: "Registered",
 			})
 		} else {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusNoContent, gin.H{
 				username: "Not Registered",
 			})
 		}
@@ -190,7 +188,7 @@ func AutoSearch(ctx *gin.Context) {
 				email: "Ooops, Registered",
 			})
 		} else {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusNoContent, gin.H{
 				email: "OK, Not Registered",
 			})
 
@@ -210,10 +208,10 @@ func InitialSetsFromDB() {
 
 	var (
 		usernames []struct {
-			Name string        `json:"name" bson:"name"  form:"name"`
+			Name string `json:"name" bson:"name"  form:"name"`
 		}
 		emails []struct {
-			Email string        `json:"email" bson:"email"  form:"email"`
+			Email string `json:"email" bson:"email"  form:"email"`
 		}
 	)
 
