@@ -148,7 +148,6 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("postid", "xixihaha", 2000, "/", "localhost", false, false)
 	ctx.JSON(http.StatusCreated, comment)
 }
 

@@ -1,13 +1,14 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
@@ -164,7 +165,7 @@ func (this AuthAPI) LogOut(ctx *gin.Context) {
 	for _, v := range ctx.Request.Cookies() {
 		fmt.Println(v)
 	}
-	ctx.SetCookie("sessionid", "", -1, "/", "localhost", false, false)
+	ctx.SetCookie("sessionid", "", -1, "/", configs.BASEDOMAIN, false, false)
 	ctx.JSON(http.StatusOK, gin.H{"OK": "DONE"})
 }
 
