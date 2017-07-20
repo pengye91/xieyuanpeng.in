@@ -118,6 +118,7 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 
 	if err := ctx.BindJSON(&comment); err != nil {
 		fmt.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
 		return
 	} else {
 		comment.Id = bson.NewObjectId()

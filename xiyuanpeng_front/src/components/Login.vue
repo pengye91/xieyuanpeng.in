@@ -10,8 +10,9 @@
       :closable="closable"
       @on-cancel="modal = false"
       @on-ok="handleSubmit('formInline')">
-      <Form @keydown.left.native.stop="" @keydown.right.native.stop="" @keyup.enter.native="handleSubmit('formInline')" ref="formInline"
-            :model="formInline" :rules="ruleInline"  style="width: 80%; margin-left: 10%">
+      <Form @keydown.left.native.stop="" @keydown.right.native.stop="" @keyup.enter.native="handleSubmit('formInline')"
+            ref="formInline"
+            :model="formInline" :rules="ruleInline" style="width: 80%; margin-left: 10%">
         <Form-item prop="user">
         <Input type="text" v-model="formInline.user" placeholder="用户名或邮箱" :autofocus="true">
           <Icon type="ios-person-outline" slot="prepend"></Icon>
@@ -24,7 +25,7 @@
         </Form-item>
       </Form>
       <div style="padding-left: 88%; margin:0 0">
-        <Button type="ghost" @click="handleReset('registerForm')">重置</Button>
+        <Button type="ghost" @click="handleReset('formInline')">重置</Button>
       </div>
     </Modal1>
   </span>
@@ -34,7 +35,7 @@
   import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
   //  import axios from 'axios'
-//  import router from '../router/index'
+  //  import router from '../router/index'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
   import {HTTP} from '../config/dev'
@@ -87,11 +88,19 @@
               .then((response) => {
                 if (response.status === 200) {
                   this.modal = false
-                  this.$Message.success('提交成功!')
+                  this.$Message.success('登录成功!')
                   let user
                   user = jwtDecode(response.data.token).user
-                  this.login({user: user, isLogin: true})
+                  // this must be the former one
                   localStorage.setItem('jwtToken', response.data.token)
+                  this.login({user: user, isLogin: true})
+                } else if (response.status === 401) {
+                  this.$Message.error('用户名或密码不正确')
+                }
+              })
+              .catch(error => {
+                if (error.response.status === 401) {
+                  this.$Message.error('用户名或密码不正确')
                 }
               })
           } else {

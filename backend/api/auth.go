@@ -205,7 +205,6 @@ func InitialSetsFromDB() {
 	Db := &db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
-
 	var (
 		usernames []struct {
 			Name string `json:"name" bson:"name"  form:"name"`
