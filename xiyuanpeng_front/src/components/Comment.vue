@@ -59,7 +59,7 @@
   import {EventBus} from '../store/EventBus'
   import {mapState} from 'vuex'
   import moment from 'moment'
-  import {HTTP} from '../../config/http-common'
+  import {HTTP} from '../config/dev'
 
   moment.locale('zh-cn')
 

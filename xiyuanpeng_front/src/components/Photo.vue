@@ -168,7 +168,7 @@
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
-  import {HTTP} from '../../config/http-common'
+  import {HTTP} from '../config/dev'
   let preloader = new ImagePreloader()
   import {mapState} from 'vuex'
 

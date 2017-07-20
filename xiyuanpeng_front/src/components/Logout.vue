@@ -11,7 +11,7 @@
   import router from '../router/index'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
-  import {HTTP} from '../../config/http-common'
+  import {HTTP} from '../config/dev'
 
   let converter = new showdown.Converter()
   export default {
