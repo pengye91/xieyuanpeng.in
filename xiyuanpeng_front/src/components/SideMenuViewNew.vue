@@ -1,18 +1,20 @@
 <template>
   <div class="layout-content">
-    <Row type="flex" style="height: 100%">
+    <Row type="flex" style="height: 100%;">
       <Col span="3">
-      <Menu style="height: 100%; border-top: 1px solid lightgray" width="100%">
-        <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}">
-          <Icon type="ios-book" size="16"></Icon>
-          {{ item }}
-        </MyMenuItem>
+      <Menu style="height: 100%" width="100%">
+        <router-link :to="{name: 'bar'}">
+          <button style="padding-top: 50px">
+            <Icon type="ios-book" size="16"></Icon>
+            comments-test
+          </button>
+        </router-link>
       </Menu>
       </Col>
       <Col span="21" style="height: 100%">
-      <div class="layout-content-main">
-        <router-view></router-view>
-      </div>
+      <!--<div class="layout-content-main">-->
+      <!--</div>-->
+      <router-view></router-view>
       </Col>
     </Row>
   </div>
@@ -61,6 +63,11 @@
   }
 </script>
 <style scoped>
+  .layout {
+    border: 1px solid #d7dde4;
+    background: #f5f7f9;
+  }
+
   .ivu-menu-item {
     font-size: 12px;
   }
@@ -134,8 +141,9 @@
 
   .layout-content {
     height: 100%;
-    padding: 42px 0 30px 0;
+    padding: 42px 10px 30px 5px;
     background: transparent;
+    border-radius: 4px;
   }
 
   .layout-content-main {

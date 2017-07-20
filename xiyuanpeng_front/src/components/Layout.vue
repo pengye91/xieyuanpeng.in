@@ -1,6 +1,6 @@
 <style scoped>
   .layout {
-    border: 1px solid #d7dde4;
+    border: 0 solid #d7dde4;
     background-color: white;
   }
 
@@ -39,7 +39,7 @@
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: #cbcbcb;
-    border-right: 0;
+    border-right: 10px;
     font-weight: bold;
   }
 
@@ -147,6 +147,7 @@
         </div>
         <div v-if="isLogin">
           <User></User>
+          <Logout></Logout>
         </div>
         </Col>
       </Row>
@@ -163,12 +164,13 @@
   import Login from './Login'
   import Register from './Register'
   import User from './User'
+  import Logout from './Logout.vue'
   import MyMenuItem from './MyMenuItem'
   import {mapState} from 'vuex'
 
   export default {
     components: {
-      Login, Register, MyMenuItem, User
+      Login, Register, MyMenuItem, User, Logout
     },
     data () {
       return {
@@ -180,6 +182,12 @@
         },
         searchText: ''
       }
+    },
+    mounted: function () {
+      this.$store.commit({
+        type: 'check',
+        jwtToken: localStorage.getItem('jwtToken')
+      })
     },
     computed: {
       ...mapState([

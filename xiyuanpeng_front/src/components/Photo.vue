@@ -30,28 +30,40 @@
     <Row type="flex" justify="space-between" align="top"
          style="border-bottom: 0.5px solid lightgray; height: 5.5%; min-height: 28px; max-height: 44px">
       <Col span="4" class="description-bar">
-      <Button v-if="currentPic !== undefined" type="text" style="height: 26px; padding: 0 0 0 13px;">{{currentPic.title}}</Button>
+      <Button v-if="currentPic !== undefined" type="text"
+              style="height: 26px; padding: 0 0 0 13px;">
+        {{currentPic.title}}
+      </Button>
       </Col>
-      <Col span="2" offset="13" @click.native="()=>{liked=!liked}" class="description-bar">
+      <Col span="2" offset="13" @click.native="" class="description-bar">
       <Icon type="ios-eye" size="17" class="description-icon"></Icon>
       <span class="description-number">20</span>
       </Col>
-      <Col span="2" @click.native="()=>{liked=!liked}" class="description-bar">
-      <Icon :type="likeOrDislike" :color="Color" size="17" class="description-icon"></Icon>
-      <span v-if="currentPic !== undefined" class="description-number">{{ currentPic.like }}</span>
+      <Col span="2" @click.native="likePic" class="description-bar">
+      <Icon v-if="currentPic" :type="likeIconType" :color="color" size="17" class="description-icon"></Icon>
+      <span v-if="currentPic" class="description-number">{{ currentPic.like }}</span>
       </Col>
       <Col span="2" class="description-bar">
-      <Icon type="android-textsms" size="15" class="description-icon"></Icon>
-      <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
+      <router-link to="#picComments">
+        <Icon id="picComments" type="android-textsms" size="15" class="description-icon"></Icon>
+        <span v-if="cComments !== undefined" class="description-number">{{ cComments.length }}</span>
+      </router-link>
       </Col>
     </Row>
-    <Row type="flex">
-      <Col span="4" id="comments" style="padding: 20px 20px 20px 20px; font-size: 28px">
+    <Row type="flex" justify="start">
+      <Col span="4" style="padding: 3% 20px 17px 20px; font-size: 28px">
       评论
       </Col>
     </Row>
-    <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" path="comments."
-              style="padding-bottom: 5%"></comments>
+    <Row type="flex" justify="center">
+      <Col span="24">
+      <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
+                style="padding-bottom: 5%"></comments>
+      </Col>
+    </Row>
+    <div style="height: 7%">
+
+    </div>
   </div>
 </template>
 <style scoped>
@@ -73,7 +85,7 @@
   .comment-box {
     position: fixed;
     left: 2px;
-    width: 12.55%;
+    width: 12.2%;
     height: 50%;
     bottom: 50px;
   }
@@ -153,11 +165,13 @@
   }
 </style>
 <script>
-  import axios from 'axios'
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
+  import {HTTP} from '../config/dev'
   let preloader = new ImagePreloader()
+  import {mapState} from 'vuex'
+
   export default {
     data () {
       return {
@@ -167,18 +181,18 @@
         urls: [],
         baseUrl: 'https://s3.ap-northeast-2.amazonaws.com/xyp-s3/public/images/',
         imgs: [],
+        liked: false,
         cComments: [],
         isHover: false,
         newPicComment: '',
-        liked: false,
         likeColor: ''
       }
     },
     computed: {
-      likeOrDislike () {
+      likeIconType () {
         return this.liked ? 'ios-heart' : 'ios-heart-outline'
       },
-      Color () {
+      color () {
         return this.liked ? '#CE0000' : ''
       },
       leftDisabled () {
@@ -209,14 +223,18 @@
           base = this.src
         }
         return this.imgs.slice(base - 4, base + 3)
-      }
+      },
+      ...mapState([
+        'user', 'isLogin'
+      ])
     },
     mounted () {
-      axios.get('http://localhost:8000/pics/')
+      HTTP.get('/pics/')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
+            this.liked = this.currentPic.likedBy.includes(this.user.id)
           }
           preloader.preload(this.urls)
             .then(function (status) {
@@ -239,11 +257,46 @@
         }).replace(/,?null/g, '').replace(/\[,/g, '['))
         console.log(this.cComments)
       })
+      EventBus.$on('edit-comment', (changedComment) => {
+        this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
+          if (value.id !== changedComment.id) {
+            return value
+          } else {
+            return changedComment
+          }
+        }))
+        console.log(this.cComments)
+      })
     },
     beforeDestroy: function () {
       window.removeEventListener('keydown', this.keyDown)
     },
     methods: {
+      likePic () {
+        if (!this.currentPic.likedBy.includes(this.user.id)) {
+          this.liked = true
+          this.currentPic.like++
+          this.currentPic.likedBy.push(this.user.id)
+          HTTP.put(
+            `/pics/${this.currentPic.id}/like`,
+            {
+              'likeType': '$push',
+              'increase': 1,
+              'likedBy': this.user.id
+            })
+        } else {
+          this.liked = false
+          this.currentPic.like--
+          this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
+          HTTP.put(
+            `/pics/${this.currentPic.id}/like`,
+            {
+              'likeType': '$pull',
+              'increase': -1,
+              'likedBy': this.user.id
+            })
+        }
+      },
       next () {
         this.rightDisabled ? null : (this.src = this.src + 1)
       },
@@ -251,15 +304,23 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        axios.post(`http://localhost:8000/pics/${this.currentPic.id}/comments`, {
-          'wordContent': this.newPicComment,
-          'comments': [],
-          'internalPath': 'comments'
-        })
+        HTTP.post(
+          `/pics/${this.currentPic.id}/comments`,
+          {
+            'wordContent': this.newPicComment,
+            'byId': this.user.id,
+            'byName': this.user.name,
+            'comments': [],
+            'internalPath': ''
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
+        )
           .then(response => {
             this.cComments.push(response.data)
-            console.log(response.data)
-            console.log(this.cComments)
             this.newPicComment = ''
             this.$Message.success('评论成功')
           })

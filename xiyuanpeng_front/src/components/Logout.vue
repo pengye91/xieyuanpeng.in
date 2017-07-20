@@ -1,40 +1,14 @@
 <template>
   <span>
-    <Button shape="circle" @click="showModal">登录</Button>
-    <Modal1
-      title="登录"
-      :value="modal"
-      :maskClosable="maskClosable"
-      ok-text="登录"
-      :loading="loading"
-      :closable="closable"
-      @on-cancel="modal = false"
-      @on-ok="handleSubmit('formInline')">
-      <Form @keydown.left.native.stop="" @keydown.right.native.stop="" @keyup.enter.native="handleSubmit('formInline')" ref="formInline"
-            :model="formInline" :rules="ruleInline"  style="width: 80%; margin-left: 10%">
-        <Form-item prop="user">
-        <Input type="text" v-model="formInline.user" placeholder="用户名或邮箱" :autofocus="true">
-          <Icon type="ios-person-outline" slot="prepend"></Icon>
-          </Input>
-        </Form-item>
-        <Form-item prop="password">
-          <Input type="password" v-model="formInline.password" placeholder="密码">
-          <Icon type="ios-locked-outline" slot="prepend"></Icon>
-          </Input>
-        </Form-item>
-      </Form>
-      <div style="padding-left: 88%; margin:0 0">
-        <Button type="ghost" @click="handleReset('registerForm')">重置</Button>
-      </div>
-    </Modal1>
+    <Button shape="circle" @click="logOut">登出</Button>
   </span>
 </template>
 <script>
   import showdown from 'showdown'
   import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
-  //  import axios from 'axios'
-//  import router from '../router/index'
+  import axios from 'axios'
+  import router from '../router/index'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
   import {HTTP} from '../config/dev'
@@ -68,30 +42,48 @@
     },
     methods: {
       ...mapMutations([
-        'login'
+        'logout'
       ]),
       showModal () {
         this.modal = true
+      },
+      logOut () {
+        HTTP.get(
+          `/auth/logout`
+        )
+          .then(response => {
+            console.log(response.data)
+            this.$Message.success('登出成功')
+            localStorage.removeItem('jwtToken')
+            this.logout()
+          })
+          .catch(error => {
+            console.log(error)
+            this.$Message.error('登出成功')
+          })
       },
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
             this.value = true
             this.loading = true
-            HTTP.post(
-              `/auth/login`,
-              {
-                username: this.formInline.user,
-                password: this.formInline.password
-              })
+            axios.post('http://localhost:8000/auth/login', {
+              username: this.formInline.user,
+              password: this.formInline.password
+            }, {withCredentials: true})
               .then((response) => {
                 if (response.status === 200) {
+                  console.log(response.data)
                   this.modal = false
                   this.$Message.success('提交成功!')
                   let user
                   user = jwtDecode(response.data.token).user
                   this.login({user: user, isLogin: true})
                   localStorage.setItem('jwtToken', response.data.token)
+                  router.push({name: 'wechat'})
+                  console.log(this.$route.path)
+                } else {
+                  console.log('wrong')
                 }
               })
           } else {
@@ -100,10 +92,6 @@
             this.$Message.error('表单验证失败!')
           }
         })
-      },
-
-      handleReset (name) {
-        this.$refs[name].resetFields()
       }
     },
     computed: {

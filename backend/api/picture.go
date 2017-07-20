@@ -66,6 +66,41 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db.Close()
 }
 
+func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
+	// TODO: a minxin function like login_required()
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	comment := models.Comment{}
+
+	picId := ctx.Param("id")
+	fmt.Printf("%s\n", picId)
+
+	if err := ctx.BindJSON(&comment); err != nil {
+		fmt.Println(err)
+		return
+	} else {
+		comment.ModifiedAt = time.Now()
+	}
+
+	updateComment := bson.M{
+		"$set": bson.M{
+			comment.InternalPath + ".word_content": comment.WordContent,
+			comment.InternalPath + ".modified_at":  comment.ModifiedAt,
+			comment.InternalPath + ".published_at": comment.PublishedAt,
+		},
+	}
+
+	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), updateComment); picErr != nil {
+		fmt.Printf("%s\n", picErr)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, comment)
+
+}
 func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
@@ -91,10 +126,19 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 		comment.PublishedAt = time.Now()
 	}
 
-	appendComment := bson.M{
-		"$push": bson.M{
-			comment.InternalPath: comment,
-		},
+	var appendComment = bson.M{}
+	if comment.InternalPath != "" {
+		appendComment = bson.M{
+			"$push": bson.M{
+				comment.InternalPath + ".comments": comment,
+			},
+		}
+	} else {
+		appendComment = bson.M{
+			"$push": bson.M{
+				"comments": comment,
+			},
+		}
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
@@ -103,8 +147,8 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 		return
 	}
 
+	ctx.SetCookie("postid", "xixihaha", 2000, "/", "localhost", false, false)
 	ctx.JSON(http.StatusCreated, comment)
-
 }
 
 // Delete picture by Id but remain all comments
@@ -185,5 +229,38 @@ func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
+}
 
+func (this PictureAPI) LikePic(ctx *gin.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	var likedVisitor struct {
+		Increase int           `json:"increase"`
+		LikeType string        `json:"likeType"`
+		LikedBy  bson.ObjectId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
+	}
+
+	if err := ctx.BindJSON(&likedVisitor); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		return
+	}
+
+	PicId := ctx.Param("id")
+
+	likePic := bson.M{
+		"$inc": bson.M{
+			"like": likedVisitor.Increase,
+		},
+		likedVisitor.LikeType: bson.M{
+			"liked_by": likedVisitor.LikedBy,
+		},
+	}
+
+	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), likePic); picErr != nil {
+		fmt.Printf("%s\n", picErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
 }

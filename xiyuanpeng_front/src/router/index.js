@@ -4,8 +4,28 @@ import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
 Vue.use(Router)
 
+const scrollBehavior = (to, from, savedPosition) => {
+  if (savedPosition) {
+    return savedPosition
+  } else {
+    let position = {}
+    if (to.hash) {
+      console.log(to, from)
+      position.selector = to.hash
+    }
+
+    if (to.matched.some(m => m.meta.scrollToTop)) {
+      position.x = 0
+      position.y = 0
+    }
+    console.log(position)
+    return position
+  }
+}
+
 export default new Router({
   mode: 'history',
+  scrollBehavior,
   routes: [
     {
       path: '/blog',
@@ -60,12 +80,12 @@ export default new Router({
       redirect: {'name': 'github'},
       children: [
         {
-          path: '/contact-me/wechat',
+          path: 'wechat',
           name: 'wechat',
           component: photo
         },
         {
-          path: '/contact-me/github',
+          path: 'github',
           name: 'github',
           component: photo
         }

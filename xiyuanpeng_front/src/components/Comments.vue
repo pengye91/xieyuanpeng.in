@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row v-for="(comment, index) in comments" :key="comment">
+    <Row v-for="(comment, index) in comments" :key="comment" class="list-group-item">
       <comment :picture="picture" :comment="comment" :path="path + index"></comment>
     </Row>
   </div>
@@ -23,13 +23,3 @@
     }
   }
 </script>
-<style>
-  .list-group-item {
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #b8fffa;
-    border: 1px solid #ddd
-  }
-</style>
