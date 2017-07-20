@@ -24,7 +24,9 @@
       <Input @keydown.left.native.stop="" @keydown.right.native.stop="" type="textarea"
              :autosize="{minRows:14, maxRows:14}" placeholder="点击评论此图片" v-model="newPicComment">
       </Input>
-      <Button type="primary" @click="commentOnPic" :disabled="commentIsEmpty" class="comment-button">评论</Button>
+      <div>
+        <Button type="primary" @click="commentOnPic" :disabled="commentIsEmpty" class="comment-button">评论</Button>
+      </div>
       </Col>
     </Row>
     <Row type="flex" justify="space-between" align="top"
@@ -181,7 +183,6 @@
         urls: [],
         baseUrl: 'https://s3.ap-northeast-2.amazonaws.com/xyp-s3/public/images/',
         imgs: [],
-        liked: false,
         cComments: [],
         isHover: false,
         newPicComment: '',
@@ -190,10 +191,10 @@
     },
     computed: {
       likeIconType () {
-        return this.liked ? 'ios-heart' : 'ios-heart-outline'
+        return this.currentPic.likedBy.includes(this.user.id) ? 'ios-heart' : 'ios-heart-outline'
       },
       color () {
-        return this.liked ? '#CE0000' : ''
+        return this.currentPic.likedBy.includes(this.user.id) ? '#CE0000' : ''
       },
       leftDisabled () {
         return this.src === 1
@@ -234,7 +235,6 @@
           this.imgs = response.data
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
-            this.liked = this.currentPic.likedBy.includes(this.user.id)
           }
           preloader.preload(this.urls)
             .then(function (status) {
@@ -274,7 +274,6 @@
     methods: {
       likePic () {
         if (!this.currentPic.likedBy.includes(this.user.id)) {
-          this.liked = true
           this.currentPic.like++
           this.currentPic.likedBy.push(this.user.id)
           HTTP.put(
@@ -285,7 +284,6 @@
               'likedBy': this.user.id
             })
         } else {
-          this.liked = false
           this.currentPic.like--
           this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
           HTTP.put(
@@ -312,11 +310,6 @@
             'byName': this.user.name,
             'comments': [],
             'internalPath': ''
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
-            }
           }
         )
           .then(response => {
@@ -325,8 +318,9 @@
             this.$Message.success('评论成功')
           })
           .catch(error => {
-            console.log(error)
-            this.$Message.error('评论失败')
+            if (error.response.status === 401) {
+              this.$Message.error(`评论失败, 你手动清理localStorage了吗？\n请登录或者刷新页面重新评论`)
+            }
           })
       },
       openImg () {

@@ -140,7 +140,6 @@
           })
           .then(response => {
             this.comment.comments.push(response.data)
-            console.log(response.data)
             this.replyWordContent = ''
             this.clickedReply = false
             this.$Message.success('评论成功')

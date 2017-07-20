@@ -15,13 +15,23 @@ import (
 
 var user models.VisitorBasic
 
+type passUser struct {
+	Id        bson.ObjectId `json:"id" bson:"_id"  form:"id"`
+	Name      string        `json:"name" bson:"name"  form:"name"`
+	Email     string        `json:"email" bson:"email"  form:"email"`
+}
+
 const Month = 30 * 24 * time.Hour
+const Year = 30 * 24 * time.Hour * 12
+const TenYears = 30 * 24 * time.Hour * 12 * 10
 
 var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
-	Realm:      "xyp test",
+	Realm:      "xyp",
 	Key:        []byte("secret key"),
-	Timeout:    Month,
-	MaxRefresh: Month,
+	Timeout:    TenYears,
+	MaxRefresh: TenYears,
+
+	// for loginHandler usage
 	Authenticator: func(loginID string, password string, ctx *gin.Context) (string, bool) {
 		Db := &db.MgoDb{}
 		Db.Init()
@@ -50,6 +60,8 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 			return user.Id.String(), false
 		}
 	},
+
+	// On every JWT related handler
 	Authorizator: func(userID string, c *gin.Context) bool {
 		return true
 	},
@@ -60,7 +72,11 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 		})
 	},
 	PayloadFunc: func(userID string) map[string]interface{} {
-		return map[string]interface{}{"user": user}
+		return map[string]interface{}{"user": passUser{
+			Id:        user.Id,
+			Name:      user.Name,
+			Email:     user.Email,
+		}}
 	},
 	TokenLookup:   "header:Authorization",
 	TokenHeadName: "Bearer",

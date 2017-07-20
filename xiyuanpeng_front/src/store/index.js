@@ -3,35 +3,38 @@ import Vuex from 'vuex'
 import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
+import ObjectId from 'bson-objectid'
 
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 const anonUser = {
-  'created_at': '2017-07-20T15:10:50.081+08:00',
   'email': 'anonymous@xyp.com',
-  'id': '5970577ad6ae2505f184ea8f',
+  'id': ObjectId(),
   'name': '匿名用户'
 }
+const anonUserJwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJleHAiOjE4MTE1ODY1MjUsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTcwNTc3YWQ2YWU
+yNTA1ZjE4NGVhOGZcIikiLCJvcmlnX2lhdCI6MTUwMDU0NjUyNSwidXNlciI6eyJpZCI6IjU5
+NzA1NzdhZDZhZTI1MDVmMTg0ZWE4ZiIsIm5hbWUiOiLljL_lkI3nlKjmiLciLCJlbWFpbCI6ImFub255bW91c0B4eXAuY29tIn19.
+et6Z9XJDfXn_rSIOZsutMYBeNvy-8BAQMPN_2axi7Fc`
 
 export default new Vuex.Store({
   state: {
     user: {
-      'created_at': '2017-07-20T15:10:50.081+08:00',
       'email': 'anonymous@xyp.com',
-      'id': '5970577ad6ae2505f184ea8f',
+      'id': ObjectId(),
       'name': '匿名用户'
     },
     isLogin: false,
-    jwtToken: localStorage.getItem('jwtToken')
+    jwtToken: localStorage.getItem('jwtToken'),
+    anonUserJwtToken: anonUserJwtToken
   },
   mutations: {
-    jwtTokenChange (state) {
-      state.jwtToken = localStorage.getItem('jwtToken')
-    },
     logout (state) {
       state.user = anonUser
       state.isLogin = false
+      state.jwtToken = anonUserJwtToken
     },
     login (state, loginInfo) {
       state.user = loginInfo.user
@@ -50,8 +53,13 @@ export default new Vuex.Store({
           return
         }
         if (jwtPayload.exp > Math.floor(Date.now() / 1000)) {
-          state.isLogin = true
-          state.user = jwtPayload.user
+          if (jwtPayload.user.name !== '匿名用户') {
+            state.isLogin = true
+            state.user = jwtPayload.user
+          } else {
+            state.isLogin = false
+            state.user = anonUser
+          }
         } else {
           console.log('expired')
           state.isLogin = false
