@@ -17,7 +17,6 @@ func DbMain() {
 var (
 	auth = &api.AuthAPI{}
 	pic  = &api.PictureAPI{}
-	com  = &api.CommentApi{}
 )
 
 func main() {

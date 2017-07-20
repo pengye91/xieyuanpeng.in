@@ -16,9 +16,9 @@ import (
 var user models.VisitorBasic
 
 type passUser struct {
-	Id        bson.ObjectId `json:"id" bson:"_id"  form:"id"`
-	Name      string        `json:"name" bson:"name"  form:"name"`
-	Email     string        `json:"email" bson:"email"  form:"email"`
+	Id    bson.ObjectId `json:"id" bson:"_id"  form:"id"`
+	Name  string        `json:"name" bson:"name"  form:"name"`
+	Email string        `json:"email" bson:"email"  form:"email"`
 }
 
 const Month = 30 * 24 * time.Hour
@@ -73,9 +73,9 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 	},
 	PayloadFunc: func(userID string) map[string]interface{} {
 		return map[string]interface{}{"user": passUser{
-			Id:        user.Id,
-			Name:      user.Name,
-			Email:     user.Email,
+			Id:    user.Id,
+			Name:  user.Name,
+			Email: user.Email,
 		}}
 	},
 	TokenLookup:   "header:Authorization",
