@@ -87,7 +87,6 @@ func (this CommentApi) GetAllResponsesByCommentId(ctx *gin.Context) {
 					"commentId": bson.ObjectIdHex(CommentId),
 				},
 			},
-
 		},
 	)
 

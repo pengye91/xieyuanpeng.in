@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Row type="flex" align="middle" justify="center">
+    <Row type="flex" align="middle" justify="start">
       <Col span="2" style="display: flex; align-items: center; align-self: flex-start; flex-direction: column">
       <div>
-        <router-link :to="`/users/${user.id}`">
+        <router-link :to="`/users/${comment.byId}`">
           {{comment.byName}}
         </router-link>
       </div>
@@ -11,7 +11,7 @@
         {{commentTime}}
       </div>
       </Col>
-      <Col :span="isTheUser?17:21"
+      <Col :span="isTheUser?17:20"
            style="font-size: 13px; padding: 6px 6px 6px 1%; border-right: 1px solid lightgray; border-left: 1px solid lightgray">
       {{ clickedEdit ? '' : comment.wordContent }}
       <div v-if="clickedEdit">

@@ -10,20 +10,22 @@
       :closable="closable"
       @on-cancel="modal = false"
       @on-ok="handleSubmit('formInline')">
-      <Form @keyup.enter.native="handleSubmit('formInline')" ref="formInline" :model="formInline" :rules="ruleInline"
-            inline>
+      <Form @keydown.left.native.stop="" @keydown.right.native.stop="" @keyup.enter.native="handleSubmit('formInline')" ref="formInline"
+            :model="formInline" :rules="ruleInline"  style="width: 80%; margin-left: 10%">
         <Form-item prop="user">
-        <Input type="text" v-model="formInline.user" placeholder="Username">
+        <Input type="text" v-model="formInline.user" placeholder="用户名或邮箱" :autofocus="true">
           <Icon type="ios-person-outline" slot="prepend"></Icon>
           </Input>
         </Form-item>
         <Form-item prop="password">
-          <Input type="password" v-model="formInline.password" placeholder="Password">
+          <Input type="password" v-model="formInline.password" placeholder="密码">
           <Icon type="ios-locked-outline" slot="prepend"></Icon>
           </Input>
         </Form-item>
-        <div v-html="search"></div>
       </Form>
+      <div style="padding-left: 88%; margin:0 0">
+        <Button type="ghost" @click="handleReset('registerForm')">重置</Button>
+      </div>
     </Modal1>
   </span>
 </template>
@@ -32,7 +34,7 @@
   import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
   //  import axios from 'axios'
-  import router from '../router/index'
+//  import router from '../router/index'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
   import {HTTP} from '../config/dev'
@@ -91,10 +93,6 @@
                   user = jwtDecode(response.data.token).user
                   this.login({user: user, isLogin: true})
                   localStorage.setItem('jwtToken', response.data.token)
-                  router.push({name: 'wechat'})
-                  console.log(this.$route.path)
-                } else {
-                  console.log('wrong')
                 }
               })
           } else {
@@ -103,6 +101,10 @@
             this.$Message.error('表单验证失败!')
           }
         })
+      },
+
+      handleReset (name) {
+        this.$refs[name].resetFields()
       }
     },
     computed: {

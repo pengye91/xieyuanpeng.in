@@ -35,13 +35,13 @@
         {{currentPic.title}}
       </Button>
       </Col>
-      <Col span="2" offset="13" @click.native="()=>{liked=!liked}" class="description-bar">
+      <Col span="2" offset="13" @click.native="" class="description-bar">
       <Icon type="ios-eye" size="17" class="description-icon"></Icon>
       <span class="description-number">20</span>
       </Col>
-      <Col span="2" @click.native="()=>{liked=!liked}" class="description-bar">
-      <Icon :type="likeOrDislike" :color="Color" size="17" class="description-icon"></Icon>
-      <span v-if="currentPic !== undefined" class="description-number">{{ currentPic.like }}</span>
+      <Col span="2" @click.native="likePic" class="description-bar">
+      <Icon v-if="currentPic" :type="likeIconType" :color="color" size="17" class="description-icon"></Icon>
+      <span v-if="currentPic" class="description-number">{{ currentPic.like }}</span>
       </Col>
       <Col span="2" class="description-bar">
       <router-link to="#picComments">
@@ -181,18 +181,18 @@
         urls: [],
         baseUrl: 'https://s3.ap-northeast-2.amazonaws.com/xyp-s3/public/images/',
         imgs: [],
+        liked: false,
         cComments: [],
         isHover: false,
         newPicComment: '',
-        liked: false,
         likeColor: ''
       }
     },
     computed: {
-      likeOrDislike () {
+      likeIconType () {
         return this.liked ? 'ios-heart' : 'ios-heart-outline'
       },
-      Color () {
+      color () {
         return this.liked ? '#CE0000' : ''
       },
       leftDisabled () {
@@ -234,6 +234,7 @@
           this.imgs = response.data
           for (let i in this.imgs) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
+            this.liked = this.currentPic.likedBy.includes(this.user.id)
           }
           preloader.preload(this.urls)
             .then(function (status) {
@@ -271,6 +272,31 @@
       window.removeEventListener('keydown', this.keyDown)
     },
     methods: {
+      likePic () {
+        if (!this.currentPic.likedBy.includes(this.user.id)) {
+          this.liked = true
+          this.currentPic.like++
+          this.currentPic.likedBy.push(this.user.id)
+          HTTP.put(
+            `/pics/${this.currentPic.id}/like`,
+            {
+              'likeType': '$push',
+              'increase': 1,
+              'likedBy': this.user.id
+            })
+        } else {
+          this.liked = false
+          this.currentPic.like--
+          this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
+          HTTP.put(
+            `/pics/${this.currentPic.id}/like`,
+            {
+              'likeType': '$pull',
+              'increase': -1,
+              'likedBy': this.user.id
+            })
+        }
+      },
       next () {
         this.rightDisabled ? null : (this.src = this.src + 1)
       },
@@ -286,7 +312,13 @@
             'byName': this.user.name,
             'comments': [],
             'internalPath': ''
-          })
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
+        )
           .then(response => {
             this.cComments.push(response.data)
             this.newPicComment = ''
