@@ -35,6 +35,7 @@ export default new Vuex.Store({
       state.user = anonUser
       state.isLogin = false
       state.jwtToken = anonUserJwtToken
+      localStorage.setItem('jwtToken', anonUserJwtToken)
     },
     login (state, loginInfo) {
       state.user = loginInfo.user
@@ -59,6 +60,7 @@ export default new Vuex.Store({
           } else {
             state.isLogin = false
             state.user = anonUser
+            state.jwtToken = anonUserJwtToken
           }
         } else {
           console.log('expired')
