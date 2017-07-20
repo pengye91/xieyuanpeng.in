@@ -5,13 +5,20 @@ import (
 	"strings"
 	"time"
 
+<<<<<<< HEAD
+=======
+	"fmt"
+>>>>>>> dev
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"gopkg.in/mgo.v2/bson"
+<<<<<<< HEAD
 	"fmt"
+=======
+>>>>>>> dev
 )
 
 var tk string
@@ -19,6 +26,12 @@ var tk string
 type AuthAPI struct {
 	*gin.Context
 }
+type Set map[interface{}]bool
+
+var (
+	UsernameSet = make(Set)
+	EmailSet    = make(Set)
+)
 
 type LoginInfo struct {
 	LoginId string `json:"logId"`
@@ -26,26 +39,36 @@ type LoginInfo struct {
 }
 
 func (this AuthAPI) Register(ctx *gin.Context) {
+<<<<<<< HEAD
 	visitorInfo := models.VisitorBasic{}
 	err := ctx.BindJSON(&visitorInfo)
 	if err != nil {
 		ctx.JSON(http.StatusOK, models.Err("4"))
+=======
+	session := sessions.Default(ctx)
+
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	visitor := models.VisitorBasic{}
+	if err := ctx.BindJSON(&visitor); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Err("4"))
+>>>>>>> dev
 		return
 	}
 
 	pass := libs.Password{}
-	visitorInfo.Pass = pass.Gen(visitorInfo.Pass)
+	visitor.Pass = pass.Gen(visitor.Pass)
 
-	Db := db.MgoDb{}
-	Db.Init()
-
-	visitorInfo.Id = bson.NewObjectId()
-	visitorInfo.CreatedAt = time.Now()
-	visitorInfo.UpdatedAt = time.Now()
+	visitor.Id = bson.NewObjectId()
+	visitor.CreatedAt = time.Now()
+	visitor.UpdatedAt = time.Now()
 
 	// Insert Visitor
-	if err := Db.C("auth").Insert(&visitorInfo); err != nil {
+	if err := Db.C("auth").Insert(&visitor); err != nil {
 		// Is a duplicate key, but we don't know which one
+<<<<<<< HEAD
 
 		ctx.JSON(http.StatusBadRequest, err)
 		if Db.IsDup(err) {
@@ -61,13 +84,29 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusOK, visitorInfo)
+=======
+		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		return
+	} else {
+		// TODO: auto login after registration.
+		session.Set("login", "true")
+		session.Set("visitor", visitor.Id.String())
+		session.Save()
+
+		UsernameSet[visitor.Name] = true
+		EmailSet[visitor.Email] = true
+
+		ctx.JSON(http.StatusCreated, visitor)
+>>>>>>> dev
 	}
-	Db.Close()
 }
 
 func (this AuthAPI) Login(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
 	result := models.VisitorBasic{}
 	loginInfo := LoginInfo{}
 	err := ctx.BindJSON(&loginInfo)
@@ -100,6 +139,7 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 	if cp {
 		token := pass.Token()
 		session.Set("login", "true")
+<<<<<<< HEAD
 		session.Set("visitor", result.Id.Hex())
 		session.Set("token", token)
 
@@ -107,6 +147,11 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 			fmt.Printf("%s", err)
 		}
 
+=======
+		session.Set("visitor", result)
+		session.Save()
+		//time.Sleep(3 * time.Second)
+>>>>>>> dev
 		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
 	} else {
 		ctx.JSON(http.StatusBadRequest, models.Err("7"))
@@ -114,6 +159,7 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 }
 
 func (this AuthAPI) Check(ctx *gin.Context) {
+<<<<<<< HEAD
 	start := time.Now()
 	session := sessions.Default(ctx)
 	Db := db.MgoDb{}
@@ -150,10 +196,58 @@ func (this AuthAPI) Check(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
 	} else {
 		ctx.JSON(http.StatusOK, models.Err("8"))
+=======
+	session := sessions.Default(ctx)
+	Db := &db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	var ps struct {
+		Pass string `json:"pass" bson:"pass" form:"pass"`
+	}
+
+	_pass := string(ctx.PostForm("pass"))
+	visitor := session.Get("visitor")
+	if visitor == nil {
+		ctx.JSON(http.StatusInternalServerError, "session error")
+		return
+	} else {
+		fmt.Println(visitor)
+		if err := Db.C("auth").FindId(visitor).Select(bson.M{"pass": 1}).One(&ps); err != nil {
+			fmt.Println(err)
+			ctx.JSON(http.StatusNotFound, models.Err("1"))
+			return
+		}
+	}
+
+	pass := libs.Password{}
+	cp := pass.Compare(ps.Pass, _pass)
+
+	if cp {
+		ctx.JSON(http.StatusOK, gin.H{"response": true})
+	} else {
+		ctx.JSON(http.StatusOK, models.Err("8"))
 	}
 
 }
 
+func (this AuthAPI) GetAllUsers(ctx *gin.Context) {
+	visitors := []models.VisitorBasic{}
+
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	if err := Db.C("auth").Find(nil).All(&visitors); err != nil {
+		ctx.JSON(http.StatusNotFound, models.Err("1"))
+		return
+>>>>>>> dev
+	}
+	ctx.JSON(http.StatusOK, visitors)
+
+}
+
+<<<<<<< HEAD
 func (this AuthAPI) Session(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 
@@ -164,8 +258,76 @@ func (this AuthAPI) Session(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"response": true, "token": token})
 	} else {
 		ctx.JSON(http.StatusOK, models.Err("8"))
+=======
+func (this AuthAPI) LogOut(ctx *gin.Context) {
+	for _, v := range ctx.Request.Cookies() {
+		fmt.Println(v)
+	}
+	ctx.SetCookie("sessionid", "", -1, "/", "localhost", false, false)
+	ctx.JSON(http.StatusOK, gin.H{"OK": "DONE"})
+}
+
+func AutoSearch(ctx *gin.Context) {
+	username := ctx.Query("username")
+	email := ctx.Query("email")
+
+	if username != "" {
+		if UsernameSet[username] {
+			ctx.JSON(http.StatusOK, gin.H{
+				username: "Registered",
+			})
+		} else {
+			ctx.JSON(http.StatusNoContent, gin.H{
+				username: "Not Registered",
+			})
+		}
+	} else if email != "" {
+		if EmailSet[email] {
+			ctx.JSON(http.StatusOK, gin.H{
+				email: "Ooops, Registered",
+			})
+		} else {
+			ctx.JSON(http.StatusNoContent, gin.H{
+				email: "OK, Not Registered",
+			})
+
+		}
+	} else {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"WRONG QUERY": "Query params must contain one of username and email.",
+		})
+>>>>>>> dev
+	}
+}
+
+// TODO: Put the logic in redis. Or a small search DB.
+func InitialSetsFromDB() {
+	Db := &db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+	var (
+		usernames []struct {
+			Name string `json:"name" bson:"name"  form:"name"`
+		}
+		emails []struct {
+			Email string `json:"email" bson:"email"  form:"email"`
+		}
+	)
+
+	if usernameErr := Db.C("auth").Find(nil).Select(bson.M{"name": 1}).All(&usernames); usernameErr != nil {
+		fmt.Println(usernameErr)
+	}
+	if emailErr := Db.C("auth").Find(nil).Select(bson.M{"email": 1}).All(&emails); emailErr != nil {
+		fmt.Println(emailErr)
 	}
 
+	for _, v := range usernames {
+		UsernameSet[v.Name] = true
+	}
+
+	for _, v := range emails {
+		EmailSet[v.Email] = true
+	}
 }
 func Xixihaha(ctx *gin.Context) {
 

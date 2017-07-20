@@ -20,6 +20,7 @@ func main() {
 			},
 		),
 	)
+<<<<<<< HEAD
 	// logger
 	app.Use(utils.New())
 
@@ -63,4 +64,6 @@ func authRoute(app *iris.Router) {
 			c.JSON(200, "v1.auth.register.get")
 		})
 	}
+=======
+>>>>>>> dev
 }
