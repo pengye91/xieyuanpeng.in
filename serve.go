@@ -13,9 +13,12 @@ func main() {
 		httprouter.New(),
 		cors.New(
 			cors.Options{
-				AllowedOrigins: []string{"*"},
+				AllowedOrigins: []string {"*"},
 				AllowedHeaders: []string{"*"},
 			},
 		),
+
 	)
 }
+
+

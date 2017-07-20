@@ -230,37 +230,3 @@ func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
 }
-
-func (this PictureAPI) LikePic(ctx *gin.Context) {
-	Db := db.MgoDb{}
-	Db.Init()
-	defer Db.Close()
-
-	var likedVisitor struct {
-		Increase int           `json:"increase"`
-		LikeType string        `json:"likeType"`
-		LikedBy  bson.ObjectId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
-	}
-
-	if err := ctx.BindJSON(&likedVisitor); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
-		return
-	}
-
-	PicId := ctx.Param("id")
-
-	likePic := bson.M{
-		"$inc": bson.M{
-			"like": likedVisitor.Increase,
-		},
-		likedVisitor.LikeType: bson.M{
-			"liked_by": likedVisitor.LikedBy,
-		},
-	}
-
-	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), likePic); picErr != nil {
-		fmt.Printf("%s\n", picErr)
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
-}

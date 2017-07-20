@@ -8,25 +8,24 @@ Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 const anonUser = {
-  'created_at': '2017-07-20T15:10:50.081+08:00',
-  'email': 'anonymous@xyp.com',
-  'id': '5970577ad6ae2505f184ea8f',
-  'name': '匿名用户',
-  'pass': '$2a$10$2mEo5uIXsYTLoS95g/L.iOyRriqIlJiORjMFPCU7Oa6icw.0jltOi',
-  'updated_at': '2017-07-20T15:10:50.081+08:00'
+  created_at: '2017-07-08T14:24:53.091+08:00',
+  email: 'anon@xyp.com',
+  id: '000000000000000000',
+  name: '匿名用户',
+  pass: 'anon',
+  updated_at: '2017-07-08T14:24:53.091+08:00'
 }
 
 export default new Vuex.Store({
   state: {
     user: {
-      'created_at': '2017-07-20T15:10:50.081+08:00',
-      'email': 'anonymous@xyp.com',
-      'id': '5970577ad6ae2505f184ea8f',
-      'name': '匿名用户',
-      'pass': '$2a$10$2mEo5uIXsYTLoS95g/L.iOyRriqIlJiORjMFPCU7Oa6icw.0jltOi',
-      'updated_at': '2017-07-20T15:10:50.081+08:00'
+      created_at: '2017-07-08T14:24:53.091+08:00',
+      email: 'anon@xyp.com',
+      id: '000000000000000000',
+      name: '匿名用户',
+      pass: 'anon',
+      updated_at: '2017-07-08T14:24:53.091+08:00'
     },
-
     isLogin: false,
     jwtToken: localStorage.getItem('jwtToken')
   },

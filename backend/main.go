@@ -24,7 +24,7 @@ func main() {
 	DbMain()
 	app := gin.Default()
 
-	go api.InitialSetsFromDB()
+	api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)
 
 	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
@@ -52,7 +52,6 @@ func main() {
 		p.POST("/", pic.PostPicToMain)
 		p.GET("/", pic.GetAllPics)
 		p.GET("/:id", pic.GetPicById)
-		p.PUT("/:id/like", pic.LikePic)
 		p.POST("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.PostCommentToPic)
 		p.PUT("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.UpdateCommentByPicId)
 		p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
