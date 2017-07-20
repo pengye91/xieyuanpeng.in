@@ -36,7 +36,7 @@
 
 
 <script>
-  import {HTTP} from '../../config/http-common'
+  import {HTTP} from '../config/dev'
 
   export default {
     data () {

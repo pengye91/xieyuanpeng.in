@@ -11,9 +11,7 @@ const anonUser = {
   'created_at': '2017-07-20T15:10:50.081+08:00',
   'email': 'anonymous@xyp.com',
   'id': '5970577ad6ae2505f184ea8f',
-  'name': '匿名用户',
-  'pass': '$2a$10$2mEo5uIXsYTLoS95g/L.iOyRriqIlJiORjMFPCU7Oa6icw.0jltOi',
-  'updated_at': '2017-07-20T15:10:50.081+08:00'
+  'name': '匿名用户'
 }
 
 export default new Vuex.Store({
@@ -22,11 +20,8 @@ export default new Vuex.Store({
       'created_at': '2017-07-20T15:10:50.081+08:00',
       'email': 'anonymous@xyp.com',
       'id': '5970577ad6ae2505f184ea8f',
-      'name': '匿名用户',
-      'pass': '$2a$10$2mEo5uIXsYTLoS95g/L.iOyRriqIlJiORjMFPCU7Oa6icw.0jltOi',
-      'updated_at': '2017-07-20T15:10:50.081+08:00'
+      'name': '匿名用户'
     },
-
     isLogin: false,
     jwtToken: localStorage.getItem('jwtToken')
   },
@@ -41,6 +36,7 @@ export default new Vuex.Store({
     login (state, loginInfo) {
       state.user = loginInfo.user
       state.isLogin = loginInfo.isLogin
+      state.jwtToken = localStorage.getItem('jwtToken')
     },
     check (state, payload) {
       let jwtToken = payload.jwtToken

@@ -86,7 +86,6 @@
               })
               .then((response) => {
                 if (response.status === 200) {
-                  console.log(response.data)
                   this.modal = false
                   this.$Message.success('提交成功!')
                   let user
