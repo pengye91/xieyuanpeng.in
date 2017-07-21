@@ -6,7 +6,7 @@
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
       <Col span="20">
-      <img :src="imgSrc" :alt="src" class="img" @click="openImg">
+        <img :src="imgSrc" :alt="src" class="img" @click="openImg">
       </Col>
       <Col span="2">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
@@ -14,9 +14,9 @@
       </Col>
     </Row>
     <Row type="flex" justify="center" align="middle" style="height: 16%">
-      <Col v-for="img in sliderImgs" :key="img" span="2" style="margin: 0 0.8% 0 0.8%">
-        <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
-             class="slider-img" :class="{'is-src': img.title == src}">
+      <Col v-for="img in sliderImgs" :key="img" span="2" style="margin: 0 0.5% 0 0.5%">
+      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
+           class="slider-img" :class="{'is-src': img.title == src}">
       </Col>
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
@@ -94,7 +94,7 @@
 
   .comment-button {
     position: fixed;
-    left: 7%;
+    left: 6%;
     margin-top: 4px;
   }
 
@@ -123,11 +123,12 @@
   }
 
   .img {
-    box-shadow: 7px 7px 7px #484848;
+    box-shadow: 15px 20px 15px #484848;
     /*height: 100%;*/
     /*width: auto;*/
-    height: auto;
     width: 100%;
+    max-width: 100%;
+    height: auto;
   }
 
   .pre-button {

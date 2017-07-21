@@ -2,10 +2,10 @@
   <div class="layout-content">
     <Row type="flex" style="height: 100%">
       <Col span="3">
-      <Menu style="height: 100%; border-top: 1px solid lightgray;" width="100%">
-        <div style="position: fixed">
+      <Menu style="height: 100%; border-top: 1px solid lightgray; width: 100%;">
+        <div style="position: fixed; width: 12.5%; margin-top: 10%">
           <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}"
-                      style="margin-top: 20%">
+                      style="margin-top: 20%; width: 100%">
             <Icon type="ios-book" size="16"></Icon>
             {{ item }}
           </MyMenuItem>
@@ -98,7 +98,7 @@
   }
 
   .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
-    background: #cbcbcb;
+    background: #eaeaea;
     border-right: 0;
     font-weight: bold;
   }

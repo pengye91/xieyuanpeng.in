@@ -33,7 +33,7 @@
   }
 
   .ivu-menu-light.ivu-menu-horizontal .ivu-menu-item-selected {
-    background: #e6e6e6 !important;
+    background: #c9c9c9 !important;
     font-weight: bold;
   }
 
