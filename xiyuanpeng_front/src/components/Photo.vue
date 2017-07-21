@@ -1,23 +1,23 @@
 <template>
   <div style="height: 100%;">
-    <Row type="flex" style="height: 89%" justify="space-between" align="middle">
-      <Col span="1" style="text-align: left">
+    <Row type="flex" style="height: 80%" justify="space-between" align="middle">
+      <Col span="2" style="text-align: left">
       <Button type="text" icon="ios-arrow-left" :disabled="leftDisabled"
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
       <Col span="20">
       <img :src="imgSrc" :alt="src" class="img" @click="openImg">
       </Col>
-      <Col span="1">
+      <Col span="2">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row type="flex" justify="center" align="top" class="slider">
-      <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
+    <Row type="flex" justify="center" align="middle" style="height: 16%">
+      <Col v-for="img in sliderImgs" :key="img" span="2" style="margin: 0 0.8% 0 0.8%">
         <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
              class="slider-img" :class="{'is-src': img.title == src}">
-      </div>
+      </Col>
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
       <Col span="8" class="comment-box">
@@ -99,49 +99,27 @@
   }
 
   .slider {
-    height: 7%;
-    text-align: center;
+    height: 16%;
   }
 
   .slider-img-div {
     -webkit-transition: width 0.3s, height 0.4s; /* For Safari 3.1 to 6.0 */
     transition: width 0.2s, height 0.4s;
     height: 100%;
-    text-align: center;
     width: 50px;
     position: relative;
     margin: 0 4px 0 4px;
   }
 
-  .slider:hover div {
-    max-height: 100%;
-    height: 70px;
-    width: 70px;
-    margin: 0 5px 0 5px;
-  }
-
-  .slider:hover img {
-    height: 95%;
-    width: 100%;
-    margin: 0 5px 0 5px;
-  }
-
   .slider-img {
-    width: 100%;
-    max-height: 80%;
+    width: 98%;
     height: auto;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-  }
-
-  .slider-img:hover {
-    box-shadow: 6px 6px 4px #1f3c48;
   }
 
   .is-src {
-    bottom: 5px;
-    box-shadow: 4px 4px 3px #484848;
+    box-shadow: 8px 8px 8px #484848;
+    margin-bottom: 80%;
+    width: 100%;
   }
 
   .img {
@@ -171,7 +149,7 @@
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
   let preloader = new ImagePreloader()
   import {mapState} from 'vuex'
 
@@ -231,7 +209,7 @@
       ])
     },
     mounted () {
-      HTTP.get('/pics/')
+      config.HTTP.get('/pics/')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
@@ -277,7 +255,7 @@
         if (!this.currentPic.likedBy.includes(this.user.id)) {
           this.currentPic.like++
           this.currentPic.likedBy.push(this.user.id)
-          HTTP.put(
+          config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$push',
@@ -287,7 +265,7 @@
         } else {
           this.currentPic.like--
           this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
-          HTTP.put(
+          config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$pull',
@@ -303,7 +281,7 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        HTTP.post(
+        config.HTTP.post(
           `/pics/${this.currentPic.id}/comments`,
           {
             'wordContent': this.newPicComment,

@@ -6,7 +6,7 @@
 <script>
   import Modal1 from './Modal'
   import {mapState, mapMutations} from 'vuex'
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
 
   export default {
     components: {
@@ -42,7 +42,7 @@
         this.modal = true
       },
       logOut () {
-        HTTP.get(
+        config.HTTP.get(
           `/auth/logout`
         )
           .then(response => {

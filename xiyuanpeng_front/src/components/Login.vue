@@ -36,7 +36,7 @@
   import Modal1 from './Modal'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
 
   let converter = new showdown.Converter()
   export default {
@@ -77,7 +77,7 @@
           if (valid) {
             this.value = true
             this.loading = true
-            HTTP.post(
+            config.HTTP.post(
               `/auth/login`,
               {
                 username: this.formInline.user,

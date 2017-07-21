@@ -2,11 +2,14 @@
   <div class="layout-content">
     <Row type="flex" style="height: 100%">
       <Col span="3">
-      <Menu style="height: 100%; border-top: 1px solid lightgray" width="100%">
-        <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}">
-          <Icon type="ios-book" size="16"></Icon>
-          {{ item }}
-        </MyMenuItem>
+      <Menu style="height: 100%; border-top: 1px solid lightgray;" width="100%">
+        <div style="position: fixed">
+          <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}"
+                      style="margin-top: 20%">
+            <Icon type="ios-book" size="16"></Icon>
+            {{ item }}
+          </MyMenuItem>
+        </div>
       </Menu>
       </Col>
       <Col span="21" style="height: 100%">
@@ -133,6 +136,7 @@
   }
 
   .layout-content {
+    position: relative;
     height: 100%;
     padding: 42px 0 30px 0;
     background: transparent;

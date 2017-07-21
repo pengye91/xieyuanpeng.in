@@ -59,7 +59,7 @@
   import {EventBus} from '../store/EventBus'
   import {mapState} from 'vuex'
   import moment from 'moment'
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
 
   moment.locale('zh-cn')
 
@@ -91,7 +91,7 @@
     },
     methods: {
       deleteComment () {
-        HTTP.delete(
+        config.HTTP.delete(
           `/pics/${this.picture}/comments?id=${this.commentId}&internalPath=${this.path.slice(0, -2)}`
         )
           .then(response => {
@@ -107,7 +107,7 @@
           })
       },
       realEdit () {
-        HTTP.put(
+        config.HTTP.put(
           `/pics/${this.picture}/comments`,
           {
             'wordContent': this.comment.wordContent,
@@ -129,7 +129,7 @@
           })
       },
       realReply () {
-        HTTP.post(
+        config.HTTP.post(
           `/pics/${this.picture}/comments`,
           {
             'wordContent': this.replyWordContent,
