@@ -7,11 +7,13 @@
       :loading="loading"
       @on-ok="asyncOK">
       <p>点击确定后，对话框将在 2秒 后关闭。</p>
+    <logout></logout>
     </Modal>
   </span>
 </template>
 <script>
   import {mapState} from 'vuex'
+  import Logout from './Logout'
 
   export default {
     data () {
@@ -32,6 +34,9 @@
           this.modal = false
         }, 2000)
       }
+    },
+    components: {
+      Logout
     }
   }
 </script>

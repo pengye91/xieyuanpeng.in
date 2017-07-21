@@ -28,8 +28,8 @@ const TenYears = 30 * 24 * time.Hour * 12 * 10
 var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 	Realm:      "xyp",
 	Key:        []byte("secret key"),
-	Timeout:    TenYears,
-	MaxRefresh: TenYears,
+	Timeout:    Year,
+	MaxRefresh: Year,
 
 	// for loginHandler usage
 	Authenticator: func(loginID string, password string, ctx *gin.Context) (string, bool) {

@@ -34,8 +34,6 @@
   import showdown from 'showdown'
   import {EventBus} from '../store/EventBus'
   import Modal1 from './Modal'
-  //  import axios from 'axios'
-  //  import router from '../router/index'
   import jwtDecode from 'jwt-decode'
   import {mapState, mapMutations} from 'vuex'
   import {HTTP} from '../config/dev'

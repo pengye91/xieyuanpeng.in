@@ -1,11 +1,11 @@
 <template>
   <div style="height: 100%;">
-    <Row type="flex" style="height: 89%">
+    <Row type="flex" style="height: 89%" justify="space-between" align="middle">
       <Col span="1" style="text-align: left">
       <Button type="text" icon="ios-arrow-left" :disabled="leftDisabled"
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
-      <Col span="22" style="height: 100%; text-align: center">
+      <Col span="20">
       <img :src="imgSrc" :alt="src" class="img" @click="openImg">
       </Col>
       <Col span="1">
@@ -13,7 +13,7 @@
               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row type="flex" justify="center" align="bottom" class="slider" style="height: 7%">
+    <Row type="flex" justify="center" align="top" class="slider">
       <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
         <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
              class="slider-img" :class="{'is-src': img.title == src}">
@@ -99,7 +99,7 @@
   }
 
   .slider {
-    height: 6%;
+    height: 7%;
     text-align: center;
   }
 
@@ -108,22 +108,22 @@
     transition: width 0.2s, height 0.4s;
     height: 100%;
     text-align: center;
-    width: 25px;
+    width: 50px;
     position: relative;
-    margin: 0 2px 0 2px;
+    margin: 0 4px 0 4px;
   }
 
   .slider:hover div {
-    max-height: 95%;
-    height: 5vw;
-    width: 3vw;
-    margin: 0 3px 0 3px;
+    max-height: 100%;
+    height: 70px;
+    width: 70px;
+    margin: 0 5px 0 5px;
   }
 
   .slider:hover img {
     height: 95%;
     width: 100%;
-    margin: 0 2px 0 2px;
+    margin: 0 5px 0 5px;
   }
 
   .slider-img {
@@ -146,9 +146,10 @@
 
   .img {
     box-shadow: 7px 7px 7px #484848;
-    height: 100%;
-    width: auto;
-    max-width: 100%;
+    /*height: 100%;*/
+    /*width: auto;*/
+    height: auto;
+    width: 100%;
   }
 
   .pre-button {
@@ -319,7 +320,7 @@
           })
           .catch(error => {
             if (error.response.status === 401) {
-              this.$Message.error(`评论失败, 你手动清理localStorage了吗？\n请登录或者刷新页面重新评论`)
+              this.$Message.error(`评论失败\n请登录或者刷新页面重新评论`)
             }
           })
       },
