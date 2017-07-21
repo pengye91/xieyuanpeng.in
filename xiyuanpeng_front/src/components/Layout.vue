@@ -117,7 +117,7 @@
   <div class="layout">
     <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px"
           @on-select="menuItemRoute">
-      <Row type="flex">
+      <Row>
         <Col span="1" offset="1">
         <div class="layout-logo">
           <img src="../assets/logo.png" alt="logo" height="40" width="40">
@@ -127,7 +127,7 @@
         <Input size="large" icon="search"
                placeholder="请输入搜索内容..." :value="searchText" @input="searchNotify"></Input>
         </Col>
-        <Col span="14" >
+        <Col span="14" offset="1">
         <div class="layout-nav">
           <MyMenuItem name="blog" to="/blog">
             技术博客
@@ -147,6 +147,7 @@
         </div>
         <div v-if="isLogin">
           <User></User>
+          <Logout></Logout>
         </div>
         </Col>
       </Row>

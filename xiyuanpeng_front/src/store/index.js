@@ -13,7 +13,11 @@ const anonUser = {
   'id': ObjectId(),
   'name': '匿名用户'
 }
-const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzE3Mjg5NDMsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTVmNDg4MGQ2YWUyNTQ1NmE4YjkxNmNcIikiLCJvcmlnX2lhdCI6MTUwMDYyNDk0MywidXNlciI6eyJpZCI6IjU5NWY0ODgwZDZhZTI1NDU2YThiOTE2YyIsIm5hbWUiOiJ4eXAiLCJlbWFpbCI6InBlbmd5ZTkxQGhvdG1haWwuY29tIn19.rCOI2ZVRa7k2P0_DFYJSIMP7MTB2iE0tPjIQyxmdU0I'
+const anonUserJwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJleHAiOjE4MTE1ODY1MjUsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTcwNTc3YWQ2YWU
+yNTA1ZjE4NGVhOGZcIikiLCJvcmlnX2lhdCI6MTUwMDU0NjUyNSwidXNlciI6eyJpZCI6IjU5
+NzA1NzdhZDZhZTI1MDVmMTg0ZWE4ZiIsIm5hbWUiOiLljL_lkI3nlKjmiLciLCJlbWFpbCI6ImFub255bW91c0B4eXAuY29tIn19.
+et6Z9XJDfXn_rSIOZsutMYBeNvy-8BAQMPN_2axi7Fc`
 
 export default new Vuex.Store({
   state: {
@@ -23,7 +27,7 @@ export default new Vuex.Store({
       'name': '匿名用户'
     },
     isLogin: false,
-    jwtToken: anonUserJwtToken,
+    jwtToken: localStorage.getItem('jwtToken'),
     anonUserJwtToken: anonUserJwtToken
   },
   mutations: {
