@@ -13,5 +13,5 @@ sudo mkdir -p /etc/nginx/log/
 
 #sudo ln -s /etc/nginx/sites-available/my-project-host.conf /etc/nginx/sites-enabled/my-project-host.conf
 sudo nginx -s stop
-sudo nginx -c /home/ec2-user/www/yukere_project_aws/nginx.conf
+sudo nginx -c /home/ubuntu/www/xieyuanpeng.in/aws/nginx/nginx.conf
 #sudo /etc/init.d/nginx start

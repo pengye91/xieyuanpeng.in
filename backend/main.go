@@ -21,15 +21,16 @@ var (
 
 func main() {
 	DbMain()
+	//gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
 
 	go api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)
 
-	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+	store, _ := sessions.NewRedisStore(10, "tcp", "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379", "", []byte("secret"))
 	store.Options(sessions.Options{
 		Path:     "/",
-		Domain:   "localhost",
+		Domain:   "xieyuanpeng.com",
 		MaxAge:   86400,
 		Secure:   false,
 		HttpOnly: false,
@@ -63,5 +64,5 @@ func main() {
 		u.GET("/auto-search", api.AutoSearch)
 	}
 
-	app.Run(":8000")
+	app.Run("0.0.0.0:8000")
 }
