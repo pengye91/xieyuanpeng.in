@@ -1,8 +1,8 @@
 package configs
 
 const (
-	ALLOWORIGIN  = "http://www.xieyuanpeng.com"
+	ALLOWORIGIN  = "http://localhost:8080"
 	BASEMONGOURL = "localhost:27017"
-	BASEDOMAIN   = "xieyuanpeng.com"
+	BASEDOMAIN   = "localhost"
 	BASEHOST     = "http://www.xieyuanpeng.com"
 )

@@ -9,8 +9,8 @@ const (
 	Host         = configs.BASEMONGOURL
 	Database     = "xieyuanpeng"
 	AuthDatabase = "admin"
-	AuthUserName = "xyp"
-	AuthPassword = "pengye2901307001"
+	AuthUserName = "root"
+	AuthPassword = "2901307001"
 )
 
 var (

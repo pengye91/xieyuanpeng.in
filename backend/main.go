@@ -27,10 +27,10 @@ func main() {
 	go api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)
 
-	store, _ := sessions.NewRedisStore(10, "tcp", "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379", "", []byte("secret"))
+	store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 	store.Options(sessions.Options{
 		Path:     "/",
-		Domain:   "xieyuanpeng.com",
+		Domain:   "localhost",
 		MaxAge:   86400,
 		Secure:   false,
 		HttpOnly: false,
