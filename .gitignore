@@ -18,10 +18,10 @@
 
 logs/
 
-/xieyuanpeng.in/xiyuanpeng_front/node_modules/*
-/xieyuanpeng.in/xiyuanpeng_front/build/*
-/xieyuanpeng.in/xiyuanpeng_front/config/*
-/xieyuanpeng.in/xiyuanpeng_front/vendors/*
+/xieyuanpeng.in/.xiyuanpeng_front/node_modules/*
+/xieyuanpeng.in/.xiyuanpeng_front/build/*
+/xieyuanpeng.in/.xiyuanpeng_front/config/*
+/xieyuanpeng.in/.xiyuanpeng_front/vendors/*
 /xieyuanpeng.in/backend/db/db.go
 */vendors
 */node_modules
