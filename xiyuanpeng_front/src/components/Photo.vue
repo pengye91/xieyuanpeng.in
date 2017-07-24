@@ -112,8 +112,8 @@
   }
 
   .slider-img {
-    width: 98%;
-    height: auto;
+    width: auto;
+    height: 90%;
   }
 
   .is-src {
