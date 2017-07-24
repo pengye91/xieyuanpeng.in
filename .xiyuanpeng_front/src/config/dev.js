@@ -5,5 +5,5 @@ import {http} from './http-common'
 
 export const config = {
   HTTP: http,
-  BASE_URL: `http://www.yukere.com`
+  BASE_URL: `http://www.yukere.com/api/v1`
 }
