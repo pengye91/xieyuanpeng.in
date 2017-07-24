@@ -7,6 +7,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
+	"fmt"
 )
 
 func DbMain() {
