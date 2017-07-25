@@ -1,10 +1,8 @@
 package main
 
 import (
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
-	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 )
@@ -27,19 +25,9 @@ func main() {
 	go api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)
 
-	store, _ := sessions.NewRedisStore(10, "tcp", configs.AWS_CONFIGS.REDIS_URL , "", []byte("secret"))
-	store.Options(sessions.Options{
-		Path:     "/",
-		Domain:   configs.AWS_CONFIGS.BASE_DOMAIN,
-		MaxAge:   86400,
-		Secure:   false,
-		HttpOnly: false,
-	})
-	session_middleware := sessions.Sessions("sessionid", store)
-
 	apiV1 := app.Group("/api/v1")
 	{
-		a := apiV1.Group("/auth", session_middleware)
+		a := apiV1.Group("/auth", middlewares.Session_middleware)
 		{
 			a.POST("/register", auth.Register)
 			a.POST("/login", middlewares.JWTAuthMiddleware.LoginHandler)
