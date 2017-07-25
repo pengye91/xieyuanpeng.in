@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
-		AllowOrigins:     []string{"http://www.xieyuanpeng.com"},
+		AllowOrigins:     []string{configs.ALLOWORIGIN},
 		AllowAllOrigins:  false,
 	})
 )
