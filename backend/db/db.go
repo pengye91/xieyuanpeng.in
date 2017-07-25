@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	Host         = configs.BASEMONGOURL
+	Host         = configs.BASE_MONGOURL
 	Database     = "xieyuanpeng"
 	AuthDatabase = "admin"
-	AuthUserName = "xyp"
-	AuthPassword = "pengye2901307001"
+	AuthUserName = configs.MONGO_AUTH_USERNAME
+	AuthPassword = configs.MONGO_AUTH_PASSWORD
 )
 
 var (
