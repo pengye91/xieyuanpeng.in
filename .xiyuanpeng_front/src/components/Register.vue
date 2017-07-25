@@ -36,7 +36,7 @@
 
 
 <script>
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
 
   export default {
     data () {
@@ -49,7 +49,7 @@
       }
 
       const emailCheck = (rule, email, callback) => {
-        HTTP.get(
+        config.HTTP.get(
           `/users/auto-search?email=${email}`
         )
           .then(response => {
@@ -65,7 +65,7 @@
           })
       }
       const usernameCheck = (rule, username, callback) => {
-        HTTP.get(
+        config.HTTP.get(
           `/users/auto-search?username=${username}`
         )
           .then(response => {
@@ -123,7 +123,7 @@
         this.loading = true
         this.$refs[name].validate((valid) => {
           if (valid) {
-            HTTP.post(
+            config.HTTP.post(
               '/auth/register',
               {
                 name: this.registerForm.username,

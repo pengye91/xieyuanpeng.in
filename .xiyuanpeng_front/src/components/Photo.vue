@@ -1,23 +1,24 @@
 <template>
   <div style="height: 100%;">
-    <Row type="flex" style="height: 89%">
-      <Col span="1" style="text-align: left">
+    <Row style="height: 80%">
+      <Col span="2" style="height: 100%">
       <Button type="text" icon="ios-arrow-left" :disabled="leftDisabled"
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
-      <Col span="22" style="height: 100%; text-align: center">
+      <Col span="20" style="height: 100%; display: flex; align-items: center; justify-content: center;">
       <img :src="imgSrc" :alt="src" class="img" @click="openImg">
       </Col>
-      <Col span="1">
+      <Col span="2" style="height: 100%">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row type="flex" justify="center" align="bottom" class="slider" style="height: 7%">
-      <div v-for="img in sliderImgs" :key="img" class="slider-img-div">
-        <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
-             class="slider-img" :class="{'is-src': img.title == src}">
-      </div>
+    <Row style="height: 16%; display: flex; align-items: center; justify-content: center;" >
+      <Col v-for="img in sliderImgs" :key="img" span="2"
+           style="height: 100%; display: flex; align-items: flex-end;justify-content: center; margin: 0 0.5%">
+      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
+           class="slider-img" :class="{'is-src': img.title == src}">
+      </Col>
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
       <Col span="8" class="comment-box">
@@ -63,9 +64,6 @@
                 style="padding-bottom: 5%"></comments>
       </Col>
     </Row>
-    <div style="height: 7%">
-
-    </div>
   </div>
 </template>
 <style scoped>
@@ -94,59 +92,25 @@
 
   .comment-button {
     position: fixed;
-    left: 7%;
+    left: 6%;
     margin-top: 4px;
   }
 
-  .slider {
-    height: 6%;
-    text-align: center;
-  }
-
-  .slider-img-div {
-    -webkit-transition: width 0.3s, height 0.4s; /* For Safari 3.1 to 6.0 */
-    transition: width 0.2s, height 0.4s;
-    height: 100%;
-    text-align: center;
-    width: 25px;
-    position: relative;
-    margin: 0 2px 0 2px;
-  }
-
-  .slider:hover div {
-    max-height: 95%;
-    height: 5vw;
-    width: 3vw;
-    margin: 0 3px 0 3px;
-  }
-
-  .slider:hover img {
-    height: 95%;
-    width: 100%;
-    margin: 0 2px 0 2px;
-  }
-
   .slider-img {
-    width: 100%;
-    max-height: 80%;
-    height: auto;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-  }
-
-  .slider-img:hover {
-    box-shadow: 6px 6px 4px #1f3c48;
+    width: 90%;
+    max-height: 90%;
   }
 
   .is-src {
-    bottom: 5px;
-    box-shadow: 4px 4px 3px #484848;
+    box-shadow: 8px 8px 8px #484848;
+    margin-bottom: 10%;
   }
 
   .img {
-    box-shadow: 7px 7px 7px #484848;
-    height: 100%;
+    box-shadow: 15px 20px 15px #484848;
+    /*height: 100%;*/
+    /*width: auto;*/
+    max-height: 100%;
     width: auto;
     max-width: 100%;
   }
@@ -170,7 +134,7 @@
   import ImagePreloader from 'image-preloader'
   import Comments from './Comments.vue'
   import {EventBus} from '../store/EventBus'
-  import {HTTP} from '../config/dev'
+  import {config} from '../config/dev'
   let preloader = new ImagePreloader()
   import {mapState} from 'vuex'
 
@@ -181,7 +145,7 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'https://s3.ap-northeast-2.amazonaws.com/xyp-s3/public/images/',
+        baseUrl: 'http://www.xieyuanpeng.com/static/images/',
         imgs: [],
         cComments: [],
         isHover: false,
@@ -230,7 +194,7 @@
       ])
     },
     mounted () {
-      HTTP.get('/pics/')
+      config.HTTP.get('/pics/')
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {
@@ -276,7 +240,7 @@
         if (!this.currentPic.likedBy.includes(this.user.id)) {
           this.currentPic.like++
           this.currentPic.likedBy.push(this.user.id)
-          HTTP.put(
+          config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$push',
@@ -286,7 +250,7 @@
         } else {
           this.currentPic.like--
           this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
-          HTTP.put(
+          config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$pull',
@@ -302,7 +266,7 @@
         this.leftDisabled ? null : (this.src = this.src - 1)
       },
       commentOnPic () {
-        HTTP.post(
+        config.HTTP.post(
           `/pics/${this.currentPic.id}/comments`,
           {
             'wordContent': this.newPicComment,

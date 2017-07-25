@@ -165,7 +165,7 @@ func (this AuthAPI) LogOut(ctx *gin.Context) {
 	for _, v := range ctx.Request.Cookies() {
 		fmt.Println(v)
 	}
-	ctx.SetCookie("sessionid", "", -1, "/", configs.BASEDOMAIN, false, false)
+	ctx.SetCookie("sessionid", "", -1, "/", configs.BASE_DOMAIN, false, false)
 	ctx.JSON(http.StatusOK, gin.H{"OK": "DONE"})
 }
 

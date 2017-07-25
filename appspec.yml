@@ -18,16 +18,16 @@ hooks:
 #      timeout: 60000
 #      runas: root
   AfterInstall:
-    - location: aws/scripts/install_os_dependencies.sh
-      timeout: 60000
-      runas: root
+#    - location: aws/scripts/install_os_dependencies.sh
+#      timeout: 60000
+#      runas: root
 #    - location: aws/scripts/install_python_dependencies.sh
 #      timeout: 60000
 #      runas: ec2-user
-#    - location: aws/scripts/ngnix.sh
-#      timeout: 60000
-#      runas: ec2-user
-#  ApplicationStart:
-#    - location: aws/scripts/start_application.sh
-#      timeout: 60000
-#      runas: ec2-user
+    - location: aws/scripts/ngnix.sh
+      timeout: 60000
+      runas: ubuntu
+  ApplicationStart:
+    - location: aws/scripts/start_application.sh
+      timeout: 60000
+      runas: ubuntu
