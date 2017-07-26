@@ -128,7 +128,7 @@
         </Col>
         <Col :span="Math.floor(16/menuItems.length)" v-for="(menuItem, key) in menuItems" :key="key"
              class="layout-nav">
-        <MyMenuItem :to="$route.path.startsWith('/admin') ? `/admin/${key}` : `${key}`">
+        <MyMenuItem :to="{name: `admin-${key}`}">
           {{menuItem.name}}
         </MyMenuItem>
         </Col>

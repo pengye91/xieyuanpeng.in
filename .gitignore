@@ -23,5 +23,8 @@ logs/
 /xieyuanpeng.in/.xiyuanpeng_front/config/*
 /xieyuanpeng.in/.xiyuanpeng_front/vendors/*
 /xieyuanpeng.in/backend/db/db.go
+/xieyuanpeng.in/static/
+/xieyuanpeng.in/index.html
 */vendors
 */node_modules
+

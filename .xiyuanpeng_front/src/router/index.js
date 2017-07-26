@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
+import postAll from '../components/PostAll'
+import SideMenuView from '../components/SideMenuView.vue'
 Vue.use(Router)
 
 const scrollBehavior = (to, from, savedPosition) => {
@@ -27,6 +29,18 @@ export default new Router({
   mode: 'history',
   scrollBehavior,
   routes: [
+    {
+      path: '/admin/:post',
+      name: 'admin',
+      component: SideMenuView,
+      redirect: '/admin/:post/all',
+      children: [
+        {
+          path: ':option',
+          component: postAll
+        }
+      ]
+    },
     {
       path: '/blog',
       name: 'blog',
@@ -57,7 +71,7 @@ export default new Router({
     },
     {
       path: '/photography',
-      name: 'photographs',
+      name: 'photography',
       component: createSideMenuView('photography'),
       redirect: {'name': '项目1'},
       children: [
@@ -74,9 +88,9 @@ export default new Router({
       ]
     },
     {
-      path: '/contact-me',
-      name: 'contact-me',
-      component: createSideMenuView('contact-me'),
+      path: '/contact',
+      name: 'contact',
+      component: createSideMenuView('contact'),
       redirect: {'name': 'github'},
       children: [
         {

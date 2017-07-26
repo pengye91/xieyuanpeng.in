@@ -4,6 +4,7 @@ import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
+// import {menuItems} from './utils'
 
 Vue.use(Vuex)
 
@@ -24,7 +25,8 @@ export default new Vuex.Store({
     },
     isLogin: false,
     jwtToken: anonUserJwtToken,
-    anonUserJwtToken: anonUserJwtToken
+    anonUserJwtToken: anonUserJwtToken,
+    menuItems: {}
   },
   mutations: {
     logout (state) {
@@ -37,6 +39,9 @@ export default new Vuex.Store({
       state.user = loginInfo.user
       state.isLogin = loginInfo.isLogin
       state.jwtToken = localStorage.getItem('jwtToken')
+    },
+    loadMenuItems (state, payload) {
+      state.menuItems = payload.menuItems
     },
     check (state, payload) {
       let jwtToken = payload.jwtToken
