@@ -21,6 +21,7 @@ func main() {
 	DbMain()
 	//gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
+	app.Static()
 
 	go api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)

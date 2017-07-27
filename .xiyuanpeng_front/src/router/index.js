@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
 import postAll from '../components/PostAll'
-import SideMenuView from '../components/SideMenuView.vue'
+import SideMenuView from '../components/SideMenuView'
+import Uploads from '../components/Uploads'
 Vue.use(Router)
 
 const scrollBehavior = (to, from, savedPosition) => {
@@ -36,8 +37,12 @@ export default new Router({
       redirect: '/admin/:post/all',
       children: [
         {
-          path: ':option',
+          path: 'all',
           component: postAll
+        },
+        {
+          path: 'upload',
+          component: Uploads
         }
       ]
     },
