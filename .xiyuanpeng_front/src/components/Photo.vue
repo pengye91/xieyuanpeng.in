@@ -13,7 +13,7 @@
               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row style="height: 16%; display: flex; align-items: center; justify-content: center;" >
+    <Row style="height: 16%; display: flex; align-items: center; justify-content: center;">
       <Col v-for="img in sliderImgs" :key="img" span="2"
            style="height: 100%; display: flex; align-items: flex-end;justify-content: center; margin: 0 0.5%">
       <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
@@ -155,10 +155,12 @@
     },
     computed: {
       likeIconType () {
-        return this.currentPic.likedBy.includes(this.user.id) ? 'ios-heart' : 'ios-heart-outline'
+        let userIdName = {}
+        userIdName[this.user.id] = this.user.name
+        return this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined }) ? 'ios-heart' : 'ios-heart-outline'
       },
       color () {
-        return this.currentPic.likedBy.includes(this.user.id) ? '#CE0000' : ''
+        return this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined }) ? '#CE0000' : ''
       },
       leftDisabled () {
         return this.src === 1
@@ -237,25 +239,28 @@
     },
     methods: {
       likePic () {
-        if (!this.currentPic.likedBy.includes(this.user.id)) {
+        let userIdName = {}
+        userIdName[this.user.id] = this.user.name
+        if (!this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined })) {
           this.currentPic.like++
-          this.currentPic.likedBy.push(this.user.id)
+          this.currentPic.likedBy.push(userIdName)
+          console.log(this.currentPic.likedBy)
           config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$push',
               'increase': 1,
-              'likedBy': this.user.id
+              'likedBy': userIdName
             })
         } else {
           this.currentPic.like--
-          this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
+          this.currentPic.likedBy.splice(this.currentPic.likedBy.findIndex(i => i[this.user.id] !== undefined), 1)
           config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$pull',
               'increase': -1,
-              'likedBy': this.user.id
+              'likedBy': userIdName
             })
         }
       },
@@ -283,7 +288,7 @@
           })
           .catch(error => {
             if (error.response.status === 401) {
-              this.$Message.error(`评论失败\n请登录或者刷新页面重新评论`)
+              this.$Message.error(`评论失败, 你手动清理localStorage了吗？\n请登录或者刷新页面重新评论`)
             }
           })
       },

@@ -237,9 +237,9 @@ func (this PictureAPI) LikePic(ctx *gin.Context) {
 	defer Db.Close()
 
 	var likedVisitor struct {
-		Increase int           `json:"increase"`
-		LikeType string        `json:"likeType"`
-		LikedBy  bson.ObjectId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
+		Increase int                  `json:"increase"`
+		LikeType string               `json:"likeType"`
+		LikedBy  models.VisitorNameId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
 	}
 
 	if err := ctx.BindJSON(&likedVisitor); err != nil {

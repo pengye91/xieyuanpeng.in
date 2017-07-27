@@ -1,51 +1,115 @@
 <template>
-  <Table border :columns="columns4" :data="data1"></Table>
+  <Row type="flex" justify="center" align="middle" style="margin-top: 10px">
+    <Col span="20">
+    <Table border :columns="columns" :data="metaData" height="550"></Table>
+    </Col>
+  </Row>
 </template>
 <script>
+  import {config} from '@/config/dev'
+  import moment from 'moment'
+
+  moment().locale('zh-cn')
+
   export default {
     data () {
       return {
-        columns4: [
+        columns: [
           {
             type: 'selection',
             width: 60,
             align: 'center'
           },
           {
-            title: '姓名',
-            key: 'name'
+            title: '标题',
+            width: 70,
+            align: 'center',
+            key: 'title'
           },
           {
-            title: '年龄',
-            key: 'age'
+            title: '被赞次数',
+            width: 100,
+            align: 'center',
+            key: 'like'
           },
           {
-            title: '地址',
-            key: 'address'
+            title: '赞同人',
+            align: 'center',
+//            width: 365,
+            key: 'likedBy'
+          },
+          {
+            title: '创建时间',
+            align: 'center',
+            width: 200,
+            key: 'created_at'
+          },
+          {
+            title: '操作',
+            align: 'center',
+            key: 'action',
+            width: 150,
+            render: (h, params) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.show(params.index)
+                    }
+                  }
+                }, '查看'),
+                h('Button', {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index)
+                    }
+                  }
+                }, '删除')])
+            }
           }
         ],
-        data1: [
-          {
-            name: '王小明',
-            age: 18,
-            address: '北京市朝阳区芍药居'
-          },
-          {
-            name: '张小刚',
-            age: 25,
-            address: '北京市海淀区西二旗'
-          },
-          {
-            name: '李小红',
-            age: 30,
-            address: '上海市浦东新区世纪大道'
-          },
-          {
-            name: '周小伟',
-            age: 26,
-            address: '深圳市南山区深南大道'
+        metaData: []
+      }
+    },
+    mounted () {
+      config.HTTP.get('/pics/')
+        .then(response => {
+          if (response.status === 200) {
+            this.metaData = JSON.parse(JSON.stringify(response.data, (key, value) => {
+              if (key === 'created_at') {
+                return moment(value).format('YYYY-MM-D')
+              }
+              if (key === 'likedBy') {
+                let newArray = []
+                value.forEach(o => {
+                  newArray.push(Object.values(o)[0])
+                })
+                return newArray
+              }
+              return value
+            }))
+            console.log('get all pics done')
           }
-        ]
+        })
+        .catch(error => {
+          console.log(error.response.data)
+        })
+    },
+    methods: {
+      remove (index) {
+        // TODO: delete in database
+        this.metaData.splice(index, 1)
       }
     }
   }
