@@ -3,12 +3,14 @@
  */
 import {http} from './http-common'
 
+//TODO: this should be put into store/state
 let adminSideMenuItem = {
   'all': '所有',
   'upload': '上传',
   'with-selected': '选中操作'
 }
 
+//TODO: this should be put into store/state
 let sideMenuItem = {
   'blog': ['python', 'golang', 'django', 'miscellaneous'],
   'photography': ['project-1', 'project-2'],
@@ -18,6 +20,8 @@ let sideMenuItem = {
 export const config = {
   HTTP: http,
   BASE_URL: `http://localhost:8000`,
+
+//TODO: this should be put into store/state
   MENU_ITEMS: {
     'blog': {
       ref: 'blog',
