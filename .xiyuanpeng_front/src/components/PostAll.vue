@@ -15,6 +15,8 @@
 
   export default {
     name: 'operation-all',
+
+    // TODO: use props to determine data in table.
     props: [
       'post', 'sideMenu'
     ],
