@@ -10,8 +10,8 @@ let adminSideMenuItem = {
 }
 
 let sideMenuItem = {
-  'blog': ['python', 'golang', 'django', '杂'],
-  'photography': ['项目1', '项目2'],
+  'blog': ['python', 'golang', 'django', 'miscellaneous'],
+  'photography': ['project-1', 'project-2'],
   'contact': ['github', 'wechat']
 }
 

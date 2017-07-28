@@ -37,6 +37,10 @@
 </template>
 <script>
   export default {
+    name: 'operation-upload',
+    props: [
+      'post', 'sideMenu'
+    ],
     data () {
       return {
         defaultList: [

@@ -1,9 +1,11 @@
 <template>
-  <Row type="flex" justify="center" align="middle" style="margin-top: 10px">
-    <Col span="20">
-    <Table border :columns="columns" :data="metaData" height="550"></Table>
-    </Col>
-  </Row>
+  <div>
+    <Row type="flex" justify="center" align="middle" style="margin-top: 10px">
+      <Col span="23">
+      <Table border :columns="columns" :data="metaData" height="550"></Table>
+      </Col>
+    </Row>
+  </div>
 </template>
 <script>
   import {config} from '@/config/dev'
@@ -12,6 +14,10 @@
   moment().locale('zh-cn')
 
   export default {
+    name: 'operation-all',
+    props: [
+      'post', 'sideMenu'
+    ],
     data () {
       return {
         columns: [
@@ -35,7 +41,6 @@
           {
             title: '赞同人',
             align: 'center',
-//            width: 365,
             key: 'likedBy'
           },
           {
@@ -110,7 +115,13 @@
       remove (index) {
         // TODO: delete in database
         this.metaData.splice(index, 1)
+      },
+      show (index) {
+        this.$Modal.info({
+          title: '用户信息'
+        })
       }
+
     }
   }
 </script>

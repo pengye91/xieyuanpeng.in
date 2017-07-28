@@ -2,9 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
-import postAll from '../components/PostAll'
+import Operations from '../components/Operations'
+// import Uploads from '../components/Uploads'
 import SideMenuView from '../components/SideMenuView'
 import AllUploads from '../components/AllUploads'
+import {config} from '@/config/dev'
 Vue.use(Router)
 
 const scrollBehavior = (to, from, savedPosition) => {
@@ -13,7 +15,6 @@ const scrollBehavior = (to, from, savedPosition) => {
   } else {
     let position = {}
     if (to.hash) {
-      console.log(to, from)
       position.selector = to.hash
     }
 
@@ -21,7 +22,6 @@ const scrollBehavior = (to, from, savedPosition) => {
       position.x = 0
       position.y = 0
     }
-    console.log(position)
     return position
   }
 }
@@ -31,21 +31,60 @@ export default new Router({
   scrollBehavior,
   routes: [
     {
+      path: '/admin',
+      name: 'admin',
+      redirect: {
+        name: 'operation',
+        params: {
+          post: Object.keys(config.SIDE_MENU_ITEMS)[0],
+          sideMenu: config.SIDE_MENU_ITEMS[Object.keys(config.SIDE_MENU_ITEMS)[0]][0],
+          operation: 'all'
+        }
+      }
+    },
+    {
       path: '/admin/:post',
-      name: 'posts',
+      name: 'post',
       component: SideMenuView,
-      // redirect: '/admin/:post/project-1',
+      redirect: to => {
+        return {
+          name: 'operation',
+          params: {
+            post: to.params.post,
+            sideMenu: config.SIDE_MENU_ITEMS[to.params.post][0],
+            operation: 'all'
+          }
+        }
+      },
       children: [
         {
           path: ':sideMenu',
           component: AllUploads,
           name: 'sideMenu',
-          // redirect: {'name': 'operation', 'params': {'operation': 'all'}},
+          redirect: to => {
+            return {
+              name: 'operation',
+              params: {
+                post: to.params.post,
+                sideMenu: to.params.sideMenu,
+                operation: 'all'
+              }
+            }
+          },
           children: [
             {
               path: ':operation',
               name: 'operation',
-              component: postAll
+              component: Operations
+
+              // component: to => {
+              //   switch (to.params.operation) {
+              //     case 'all':
+              //       return postAll
+              //     case 'upload':
+              //       return Uploads
+              //   }
+              // }
             }
           ]
         }

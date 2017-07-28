@@ -4,7 +4,6 @@
       <Row type="flex" style="height: 100%;" justify="space-around" align="middle">
         <Col :span="Math.floor(24/menuItems[$route.params.post].adminSideMenuItems.length)"
              v-for="(menuItem, key) in menuItems[$route.params.post].adminSideMenuItems " :key="key">
-        <!--<MyMenuItem :to="`/admin/${$route.params.post}/${$route.params.sideMenu}/${key}`" :name="`${key}`">-->
         <MyMenuItem :to="{name: 'operation', params: {operation: `${key}`}}" :name="`${key}`">
           {{menuItem}}
         </MyMenuItem>
