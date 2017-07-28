@@ -1,31 +1,17 @@
 <template>
-  <div class="layout-content">
-    <Row type="flex" style="height: 100%">
-      <Col span="3">
-      <Menu style="height: 100%; border-top: 1px solid lightgray; width: 100%;">
-        <div style="position: fixed; width: 12.5%;" v-if="$route.path.startsWith('/admin')">
-          <MyMenuItem v-for="(item, key) in menuItems[$route.params.post].sideMenuItems" :name="key"
-                      :key="key" :to="`/admin/${$route.params.post}/${key}`"
-                      style="margin-top: 5%; width: 100%">
-            {{item}}
-          </MyMenuItem>
-        </div>
-        <div v-else>
-          <MyMenuItem v-for="(item, index) in menuItems[type].sideMenuItems" :key="index"
-                      :to="{name: item}" :name="item"
-                      style="margin-top: 5%; width: 100%">
-            <Icon type="ios-book" size="16"></Icon>
-            {{item}}
-          </MyMenuItem>
-        </div>
-      </Menu>
-      </Col>
-      <Col span="21" style="height: 100%">
-      <div class="layout-content-main">
-        <router-view></router-view>
-      </div>
-      </Col>
-    </Row>
+  <div class="all-list-and-uploads">
+    <Menu theme="dark" mode="horizontal" style="width: 100%; height: 40px">
+      <Row type="flex" style="height: 100%;" justify="space-around" align="middle">
+        <!--<Col :span="Math.floor(24/menuItems[$route.params.post].adminSideMenuItems.length)"-->
+        <Col :span="Math.floor(24/menuItems[$route.params.post].adminSideMenuItems.length)"
+             v-for="(menuItem, key) in menuItems[$route.params.post].adminSideMenuItems " :key="key">
+        <MyMenuItem :to="`/admin/${$route.params.post}/${$route.params.sideMenu}/${key}`" :name="`${key}`">
+          {{menuItem}}
+        </MyMenuItem>
+        </Col>
+      </Row>
+    </Menu>
+    <router-view></router-view>
   </div>
 </template>
 

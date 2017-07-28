@@ -4,7 +4,7 @@ import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
 import postAll from '../components/PostAll'
 import SideMenuView from '../components/SideMenuView'
-import Uploads from '../components/Uploads'
+import AllUploads from '../components/AllUploads'
 Vue.use(Router)
 
 const scrollBehavior = (to, from, savedPosition) => {
@@ -32,17 +32,19 @@ export default new Router({
   routes: [
     {
       path: '/admin/:post',
-      name: 'admin',
+      name: 'admin-posts',
       component: SideMenuView,
-      redirect: '/admin/:post/all',
+      // redirect: '/admin/:post/:sideMenu',
       children: [
         {
-          path: 'all',
-          component: postAll
-        },
-        {
-          path: 'upload',
-          component: Uploads
+          path: ':sideMenu',
+          component: AllUploads,
+          children: [
+            {
+              path: ':operation',
+              component: postAll
+            }
+          ]
         }
       ]
     },

@@ -22,19 +22,19 @@ export const config = {
     'blog': {
       ref: 'blog',
       name: '博客',
-      sideMenuItems: ['python', 'golang', 'django', '杂'],
+      sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
       adminSideMenuItems: adminSideMenuItem
     },
     'photography': {
       ref: 'photography',
       name: '摄影',
-      sideMenuItems: ['项目1', '项目2'],
+      sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
       adminSideMenuItems: adminSideMenuItem
     },
     'contact': {
       ref: 'contact',
       name: '联系我',
-      sideMenuItems: ['github', 'wechat'],
+      sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
       adminSideMenuItems: adminSideMenuItem
     }
   },
