@@ -5,7 +5,7 @@
       <Menu style="height: 100%; border-top: 1px solid lightgray; width: 100%;">
         <div style="position: fixed; width: 12.5%;" v-if="$route.path.startsWith('/admin')">
           <MyMenuItem v-for="(item, key) in menuItems[$route.params.post].sideMenuItems" :name="key"
-                      :key="key" :to="`/admin/${$route.params.post}/${key}`"
+                      :key="key" :to="{name: 'sideMenu', params: {'sideMenu': `${key}`}}"
                       style="margin-top: 5%; width: 100%">
             {{item}}
           </MyMenuItem>

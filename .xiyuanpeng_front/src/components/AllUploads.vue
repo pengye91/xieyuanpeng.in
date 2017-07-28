@@ -1,11 +1,11 @@
 <template>
   <div class="all-list-and-uploads">
-    <Menu theme="dark" mode="horizontal" style="width: 100%; height: 40px">
+    <Menu theme="primary" mode="horizontal" style="width: 100%; height: 40px">
       <Row type="flex" style="height: 100%;" justify="space-around" align="middle">
-        <!--<Col :span="Math.floor(24/menuItems[$route.params.post].adminSideMenuItems.length)"-->
         <Col :span="Math.floor(24/menuItems[$route.params.post].adminSideMenuItems.length)"
              v-for="(menuItem, key) in menuItems[$route.params.post].adminSideMenuItems " :key="key">
-        <MyMenuItem :to="`/admin/${$route.params.post}/${$route.params.sideMenu}/${key}`" :name="`${key}`">
+        <!--<MyMenuItem :to="`/admin/${$route.params.post}/${$route.params.sideMenu}/${key}`" :name="`${key}`">-->
+        <MyMenuItem :to="{name: 'operation', params: {operation: `${key}`}}" :name="`${key}`">
           {{menuItem}}
         </MyMenuItem>
         </Col>

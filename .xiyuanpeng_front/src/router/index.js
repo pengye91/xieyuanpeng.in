@@ -32,16 +32,19 @@ export default new Router({
   routes: [
     {
       path: '/admin/:post',
-      name: 'admin-posts',
+      name: 'posts',
       component: SideMenuView,
-      // redirect: '/admin/:post/:sideMenu',
+      // redirect: '/admin/:post/project-1',
       children: [
         {
           path: ':sideMenu',
           component: AllUploads,
+          name: 'sideMenu',
+          // redirect: {'name': 'operation', 'params': {'operation': 'all'}},
           children: [
             {
               path: ':operation',
+              name: 'operation',
               component: postAll
             }
           ]
