@@ -24,6 +24,8 @@
     "moment": "^2.18.1",
     "mongodb": "^2.2.30",
     "quill": "^1.2.4",
+    "sass-loader": "^6.0.6",
+    "scss-loader": "0.0.1",
     "showdown": "^1.6.4",
     "vue": "^2.3.4",
     "vue-images": "^1.0.4",

@@ -1,21 +1,29 @@
 <template>
   <div>
-    <div class="demo-upload-list" v-for="item in uploadList">
-      <template v-if="item.status === 'finished'">
-        <img :src="`${imgBaseUrl}/${item.path}`">
+    <div class="demo-upload-list" v-for="item in uploadList" :key="item.name">
+      <!--<template v-if="item.status === 'finished'">-->
+      <div>
+          <img :src="item.src">
+      </div>
+      <div>
+          {{item.src}}
+      </div>
         <!--<div class="demo-upload-list-cover">-->
-          <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-          <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-        </div>
-      </template>
-      <template v-else>
-        <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-      </template>
+          <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
+          <!--<Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>-->
+        <!--</div>-->
+      <!--</template>-->
+      <!--<template v-else>-->
+        <!--<Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>-->
+      <!--</template>-->
+    </div>
+    <div>
+      {{uploadList}}
     </div>
     <Upload
       ref="upload"
-      multiple
-      :show-upload-list="false"
+      :multiple="true"
+      :show-upload-list="true"
       :default-file-list="defaultList"
       :on-success="handleSuccess"
       :on-format-error="handleFormatError"
@@ -29,13 +37,12 @@
       </div>
     </Upload>
     <Modal title="查看图片" v-model="visible">
-      <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+      <img :src="item.url" v-if="visible" style="width: 100%">
     </Modal>
   </div>
 </template>
 <script>
   import {config} from '@/config/dev'
-
   export default {
     name: 'operation-upload',
     props: [
@@ -56,6 +63,10 @@
         this.imgName = name
         this.visible = true
       },
+      createURL (item) {
+        let blob = new Blob(item)
+        return window.URL.createObjectURL(blob)
+      },
       handleRemove (file) {
         // 从 upload 实例删除数据
         const fileList = this.$refs.upload.fileList
@@ -63,8 +74,8 @@
       },
       handleSuccess (res, file) {
         // 因为上传过程为实例，这里模拟添加 url
-        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
-        file.name = '7eb99afb9d5f317c912f08b5212fd69a'
+//        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
+//        file.name = '7eb99afb9d5f317c912f08b5212fd69a'
       },
       handleFormatError (file) {
         this.$Notice.warning({
@@ -78,27 +89,22 @@
           desc: '文件 ' + file.name + ' 太大，不能超过 2M。'
         })
       },
-      handleBeforeUpload () {
-        const check = this.uploadList.length < 5
-        if (!check) {
-          this.$Notice.warning({
-            title: '最多只能上传 5 张图片。'
-          })
+      handleBeforeUpload (file) {
+        var reader = new FileReader()
+
+        reader.addEventListener('load', () => {
+          file.src = reader.result
+          this.uploadList.push(file)
+        }, false)
+        if (file) {
+          reader.readAsDataURL(file)
         }
-        return check
+        console.log(file)
+        return true
       }
     },
     mounted () {
-//      this.uploadList = this.$refs.upload.fileList
-      config.HTTP.get('/pics/')
-        .then(response => {
-          if (response.status === 200) {
-            this.uploadList = response.data
-          }
-        })
-        .catch(error => {
-          console.log(error.response.data)
-        })
+      this.uploadList = this.$refs.upload.fileList
     }
   }
 </script>

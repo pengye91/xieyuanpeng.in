@@ -14,8 +14,8 @@ const (
 	BASE_MONGOURL       = "localhost:27017"
 	BASE_DOMAIN         = "localhost"
 	REDIS_URL           = "localhost:6379"
-	MONGO_AUTH_USERNAME = "root"
-	MONGO_AUTH_PASSWORD = "2901307001"
+	MONGO_AUTH_USERNAME = "xyp"
+	MONGO_AUTH_PASSWORD = "xxyypp"
 )
 
 var (
