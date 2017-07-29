@@ -106,7 +106,14 @@
               }
               return value
             }))
+            let i = this.metaData.length
+            while (i--) {
+              if (this.metaData[i].project !== this.sideMenu) {
+                this.metaData.splice(i, 1)
+              }
+            }
             console.log('get all pics done')
+            console.log(this.metaData)
           }
         })
         .catch(error => {
