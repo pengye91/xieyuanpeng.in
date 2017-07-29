@@ -5,9 +5,6 @@
       <div>
           <img :src="item.src">
       </div>
-      <div>
-          {{item.src}}
-      </div>
         <!--<div class="demo-upload-list-cover">-->
           <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
           <!--<Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>-->
@@ -17,13 +14,10 @@
         <!--<Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>-->
       <!--</template>-->
     </div>
-    <div>
-      {{uploadList}}
-    </div>
     <Upload
       ref="upload"
       :multiple="true"
-      :show-upload-list="true"
+      :show-upload-list="false"
       :default-file-list="defaultList"
       :on-success="handleSuccess"
       :on-format-error="handleFormatError"
@@ -94,13 +88,15 @@
 
         reader.addEventListener('load', () => {
           file.src = reader.result
+          // TODO: maybe need an object to store the src base64 string,
+          // DO NOT and src field on file object.
           this.uploadList.push(file)
         }, false)
         if (file) {
           reader.readAsDataURL(file)
         }
         console.log(file)
-        return true
+        return false
       }
     },
     mounted () {
