@@ -2,8 +2,8 @@
   <div>
     <div class="demo-upload-list" v-for="item in uploadList">
       <template v-if="item.status === 'finished'">
-        <img :src="item.url">
-        <div class="demo-upload-list-cover">
+        <img :src="`${imgBaseUrl}/${item.path}`">
+        <!--<div class="demo-upload-list-cover">-->
           <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
           <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
         </div>
@@ -14,14 +14,13 @@
     </div>
     <Upload
       ref="upload"
-      :show-upload-list="true"
+      multiple
+      :show-upload-list="false"
       :default-file-list="defaultList"
       :on-success="handleSuccess"
-      :format="['jpg','jpeg','png']"
       :on-format-error="handleFormatError"
       :on-exceeded-size="handleMaxSize"
       :before-upload="handleBeforeUpload"
-      multiple
       type="drag"
       :action="`${baseUrl}/api/v1/picses`"
       style="display: inline-block;width:58px;">
@@ -45,16 +44,8 @@
     data () {
       return {
         baseUrl: config.BASE_URL,
-        defaultList: [
-          {
-            'name': 'a42bdcc1178e62b4694c830f028db5c0',
-            'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
-          },
-          {
-            'name': 'bc7521e033abdd1e92222d733590f104',
-            'url': 'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
-          }
-        ],
+        imgBaseUrl: config.IMAGE_BASE_URL,
+        defaultList: [],
         imgName: '',
         visible: false,
         uploadList: []
@@ -98,7 +89,16 @@
       }
     },
     mounted () {
-      this.uploadList = this.$refs.upload.fileList
+//      this.uploadList = this.$refs.upload.fileList
+      config.HTTP.get('/pics/')
+        .then(response => {
+          if (response.status === 200) {
+            this.uploadList = response.data
+          }
+        })
+        .catch(error => {
+          console.log(error.response.data)
+        })
     }
   }
 </script>
