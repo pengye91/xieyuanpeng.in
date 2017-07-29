@@ -106,6 +106,7 @@
               }
               return value
             }))
+            // TODO: need use watch on sideMenu value
             let i = this.metaData.length
             while (i--) {
               if (this.metaData[i].project !== this.sideMenu) {
