@@ -14,17 +14,16 @@
     </div>
     <Upload
       ref="upload"
-      :show-upload-list="false"
+      :show-upload-list="true"
       :default-file-list="defaultList"
       :on-success="handleSuccess"
       :format="['jpg','jpeg','png']"
-      :max-size="2048"
       :on-format-error="handleFormatError"
       :on-exceeded-size="handleMaxSize"
       :before-upload="handleBeforeUpload"
       multiple
       type="drag"
-      action="//jsonplaceholder.typicode.com/posts/"
+      :action="`${baseUrl}/api/v1/picses`"
       style="display: inline-block;width:58px;">
       <div style="width: 58px;height:58px;line-height: 58px;">
         <Icon type="camera" size="20"></Icon>
@@ -36,6 +35,8 @@
   </div>
 </template>
 <script>
+  import {config} from '@/config/dev'
+
   export default {
     name: 'operation-upload',
     props: [
@@ -43,6 +44,7 @@
     ],
     data () {
       return {
+        baseUrl: config.BASE_URL,
         defaultList: [
           {
             'name': 'a42bdcc1178e62b4694c830f028db5c0',
@@ -55,7 +57,7 @@
         ],
         imgName: '',
         visible: false,
-        uploadList: ['1', '2']
+        uploadList: []
       }
     },
     methods: {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Row type="flex" justify="center" align="middle" style="margin-top: 10px">
+    <Row type="flex" justify="center" align="middle" style="margin-top: 10px;">
       <Col span="23">
-      <Table border :columns="columns" :data="metaData" height="550"></Table>
+      <Table border :columns="columns" :data="metaData" height="500"></Table>
       </Col>
     </Row>
   </div>

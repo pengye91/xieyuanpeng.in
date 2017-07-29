@@ -76,15 +76,6 @@ export default new Router({
               path: ':operation',
               name: 'operation',
               component: Operations
-
-              // component: to => {
-              //   switch (to.params.operation) {
-              //     case 'all':
-              //       return postAll
-              //     case 'upload':
-              //       return Uploads
-              //   }
-              // }
             }
           ]
         }
