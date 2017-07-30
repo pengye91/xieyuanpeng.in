@@ -2,7 +2,7 @@
   <div>
     <Row type="flex" justify="center" align="middle" style="margin-top: 10px;">
       <Col span="23">
-      <Table border :columns="columns" :data="metaData" height="500"></Table>
+      <Table border :columns="columns" :data="allTable" height="500"></Table>
       </Col>
     </Row>
   </div>
@@ -15,13 +15,38 @@
 
   export default {
     name: 'operation-all',
-
-    // TODO: use props to determine data in table.
     props: [
       'post', 'sideMenu'
     ],
+    watch: {
+      '$route' (to, from) {
+        this.innerSideMenu = to.params.sideMenu
+        this.innerPost = to.params.post
+        this.initTable = []
+        this.metaData.forEach(i => {
+          if (i.project === this.innerSideMenu) {
+            this.initTable.push(i)
+          }
+        })
+      }
+    },
+    computed: {
+      allTable () {
+        if (this.initTable.length === 0) {
+          this.metaData.forEach(i => {
+            if (i.project === this.sideMenu) {
+              this.initTable.push(i)
+            }
+          })
+        }
+        return this.initTable
+      }
+    },
     data () {
       return {
+        innerSideMenu: '',
+        innerPost: '',
+        initTable: [],
         columns: [
           {
             type: 'selection',
@@ -106,15 +131,6 @@
               }
               return value
             }))
-            // TODO: need use watch on sideMenu value
-            let i = this.metaData.length
-            while (i--) {
-              if (this.metaData[i].project !== this.sideMenu) {
-                this.metaData.splice(i, 1)
-              }
-            }
-            console.log('get all pics done')
-            console.log(this.metaData)
           }
         })
         .catch(error => {
