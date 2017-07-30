@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div class="demo-upload-list" v-for="item in uploadList" :key="item.name">
+    <div class="demo-upload-list" v-for="item in withSrcUploadList" :key="item.name">
       <!--<template v-if="item.status === 'finished'">-->
       <div>
           <img :src="item.src">
+      </div>
+      <div>
+          {{uploadList}}
       </div>
         <!--<div class="demo-upload-list-cover">-->
           <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
@@ -49,6 +52,7 @@
         defaultList: [],
         imgName: '',
         visible: false,
+        withSrcUploadList: [],
         uploadList: []
       }
     },
@@ -86,16 +90,21 @@
       handleBeforeUpload (file) {
         var reader = new FileReader()
 
+        // This is very tricky.
         reader.addEventListener('load', () => {
           file.src = reader.result
-          // TODO: maybe need an object to store the src base64 string,
-          // DO NOT and src field on file object.
-          this.uploadList.push(file)
+          this.withSrcUploadList.push(file)
+          // Coll enough
+          let realFile = new File([file], file.name, {type: file.type})
+          delete realFile.src
+          console.log(realFile)
+          this.uploadList.push(realFile)
         }, false)
         if (file) {
           reader.readAsDataURL(file)
         }
         console.log(file)
+        console.log(this.uploadList)
         return false
       }
     },
