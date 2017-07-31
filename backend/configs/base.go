@@ -21,7 +21,7 @@ const (
 	BASE_DOMAIN         = "xieyuanpeng.com"
 	REDIS_URL           = "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379"
 	MONGO_AUTH_USERNAME = "xyp"
-	MONGO_AUTH_PASSWORD = "2901307001"
+	MONGO_AUTH_PASSWORD = "pengye2901307001"
 )
 
 var (
@@ -31,6 +31,6 @@ var (
 		BASE_DOMAIN:         "xieyuanpeng.com",
 		REDIS_URL:           "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379",
 		MONGO_AUTH_USERNAME: "xyp",
-		MONGO_AUTH_PASSWORD: "2901307001",
+		MONGO_AUTH_PASSWORD: "pengye2901307001",
 	}
 )
