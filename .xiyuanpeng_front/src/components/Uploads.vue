@@ -1,41 +1,47 @@
 <template>
-  <div>
-    <div class="demo-upload-list" v-for="item in withSrcUploadList" :key="item.name">
-      <!--<template v-if="item.status === 'finished'">-->
-      <div>
-          <img :src="item.src">
-      </div>
-      <div>
-          {{uploadList}}
-      </div>
-        <!--<div class="demo-upload-list-cover">-->
-          <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
-          <!--<Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>-->
-        <!--</div>-->
-      <!--</template>-->
-      <!--<template v-else>-->
-        <!--<Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>-->
-      <!--</template>-->
-    </div>
-    <Upload
-      ref="upload"
-      :multiple="true"
-      :show-upload-list="false"
-      :default-file-list="defaultList"
-      :on-success="handleSuccess"
-      :on-format-error="handleFormatError"
-      :on-exceeded-size="handleMaxSize"
-      :before-upload="handleBeforeUpload"
-      type="drag"
-      :action="`${baseUrl}/api/v1/picses`"
-      style="display: inline-block;width:58px;">
-      <div style="width: 58px;height:58px;line-height: 58px;">
-        <Icon type="camera" size="20"></Icon>
-      </div>
-    </Upload>
-    <Modal title="查看图片" v-model="visible">
-      <img :src="item.url" v-if="visible" style="width: 100%">
-    </Modal>
+  <div style="margin: 30px 10px">
+    <!--<div>-->
+    <!--<template v-if="item.status === 'finished'">-->
+    <Row class="dropbox" type="flex" justify="space-around" align="middle" v-for="item in withSrcUploadList"
+         :key="item.name" @click.native="showModal">
+      <Modal title="查看图片" :value="visible">
+        <img :src="item.src" v-if="visible" style="width: 100%">
+      </Modal>
+      <Col span="20">
+      <img :src="item.src" width="100%" style="max-height: 600px">
+      </Col>
+      <Col span="1">
+      <Button type="ghost" size="large" @click="deleteItemFromUploadList">
+        <Icon type="ios-trash" size="20"></Icon>
+      </Button>
+      </Col>
+    </Row>
+
+    <!--<div class="demo-upload-list-cover">-->
+    <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
+    <!--<Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>-->
+    <!--</div>-->
+    <!--</template>-->
+    <!--<template v-else>-->
+    <!--<Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>-->
+    <!--</template>-->
+    <!--</div>-->
+    <Row>
+      <Upload
+        ref="upload"
+        :multiple="true"
+        :show-upload-list="false"
+        :default-file-list="defaultList"
+        :on-success="handleSuccess"
+        :on-format-error="handleFormatError"
+        :on-exceeded-size="handleMaxSize"
+        :before-upload="handleBeforeUpload"
+        type="drag"
+        :action="`${baseUrl}/api/v1/picses`"
+        class="upload">
+        <Icon type="camera" size="80"></Icon>
+      </Upload>
+    </Row>
   </div>
 </template>
 <script>
@@ -57,6 +63,9 @@
       }
     },
     methods: {
+      showModal () {
+        this.visible = true
+      },
       handleView (name) {
         this.imgName = name
         this.visible = true
@@ -113,15 +122,30 @@
   }
 </script>
 <style>
-.dropbox {
+  .dropbox {
     outline: 2px dashed grey; /* the dash box */
     outline-offset: -10px;
-    background: lightcyan;
+    background: #f8f8f8;
     color: dimgray;
     padding: 10px 10px;
-    min-height: 200px; /* minimum height */
+    min-height: 150px; /* minimum height */
+    max-height: 650px; /* maximum height */
     position: relative;
-    cursor: pointer;
+    margin: 10px 40px;
+    /*cursor: pointer;*/
+  }
+
+  .upload {
+    outline: 2px dashed grey; /* the dash box */
+    outline-offset: -10px;
+    /*background: #09658c;*/
+    color: dimgray;
+    padding: 10px 10px;
+    min-height: 100px; /* minimum height */
+    position: relative;
+    margin-bottom: 60px;
+    margin-top: 30px;
+    /*cursor: pointer;*/
   }
 
   .input-file {
@@ -132,15 +156,19 @@
     cursor: pointer;
   }
 
-  .dropbox:hover {
-    background: lightblue; /* when mouse over to the drop zone, change color */
+  .upload:hover {
+    background: #0986ba; /* when mouse over to the drop zone, change color */
   }
 
-  .dropbox p {
-    font-size: 1.2em;
-    text-align: center;
-    padding: 50px 0;
+  .dropbox:hover {
+    background: #dbdbdb; /* when mouse over to the drop zone, change color */
   }
+
+  .upload p {
+    background-color: transparent;
+    /*text-align: center;*/
+  }
+
   .demo-upload-list {
     display: inline-block;
     width: 60%;
