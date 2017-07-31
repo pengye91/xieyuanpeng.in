@@ -6,6 +6,7 @@
 *.so
 *.dylib
 .idea/
+.env
 
 # Test binary, build with `go test -c`
 *.test
@@ -18,11 +19,14 @@
 
 logs/
 
-/xieyuanpeng.in/.xiyuanpeng_front/node_modules/*
-/xieyuanpeng.in/.xiyuanpeng_front/build/*
-/xieyuanpeng.in/.xiyuanpeng_front/config/*
-/xieyuanpeng.in/.xiyuanpeng_front/vendors/*
+/xieyuanpeng.in/.xiyuanpeng_front/node_modules/
+/xieyuanpeng.in/.xiyuanpeng_front/build/
+/xieyuanpeng.in/.xiyuanpeng_front/
+/xieyuanpeng.in/.xiyuanpeng_front/config/
+/xieyuanpeng.in/.xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
-/xieyuanpeng.in/aws/nginx/nginx.conf
+/xieyuanpeng.in/static/
+/xieyuanpeng.in/index.html
 */vendors
-*/node_modules
+*/node_modules/
+
