@@ -17,6 +17,7 @@ const anonUser = {
 const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIzMDk4NDQsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTcwNTc3YWQ2YWUyNTA1ZjE4NGVhOGZcIikiLCJvcmlnX2lhdCI6MTUwMTIwNTg0NCwidXNlciI6eyJpZCI6IjU5NzA1NzdhZDZhZTI1MDVmMTg0ZWE4ZiIsIm5hbWUiOiLljL_lkI3nlKjmiLciLCJlbWFpbCI6ImFub255bW91c0B4eXAuY29tIn19.GQd8tnDiC-duQe8cmwqg5mLhXwQ99HpG-aOAZEhMlbU'
 
 export default new Vuex.Store({
+  // TODO: Add all pics here.
   state: {
     user: {
       'email': 'anonymous@xyp.com',
