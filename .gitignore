@@ -8,6 +8,7 @@
 .idea/
 .vscode/
 .env
+appspec.yml
 
 # Test binary, build with `go test -c`
 *.test
@@ -20,10 +21,8 @@
 
 logs/
 
-.xiyuanpeng_front/
 .xiyuanpeng_front/node_modules/
 .xiyuanpeng_front/build/
-.xiyuanpeng_front/config/
 .xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
 /xieyuanpeng.in/static/
