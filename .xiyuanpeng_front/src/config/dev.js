@@ -19,7 +19,7 @@ let sideMenuItem = {
 
 export const config = {
   HTTP: http,
-  BASE_URL: `http://localhost:8000`,
+  BASE_URL: `http://www.xieyuanpeng.com`,
   IMAGE_BASE_URL: 'http://www.xieyuanpeng.com/static/images',
 
 // TODO: this should be put into store/state
