@@ -2,16 +2,20 @@
   <div style="margin: 30px 10px">
     <!--<div>-->
     <!--<template v-if="item.status === 'finished'">-->
-    <Row class="dropbox" type="flex" justify="space-around" align="middle" v-for="(item, key) in withSrcUploadList"
-         :key="item.name" @click.native="showModal">
-      <Modal title="查看图片" :value="visible">
-        <img :src="item.src" v-if="visible" style="width: 100%">
-      </Modal>
+    <Row class="dropbox" type="flex" justify="space-around" align="middle" v-for="(item, index) in withSrcUploadList"
+         :key="index" @click.native="showModal">
+      {{visible}}
+      <Modal1
+        title="查看图片"
+        :value="visible"
+        :on-cancel="visible=false">
+        {{visible}}
+      </Modal1>
       <Col span="20">
       <img :src="item.src" width="100%" style="max-height: 600px">
       </Col>
       <Col span="1">
-      <Button type="ghost" size="large" @click="deleteItemFromUploadList">
+      <Button type="ghost" size="large" @click="deleteItemFromUploadList(index)">
         <Icon type="ios-trash" size="20"></Icon>
       </Button>
       </Col>
@@ -46,11 +50,16 @@
 </template>
 <script>
   import {config} from '@/config/dev'
+  import Modal1 from './Modal.vue'
+
   export default {
     name: 'operation-upload',
     props: [
       'post', 'sideMenu'
     ],
+    components: {
+      Modal1
+    },
     data () {
       return {
         baseUrl: config.BASE_URL,
@@ -65,10 +74,15 @@
     methods: {
       showModal () {
         this.visible = true
+        console.log(this.visible)
       },
-      handleView (name) {
-        this.imgName = name
-        this.visible = true
+      onCancel () {
+        this.visible = false
+        console.log(this.modalIsVisible)
+      },
+      deleteItemFromUploadList (index) {
+        this.withSrcUploadList.splice(index, 1)
+        this.uploadList.splice(index, 1)
       },
       createURL (item) {
         let blob = new Blob(item)
