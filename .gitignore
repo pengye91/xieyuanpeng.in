@@ -20,10 +20,11 @@
 
 logs/
 
-/xieyuanpeng.in/.xiyuanpeng_front/node_modules/
-/xieyuanpeng.in/.xiyuanpeng_front/build/
-/xieyuanpeng.in/.xiyuanpeng_front/config/
-/xieyuanpeng.in/.xiyuanpeng_front/vendors/
+.xiyuanpeng_front/
+.xiyuanpeng_front/node_modules/
+.xiyuanpeng_front/build/
+.xiyuanpeng_front/config/
+.xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
 /xieyuanpeng.in/static/
 /xieyuanpeng.in/index.html
