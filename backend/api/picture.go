@@ -66,6 +66,28 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db.Close()
 }
 
+
+func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
+	//TODO: only admin can do this
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	// Pics are a slice of pic model
+	pics := []models.Picture{}
+	if err := ctx.BindJSON(&pics); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+	}
+
+	// The initialization part should be done in front-end.
+	// Even the ObjectId part. Insert method may provide automatically Id function.
+	if err := Db.C("picture").Insert(&pics); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+	} else {
+		ctx.JSON(http.StatusCreated, pics)
+	}
+}
+
 func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
@@ -237,9 +259,9 @@ func (this PictureAPI) LikePic(ctx *gin.Context) {
 	defer Db.Close()
 
 	var likedVisitor struct {
-		Increase int           `json:"increase"`
-		LikeType string        `json:"likeType"`
-		LikedBy  bson.ObjectId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
+		Increase int                  `json:"increase"`
+		LikeType string               `json:"likeType"`
+		LikedBy  models.VisitorNameId `json:"likedBy" bson:"liked_by"  form:"liked_by"`
 	}
 
 	if err := ctx.BindJSON(&likedVisitor); err != nil {

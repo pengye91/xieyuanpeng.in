@@ -44,10 +44,10 @@ func main() {
 			p.GET("/:id", pic.GetPicById)
 			p.PUT("/:id/like", pic.LikePic)
 			p.POST("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.PostCommentToPic)
-			//p.POST("/:id/comments", pic.PostCommentToPic)
 			p.PUT("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.UpdateCommentByPicId)
 			p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
 		}
+		apiV1.POST("/picses", pic.PostPicsToMain)
 
 		u := apiV1.Group("/users")
 		{
