@@ -66,23 +66,33 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db.Close()
 }
 
-
 func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
 
-	// Pics are a slice of pic model
+	var insertPics []interface{}
 	pics := []models.Picture{}
+
 	if err := ctx.BindJSON(&pics); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		ctx.JSON(http.StatusBadRequest, err)
+		fmt.Println(err)
+		return
+	}
+
+	for index, _ := range pics {
+		pics[index].CreatedAt = time.Now()
+		insertPics = append(insertPics, pics[index])
 	}
 
 	// The initialization part should be done in front-end.
-	// Even the ObjectId part. Insert method may provide automatically Id function.
-	if err := Db.C("picture").Insert(&pics); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+	bulk := Db.C("picture").Bulk()
+	bulk.Insert(insertPics...)
+	if bulkResult, bulkErr := bulk.Run(); bulkErr != nil {
+		fmt.Println(bulkErr)
+		fmt.Println(bulkResult)
+		ctx.JSON(http.StatusInternalServerError, bulkErr)
 	} else {
 		ctx.JSON(http.StatusCreated, pics)
 	}

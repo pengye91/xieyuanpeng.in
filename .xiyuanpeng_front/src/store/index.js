@@ -4,7 +4,6 @@ import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
-// import {menuItems} from './utils'
 
 Vue.use(Vuex)
 

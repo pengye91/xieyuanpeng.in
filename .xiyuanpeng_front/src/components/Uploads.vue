@@ -2,24 +2,55 @@
   <div style="margin: 30px 10px">
     <!--<div>-->
     <!--<template v-if="item.status === 'finished'">-->
-    <Row class="dropbox" type="flex" justify="space-around" align="middle" v-for="(item, index) in withSrcUploadList"
-         :key="index" @click.native="showModal">
-      {{visible}}
-      <Modal1
-        title="查看图片"
-        :value="visible"
-        :on-cancel="visible=false">
-        {{visible}}
-      </Modal1>
-      <Col span="20">
-      <img :src="item.src" width="100%" style="max-height: 600px">
-      </Col>
-      <Col span="1">
-      <Button type="ghost" size="large" @click="deleteItemFromUploadList(index)">
-        <Icon type="ios-trash" size="20"></Icon>
+    <div v-for="(item, index) in withSrcUploadList" :key="index" style="margin-bottom: 20px" class="dropbox">
+      <Row type="flex" justify="space-around" align="middle" style="margin-top: 10px">
+        <Col span="20">
+        <img :src="item.src" width="100%" style="max-height: 600px">
+        </Col>
+        <!--// TODO: Don't know where the fuck is wrong-->
+        <!--<Button type="ghost" size="large" @click="preview(index)">-->
+        <!--<Icon type="ios-eye" size="20"></Icon>-->
+        <!--</Button>-->
+        <!--<Modal-->
+        <!--:value="modalIsVisible[index]">-->
+        <!--<img :src="item.src" width="100%">-->
+        <!--</Modal>-->
+        <Col span="1">
+        <Button type="ghost" size="large" @click="deleteItemFromUploadList(index)">
+          <Icon type="ios-trash" size="20"></Icon>
+        </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Form ref="uploadForm" :model="uploadForms[index]" :rules="uploadFormRules" inline style="margin-top: 5px">
+          <Row type="flex" justify="space-around" align="middle">
+            <Col span="6">
+            <Form-item prop="title" class="form-item">
+              <Input type="text" v-model="uploadForms[index].title" placeholder="标题" style="width: 100%">
+              <p slot="prepend">标题</p>
+              </Input>
+            </Form-item>
+            </Col>
+            <Col span="16">
+            <Form-item prop="description" class="form-item">
+              <Input type="text" v-model="uploadForms[index].description" placeholder="简要描述">
+              <p slot="prepend">描述</p>
+              </Input>
+            </Form-item>
+            </Col>
+          </Row>
+        </Form>
+      </Row>
+    </div>
+
+    <Row type="flex" justify="center" align="middle" v-if="uploadList.length!==0">
+      <Col span="22">
+      <Button style="width: 100%" type="primary" size="large" @click="submitAll">
+        提交
       </Button>
       </Col>
     </Row>
+
 
     <!--<div class="demo-upload-list-cover">-->
     <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
@@ -50,39 +81,48 @@
 </template>
 <script>
   import {config} from '@/config/dev'
-  import Modal1 from './Modal.vue'
+  import ObjectId from 'bson-objectid'
 
   export default {
     name: 'operation-upload',
     props: [
       'post', 'sideMenu'
     ],
-    components: {
-      Modal1
-    },
     data () {
       return {
         baseUrl: config.BASE_URL,
         imgBaseUrl: config.IMAGE_BASE_URL,
         defaultList: [],
         imgName: '',
-        visible: false,
+        visible: true,
+        modal: false,
         withSrcUploadList: [],
-        uploadList: []
+        modalIsVisible: [],
+        uploadList: [],
+        uploadForm: {
+          title: '',
+          description: ''
+        },
+        uploadForms: [],
+        uploadPicMetas: [],
+        uploadFormRules: {
+          title: [
+            {required: true, message: '标题必须要写哦', trigger: 'blur'}
+          ]
+        }
       }
     },
     methods: {
-      showModal () {
-        this.visible = true
-        console.log(this.visible)
-      },
-      onCancel () {
-        this.visible = false
+      preview (index) {
+        this.modalIsVisible[index] = true
         console.log(this.modalIsVisible)
+        console.log(this.modalIsVisible[index])
       },
       deleteItemFromUploadList (index) {
         this.withSrcUploadList.splice(index, 1)
         this.uploadList.splice(index, 1)
+        this.uploadForms.splice(index, 1)
+        this.modalIsVisible.splice(index, 1)
       },
       createURL (item) {
         let blob = new Blob(item)
@@ -95,8 +135,8 @@
       },
       handleSuccess (res, file) {
         // 因为上传过程为实例，这里模拟添加 url
-//        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
-//        file.name = '7eb99afb9d5f317c912f08b5212fd69a'
+        //        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
+        //        file.name = '7eb99afb9d5f317c912f08b5212fd69a'
       },
       handleFormatError (file) {
         this.$Notice.warning({
@@ -112,12 +152,18 @@
       },
       handleBeforeUpload (file) {
         var reader = new FileReader()
-
         // This is very tricky.
         reader.addEventListener('load', () => {
           file.src = reader.result
           this.withSrcUploadList.push(file)
-          // Coll enough
+          let form = {
+            title: file.name.split('.')[file.name.split('.').length - 2],
+            description: '',
+            fileName: file.name
+          }
+          this.uploadForms.push(form)
+          this.modalIsVisible.push(false)
+          // Cool enough
           let realFile = new File([file], file.name, {type: file.type})
           delete realFile.src
           console.log(realFile)
@@ -128,6 +174,31 @@
         }
         console.log(file)
         return false
+      },
+      submitAll () {
+        this.uploadForms.forEach(i => {
+          i.comments = []
+          i.id = String(ObjectId())
+          i.path = i.fileName
+          i.project = this.$route.params.sideMenu
+          this.uploadPicMetas.push(i)
+        })
+        console.log(this.uploadPicMetas)
+        config.HTTP.post('/picses', this.uploadPicMetas)
+          .then(response => {
+            if (response.status === 201) {
+              this.$Notice.success({
+                title: '提交成功',
+                desc: `所有图片成功提交至${this.$route.params.sideMenu}`
+              })
+            }
+          })
+          .catch(error => {
+            this.$Notice.error({
+              title: '提交失败',
+              desc: error.response.data
+            })
+          })
       }
     },
     mounted () {
@@ -145,7 +216,7 @@
     min-height: 150px; /* minimum height */
     max-height: 650px; /* maximum height */
     position: relative;
-    margin: 10px 40px;
+    margin: 10px 40px 20px 40px;
     /*cursor: pointer;*/
   }
 
@@ -160,6 +231,11 @@
     margin-bottom: 60px;
     margin-top: 30px;
     /*cursor: pointer;*/
+  }
+
+  .form-item {
+    margin-bottom: 20px;
+    width: 100%;
   }
 
   .input-file {
