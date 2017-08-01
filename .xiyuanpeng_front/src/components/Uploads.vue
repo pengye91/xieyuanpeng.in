@@ -183,14 +183,35 @@
           i.project = this.$route.params.sideMenu
           this.uploadPicMetas.push(i)
         })
-        console.log(this.uploadPicMetas)
-        config.HTTP.post('/picses', this.uploadPicMetas)
+        let data = new FormData()
+        // very tricky
+        Array
+          .from(Array(this.uploadList.length).keys())
+          .map(i => {
+            data.append('pics', this.uploadList[i])
+          })
+        config.HTTP.post('/upload-pics', data)
           .then(response => {
             if (response.status === 201) {
-              this.$Notice.success({
-                title: '提交成功',
-                desc: `所有图片成功提交至${this.$route.params.sideMenu}`
-              })
+              config.HTTP.post('/picses', this.uploadPicMetas)
+                .then(response => {
+                  if (response.status === 201) {
+                    this.$Notice.success({
+                      title: '提交成功',
+                      desc: `所有图片成功提交至${this.$route.params.sideMenu}`
+                    })
+                    this.uploadPicMetas = []
+                    this.uploadList = []
+                    this.uploadForm = []
+                    this.withSrcUploadList = []
+                  }
+                })
+                .catch(error => {
+                  this.$Notice.error({
+                    title: '提交失败',
+                    desc: error.response.data
+                  })
+                })
             }
           })
           .catch(error => {

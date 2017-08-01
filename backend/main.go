@@ -48,6 +48,8 @@ func main() {
 			p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
 		}
 		apiV1.POST("/picses", pic.PostPicsToMain)
+		apiV1.POST("/upload-pics", pic.UploadPicsToStorage)
+		apiV1.Static("/picses", "../public/images")
 
 		u := apiV1.Group("/users")
 		{

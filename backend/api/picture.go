@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	//"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -96,6 +96,27 @@ func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusCreated, pics)
 	}
+}
+
+func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	files := form.File["pics"]
+	fmt.Println(form)
+
+	//for _, file := range files {
+	//	fmt.Println("filename: " + file.Filename)
+	//	if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
+	//		ctx.JSON(http.StatusBadRequest, err)
+	//		return
+	//	}
+	//}
+
+	utils.UploadToS3(files)
+	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 
 func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
