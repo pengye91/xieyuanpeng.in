@@ -10,6 +10,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 )
 
 type PictureAPI struct {
@@ -105,7 +106,23 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 		return
 	}
 	files := form.File["pics"]
+	contentTypes := form.Value["content-type"]
+	sizes := form.Value["size"]
 	fmt.Println(form)
+	fmt.Println(contentTypes)
+	fmt.Println(sizes)
+
+	var intSizes []int64
+
+	for _, v := range sizes {
+		tmp, err := strconv.Atoi(v)
+		if err != nil {
+			fmt.Println(err)
+			return
+		} else {
+			intSizes = append(intSizes, int64(tmp))
+		}
+	}
 
 	//for _, file := range files {
 	//	fmt.Println("filename: " + file.Filename)
@@ -115,7 +132,7 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	//	}
 	//}
 
-	utils.UploadToS3(files)
+	utils.UploadToS3(files, contentTypes, intSizes)
 	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 

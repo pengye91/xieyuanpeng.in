@@ -189,6 +189,8 @@
           .from(Array(this.uploadList.length).keys())
           .map(i => {
             data.append('pics', this.uploadList[i])
+            data.append('content-type', this.uploadList[i].type)
+            data.append('size', this.uploadList[i].size)
           })
         config.HTTP.post('/upload-pics', data)
           .then(response => {

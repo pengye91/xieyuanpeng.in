@@ -1,10 +1,8 @@
 package utils
 
 import (
-	"bytes"
 	"fmt"
 	"mime/multipart"
-	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
@@ -15,7 +13,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 )
 
-func UploadToS3(files []*multipart.FileHeader) {
+func UploadToS3(files []*multipart.FileHeader, contentTypes []string, sizes []int64) {
 	envErr := godotenv.Load("../.env")
 	if envErr != nil {
 		fmt.Println(envErr)
@@ -34,24 +32,20 @@ func UploadToS3(files []*multipart.FileHeader) {
 	}
 	svc := s3.New(s3Session, cfg)
 
-	for _, item := range files {
+	for index, item := range files {
 		file, err := item.Open()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		var buffer []byte
 
-		size, err := file.Read(buffer)
-		fileBytes := bytes.NewReader(buffer)
-		fileType := http.DetectContentType(buffer)
 		path := "/public/images/" + item.Filename
 		params := &s3.PutObjectInput{
 			Bucket:        aws.String(configs.AWS_S3_BUCKET),
 			Key:           aws.String(path),
-			Body:          fileBytes,
-			ContentLength: aws.Int64(int64(size)),
-			ContentType:   aws.String(fileType),
+			Body:          file,
+			ContentType:   aws.String(contentTypes[index]),
+			ContentLength: aws.Int64(sizes[index]),
 		}
 
 		if resp, err := svc.PutObject(params); err != nil {
