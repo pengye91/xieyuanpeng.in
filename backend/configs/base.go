@@ -22,6 +22,7 @@ const (
 	MONGO_AUTH_PASSWORD = "2901307001"
 	AWS_REGION          = "ap-northeast-2"
 	AWS_S3_BUCKET       = "xyp-s3"
+	STATIC_S3_STORAGE   = true
 )
 
 var (
@@ -36,5 +37,5 @@ var (
 	// TODO: not good here, use a configuration tool like viper later
 	BACKEND_ROOT, _ = filepath.Abs("../")
 	MEDIA_ROOT      = filepath.Join(BACKEND_ROOT, "public", "media")
-	IMAGE_ROOT      = filepath.Join(MEDIA_ROOT, "images")
+	IMAGE_ROOT      = filepath.Join(BACKEND_ROOT, "static", "images")
 )
