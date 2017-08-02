@@ -1,5 +1,7 @@
 package configs
 
+import "path/filepath"
+
 type AwsConfigs struct {
 	ALLOW_ORIGINS       string
 	BASE_MONGOURL       string
@@ -33,4 +35,10 @@ var (
 		MONGO_AUTH_PASSWORD: "pengye2901307001",
 	}
 	ALLOW_ORIGINS = []string{"http://www.xieyuanpeng.com", "https://www.xieyuanpeng.com"}
+	// TODO: not good here, use a configuration tool like viper later
+	BACKEND_ROOT, _ = filepath.Abs("../")
+	MEDIA_ROOT      = filepath.Join(BACKEND_ROOT, "public", "media")
+	IMAGE_ROOT      = filepath.Join(BACKEND_ROOT, "static", "images")
+	AWS_REGION      = "ap-northeast-2"
+	AWS_S3_BUCKET   = "xyp-s3"
 )

@@ -11,6 +11,8 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
+	"path/filepath"
+	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 )
 
 type PictureAPI struct {
@@ -124,13 +126,13 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 		}
 	}
 
-	//for _, file := range files {
-	//	fmt.Println("filename: " + file.Filename)
-	//	if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
-	//		ctx.JSON(http.StatusBadRequest, err)
-	//		return
-	//	}
-	//}
+	for _, file := range files {
+		fmt.Println("filename: " + file.Filename)
+		if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
+			ctx.JSON(http.StatusBadRequest, err)
+			return
+		}
+	}
 
 	utils.UploadToS3(files, contentTypes, intSizes)
 	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
