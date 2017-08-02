@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
@@ -18,6 +21,10 @@ var (
 )
 
 func main() {
+	envErr := godotenv.Load("../.env")
+	if envErr != nil {
+		fmt.Println(envErr)
+	}
 	DbMain()
 	//gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()

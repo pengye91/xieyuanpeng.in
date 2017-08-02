@@ -9,15 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/joho/godotenv"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 )
 
 func UploadToS3(files []*multipart.FileHeader, contentTypes []string, sizes []int64) {
-	envErr := godotenv.Load("../.env")
-	if envErr != nil {
-		fmt.Println(envErr)
-	}
 	creds := credentials.NewEnvCredentials()
 	_, err := creds.Get()
 	if err != nil {
