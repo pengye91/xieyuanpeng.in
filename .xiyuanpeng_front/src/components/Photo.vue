@@ -145,7 +145,7 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://www.xieyuanpeng.com/static/images/',
+        baseUrl: `${config.IMAGE_BASE_URL}/static/images/`,
         imgs: [],
         cComments: [],
         isHover: false,
