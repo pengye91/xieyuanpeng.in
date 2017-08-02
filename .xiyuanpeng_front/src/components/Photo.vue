@@ -145,7 +145,7 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: `${config.IMAGE_BASE_URL}/static/images/`,
+        baseUrl: `${config.IMAGE_BASE_URL}`,
         imgs: [],
         cComments: [],
         isHover: false,
