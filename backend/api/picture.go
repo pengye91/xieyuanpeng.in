@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
-	//"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 )
 
 type PictureAPI struct {
@@ -66,26 +67,73 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db.Close()
 }
 
-
 func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
 
-	// Pics are a slice of pic model
+	var insertPics []interface{}
 	pics := []models.Picture{}
+
 	if err := ctx.BindJSON(&pics); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		ctx.JSON(http.StatusBadRequest, err)
+		fmt.Println(err)
+		return
+	}
+
+	for index, _ := range pics {
+		pics[index].CreatedAt = time.Now()
+		insertPics = append(insertPics, pics[index])
 	}
 
 	// The initialization part should be done in front-end.
-	// Even the ObjectId part. Insert method may provide automatically Id function.
-	if err := Db.C("picture").Insert(&pics); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+	bulk := Db.C("picture").Bulk()
+	bulk.Insert(insertPics...)
+	if bulkResult, bulkErr := bulk.Run(); bulkErr != nil {
+		fmt.Println(bulkErr)
+		fmt.Println(bulkResult)
+		ctx.JSON(http.StatusInternalServerError, bulkErr)
 	} else {
 		ctx.JSON(http.StatusCreated, pics)
 	}
+}
+
+func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	files := form.File["pics"]
+	contentTypes := form.Value["content-type"]
+	sizes := form.Value["size"]
+	fmt.Println(form)
+	fmt.Println(contentTypes)
+	fmt.Println(sizes)
+
+	var intSizes []int64
+
+	for _, v := range sizes {
+		tmp, err := strconv.Atoi(v)
+		if err != nil {
+			fmt.Println(err)
+			return
+		} else {
+			intSizes = append(intSizes, int64(tmp))
+		}
+	}
+
+	//for _, file := range files {
+	//	fmt.Println("filename: " + file.Filename)
+	//	if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
+	//		ctx.JSON(http.StatusBadRequest, err)
+	//		return
+	//	}
+	//}
+
+	utils.UploadToS3(files, contentTypes, intSizes)
+	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 
 func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {

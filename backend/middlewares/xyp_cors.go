@@ -13,6 +13,6 @@ var (
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
-		AllowOrigins:     []string{configs.ALLOW_ORIGINS},
+		AllowOrigins:     configs.ALLOW_ORIGINS,
 	})
 )
