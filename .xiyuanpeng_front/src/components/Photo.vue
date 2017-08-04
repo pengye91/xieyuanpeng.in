@@ -6,7 +6,7 @@
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
       <Col span="20" style="height: 100%; display: flex; align-items: center; justify-content: center;">
-      <img :src="imgSrc" :alt="src" class="img" @click="openImg">
+      <img v-if="imgs[src - 1] !== undefined" :src="imgSrc" :alt="imgs[src - 1].path" class="img" @click="openImg">
       </Col>
       <Col span="2" style="height: 100%">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
@@ -14,10 +14,10 @@
       </Col>
     </Row>
     <Row style="height: 16%; display: flex; align-items: center; justify-content: center;">
-      <Col v-for="img in sliderImgs" :key="img" span="2"
+      <Col v-for="(img, index) in sliderImgs" :key="index" span="2"
            style="height: 100%; display: flex; align-items: flex-end;justify-content: center; margin: 0 0.5%">
-      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
-           class="slider-img" :class="{'is-src': img.title == src}">
+      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=imgs.indexOf(img)+1}"
+           class="slider-img" :class="{'is-src': img.path == imgs[src - 1].path}">
       </Col>
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
@@ -157,10 +157,14 @@
       likeIconType () {
         let userIdName = {}
         userIdName[this.user.id] = this.user.name
-        return this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined }) ? 'ios-heart' : 'ios-heart-outline'
+        return this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        }) ? 'ios-heart' : 'ios-heart-outline'
       },
       color () {
-        return this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined }) ? '#CE0000' : ''
+        return this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        }) ? '#CE0000' : ''
       },
       leftDisabled () {
         return this.src === 1
@@ -175,7 +179,9 @@
         return this.imgs.length === this.src
       },
       imgSrc () {
-        return this.baseUrl + this.src.toString() + '.jpg'
+        if (this.imgs[this.src - 1] !== undefined) {
+          return this.baseUrl + this.imgs[this.src - 1].path
+        }
       },
       commentIsEmpty () {
         return this.newPicComment === ''
@@ -192,7 +198,7 @@
         return this.imgs.slice(base - 4, base + 3)
       },
       ...mapState([
-        'user', 'isLogin'
+        'user', 'isLogin', 'jwtToken'
       ])
     },
     mounted () {
@@ -204,7 +210,6 @@
           }
           preloader.preload(this.urls)
             .then(function (status) {
-              console.log('all done!', status)
             })
         })
         .catch((error) => {
@@ -241,7 +246,9 @@
       likePic () {
         let userIdName = {}
         userIdName[this.user.id] = this.user.name
-        if (!this.currentPic.likedBy.some(i => { return i[this.user.id] !== undefined })) {
+        if (!this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        })) {
           this.currentPic.like++
           this.currentPic.likedBy.push(userIdName)
           console.log(this.currentPic.likedBy)
@@ -279,6 +286,11 @@
             'byName': this.user.name,
             'comments': [],
             'internalPath': ''
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.jwtToken}`
+            }
           }
         )
           .then(response => {

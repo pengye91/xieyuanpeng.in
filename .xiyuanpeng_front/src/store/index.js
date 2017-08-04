@@ -13,7 +13,7 @@ const anonUser = {
   'id': ObjectId(),
   'name': '匿名用户'
 }
-const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzIzMDk4NDQsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTcwNTc3YWQ2YWUyNTA1ZjE4NGVhOGZcIikiLCJvcmlnX2lhdCI6MTUwMTIwNTg0NCwidXNlciI6eyJpZCI6IjU5NzA1NzdhZDZhZTI1MDVmMTg0ZWE4ZiIsIm5hbWUiOiLljL_lkI3nlKjmiLciLCJlbWFpbCI6ImFub255bW91c0B4eXAuY29tIn19.GQd8tnDiC-duQe8cmwqg5mLhXwQ99HpG-aOAZEhMlbU'
+const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzI3NzMwNzEsImlkIjoiNTk3MDU3N2FkNmFlMjUwNWYxODRlYThmIiwib3JpZ19pYXQiOjE1MDE2NjkwNzEsInVzZXIiOnsiaWQiOiI1OTcwNTc3YWQ2YWUyNTA1ZjE4NGVhOGYiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.AwGsNWxzl6kN8yUXNhvUS1sZpJUOzOEyCop_UZX4AHs'
 
 export default new Vuex.Store({
   // TODO: Add all pics here.
@@ -45,7 +45,6 @@ export default new Vuex.Store({
     },
     check (state, payload) {
       let jwtToken = payload.jwtToken
-      console.log(jwtToken)
       if (jwtToken) {
         let jwtPayload
         try {

@@ -22,7 +22,7 @@ const (
 	MONGO_AUTH_PASSWORD = "2901307001"
 	AWS_REGION          = "ap-northeast-2"
 	AWS_S3_BUCKET       = "xyp-s3"
-	STATIC_S3_STORAGE   = true
+	STATIC_S3_STORAGE   = false
 )
 
 var (

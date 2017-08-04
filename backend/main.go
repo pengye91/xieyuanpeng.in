@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
+	"github.com/pengye91/xieyuanpeng.in/backend/authorization"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 )
@@ -50,13 +51,12 @@ func main() {
 			p.GET("/", pic.GetAllPics)
 			p.GET("/:id", pic.GetPicById)
 			p.PUT("/:id/like", pic.LikePic)
-			p.POST("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.PostCommentToPic)
-			p.PUT("/:id/comments", middlewares.JWTAuthMiddleware.MiddlewareFunc(), pic.UpdateCommentByPicId)
+			p.POST("/:id/comments", middlewares.JWTMiddlewareFactory(authorization.All).MiddlewareFunc(), pic.PostCommentToPic)
+			p.PUT("/:id/comments", middlewares.JWTMiddlewareFactory(authorization.All).MiddlewareFunc(), pic.UpdateCommentByPicId)
 			p.DELETE("/:id/comments", pic.DeleteCommentByPicId)
 		}
-		apiV1.POST("/picses", pic.PostPicsToMain)
-		apiV1.POST("/upload-pics", pic.UploadPicsToStorage)
-		apiV1.Static("/picses", "../public/images")
+		apiV1.POST("/picses", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), pic.PostPicsToMain)
+		apiV1.POST("/upload-pics", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), pic.UploadPicsToStorage)
 
 		u := apiV1.Group("/users")
 		{

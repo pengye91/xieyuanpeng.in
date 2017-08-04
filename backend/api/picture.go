@@ -110,9 +110,6 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	files := form.File["pics"]
 	contentTypes := form.Value["content-type"]
 	sizes := form.Value["size"]
-	fmt.Println(form)
-	fmt.Println(contentTypes)
-	fmt.Println(sizes)
 
 	var intSizes []int64
 
@@ -189,7 +186,6 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	comment := models.Comment{}
 
 	picId := ctx.Param("id")
-	fmt.Printf("%s\n", picId)
 
 	if err := ctx.BindJSON(&comment); err != nil {
 		fmt.Println(err)

@@ -4,43 +4,18 @@
   </span>
 </template>
 <script>
-  import Modal1 from './Modal'
   import {mapState, mapMutations} from 'vuex'
   import {config} from '../config/dev'
 
   export default {
-    components: {
-      Modal1
-    },
     data () {
       return {
-        modal: false,
-        loading: true,
-        closable: false,
-        maskClosable: false,
-        searchMessage: '',
-        formInline: {
-          user: '',
-          password: ''
-        },
-        ruleInline: {
-          user: [
-            {required: true, message: '请填写用户名', trigger: 'blur'}
-          ],
-          password: [
-            {required: true, message: '请填写密码', trigger: 'blur'},
-            {type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur'}
-          ]
-        }
       }
     },
     methods: {
       ...mapMutations([
         'logout'
       ]),
-      showModal () {
-        this.modal = true
-      },
       logOut () {
         config.HTTP.get(
           `/auth/logout`

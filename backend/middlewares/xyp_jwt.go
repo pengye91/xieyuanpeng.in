@@ -25,7 +25,7 @@ const Month = 30 * 24 * time.Hour
 const Year = 30 * 24 * time.Hour * 12
 const TenYears = 30 * 24 * time.Hour * 12 * 10
 
-var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
+var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 	Realm:      "xyp",
 	Key:        []byte("secret key"),
 	Timeout:    Year,
@@ -55,9 +55,9 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 			session.Set("logined", "true")
 			session.Set("visitor", user.Id.String())
 			session.Save()
-			return user.Id.String(), true
+			return user.Id.Hex(), true
 		} else {
-			return user.Id.String(), false
+			return user.Id.Hex(), false
 		}
 	},
 
@@ -81,4 +81,10 @@ var JWTAuthMiddleware = &jwt.GinJWTMiddleware{
 	TokenLookup:   "header:Authorization",
 	TokenHeadName: "Bearer",
 	TimeFunc:      time.Now,
+}
+
+func JWTMiddlewareFactory(authorizator func (string, *gin.Context) bool) *jwt.GinJWTMiddleware {
+	authorizatorVaryMiddleware := JWTAuthMiddleware
+	authorizatorVaryMiddleware.Authorizator = authorizator
+	return &authorizatorVaryMiddleware
 }
