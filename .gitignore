@@ -20,6 +20,7 @@ appspec.yml
 .glide/
 
 logs/
+vendor/
 
 .xiyuanpeng_front/node_modules/
 .xiyuanpeng_front/build/
