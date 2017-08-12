@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
-	//"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -51,9 +50,8 @@ var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 
 		pass := libs.Password{}
 		cp := pass.Compare(user.Pass, password)
-		println(password)
 
-		if true {
+		if cp {
 			session.Set("logined", "true")
 			session.Set("visitor", user.Id.String())
 			session.Save()
