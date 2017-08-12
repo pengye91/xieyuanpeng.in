@@ -49,65 +49,69 @@ func (this BlogAPI) GetBlogById(ctx *gin.Context) {
 	Db.Close()
 }
 
-func (this BlogAPI) PostPicToMain(ctx *gin.Context) {
-	//TODO: only admin can do this
-	Db := db.MgoDb{}
-	Db.Init()
-
-	pic := models.Blog{}
-	if err := ctx.BindJSON(&pic); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
-	}
-	pic.CreatedAt = time.Now()
-	pic.Id = bson.NewObjectId()
-
-	if err := Db.C("picture").Insert(&pic); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-	} else {
-		ctx.JSON(http.StatusCreated, pic)
-	}
-	Db.Close()
-}
-
-func (this BlogAPI) PostPicsToMain(ctx *gin.Context) {
+func (this BlogAPI) PostBlogToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
 
-	var insertPics []interface{}
-	pics := []models.Blog{}
+	blog := models.Blog{}
+	if err := ctx.BindJSON(&blog); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+	}
+	blog.CreatedAt = time.Now()
+	blog.Id = bson.NewObjectId()
 
-	if err := ctx.BindJSON(&pics); err != nil {
+	if err := Db.C("blog").Insert(&blog); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+	} else {
+		ctx.JSON(http.StatusCreated, blog)
+	}
+}
+
+func (this BlogAPI) PostBlogsToMain(ctx *gin.Context) {
+	//TODO: only admin can do this
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	var insertBlogs []interface{}
+	blogs := []models.Blog{}
+
+	if err := ctx.BindJSON(&blogs); err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 		fmt.Println(err)
 		return
 	}
 
-	for index, _ := range pics {
-		pics[index].CreatedAt = time.Now()
-		insertPics = append(insertPics, pics[index])
+	for index := range blogs {
+		blogs[index].CreatedAt = time.Now()
+		insertBlogs = append(insertBlogs, blogs[index])
 	}
 
 	// The initialization part should be done in front-end.
-	bulk := Db.C("picture").Bulk()
-	bulk.Insert(insertPics...)
+	bulk := Db.C("blog").Bulk()
+	bulk.Insert(insertBlogs...)
 	if bulkResult, bulkErr := bulk.Run(); bulkErr != nil {
 		fmt.Println(bulkErr)
 		fmt.Println(bulkResult)
 		ctx.JSON(http.StatusInternalServerError, bulkErr)
 	} else {
-		ctx.JSON(http.StatusCreated, pics)
+		ctx.JSON(http.StatusCreated, blogs)
 	}
 }
 
-func (this BlogAPI) UploadPicsToStorage(ctx *gin.Context) {
+func (this BlogAPI) UploadBlogsToStorage(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	files := form.File["pics"]
+	// form.File["blogs"] are passed from front-end.
+	// Doing markdown-to-html conversion in js.
+	files := form.File["blogs"]
+
+	// should be html
 	contentTypes := form.Value["content-type"]
 	sizes := form.Value["size"]
 
@@ -138,7 +142,7 @@ func (this BlogAPI) UploadPicsToStorage(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 
-func (this BlogAPI) UpdateCommentByPicId(ctx *gin.Context) {
+func (this BlogAPI) UpdateCommentByBlogId(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
@@ -146,8 +150,8 @@ func (this BlogAPI) UpdateCommentByPicId(ctx *gin.Context) {
 
 	comment := models.Comment{}
 
-	picId := ctx.Param("id")
-	fmt.Printf("%s\n", picId)
+	blogId := ctx.Param("id")
+	fmt.Printf("%s\n", blogId)
 
 	if err := ctx.BindJSON(&comment); err != nil {
 		fmt.Println(err)
@@ -164,8 +168,8 @@ func (this BlogAPI) UpdateCommentByPicId(ctx *gin.Context) {
 		},
 	}
 
-	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), updateComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(blogId), updateComment); blogErr != nil {
+		fmt.Printf("%s\n", blogErr)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -173,7 +177,7 @@ func (this BlogAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, comment)
 
 }
-func (this BlogAPI) PostCommentToPic(ctx *gin.Context) {
+func (this BlogAPI) PostCommentToBlog(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
@@ -185,7 +189,7 @@ func (this BlogAPI) PostCommentToPic(ctx *gin.Context) {
 
 	comment := models.Comment{}
 
-	picId := ctx.Param("id")
+	blogId := ctx.Param("id")
 
 	if err := ctx.BindJSON(&comment); err != nil {
 		fmt.Println(err)
@@ -213,8 +217,8 @@ func (this BlogAPI) PostCommentToPic(ctx *gin.Context) {
 		}
 	}
 
-	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(blogId), appendComment); blogErr != nil {
+		fmt.Printf("%s\n", blogErr)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -222,14 +226,14 @@ func (this BlogAPI) PostCommentToPic(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, comment)
 }
 
-// Delete picture by Id but remain all comments
-func (this BlogAPI) DeletePic(ctx *gin.Context) {
+// Delete blog by Id but remain all comments
+func (this BlogAPI) DeleteBlog(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
-	PicId := ctx.Param("id")
+	BlogId := ctx.Param("id")
 
-	if err := Db.C("picture").RemoveId(bson.ObjectIdHex(PicId)); err != nil {
+	if err := Db.C("blog").RemoveId(bson.ObjectIdHex(BlogId)); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 	}
 	ctx.JSON(http.StatusOK, gin.H{"details": "deleted"})
@@ -237,50 +241,50 @@ func (this BlogAPI) DeletePic(ctx *gin.Context) {
 	Db.Close()
 }
 
-// Delete all pics
-func (this BlogAPI) DeletePics(ctx *gin.Context) {
+// Delete all Blogs
+func (this BlogAPI) DeleteBlogs(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 
-	if changeInfo, err := Db.C("picture").RemoveAll(nil); err != nil {
+	if changeInfo, err := Db.C("blog").RemoveAll(nil); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 	} else {
 		fmt.Printf("%v\n", *changeInfo)
 	}
 	ctx.JSON(http.StatusOK, gin.H{"details": "deleted"})
-
-	Db.Close()
 }
 
-func (this BlogAPI) UpdatePic(ctx *gin.Context) {
+// Blog may need edit, but not pic
+func (this BlogAPI) UpdateBlog(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
 	Db.Close()
 }
 
-func (this BlogAPI) GetPicComments(ctx *gin.Context) {
-	Db := db.MgoDb{}
-	Db.Init()
-
-	picId := ctx.Param("id")
-
-	pic := models.Blog{}
-
-	if err := Db.C("picture").FindId(bson.IsObjectIdHex(picId)).One(&pic); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-	}
-	ctx.JSON(http.StatusOK, pic.Comments)
-	Db.Close()
-}
-
-func (this BlogAPI) DeleteCommentByPicId(ctx *gin.Context) {
+func (this BlogAPI) GetBlogComments(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
 
-	PicId := ctx.Param("id")
+	blogId := ctx.Param("id")
+
+	blog := models.Blog{}
+
+	if err := Db.C("blog").FindId(bson.IsObjectIdHex(blogId)).One(&blog); err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+	}
+	ctx.JSON(http.StatusOK, blog.Comments)
+}
+
+func (this BlogAPI) DeleteCommentByBlogId(ctx *gin.Context) {
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	BlogId := ctx.Param("id")
 	internalPath := ctx.Query("internalPath")
 	id := ctx.Query("id")
 
@@ -295,14 +299,14 @@ func (this BlogAPI) DeleteCommentByPicId(ctx *gin.Context) {
 		},
 	}
 
-	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), deleteComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(BlogId), deleteComment); blogErr != nil {
+		fmt.Printf("%s\n", blogErr)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
 }
 
-func (this BlogAPI) LikePic(ctx *gin.Context) {
+func (this BlogAPI) LikeBlog(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
@@ -318,9 +322,9 @@ func (this BlogAPI) LikePic(ctx *gin.Context) {
 		return
 	}
 
-	PicId := ctx.Param("id")
+	BlogId := ctx.Param("id")
 
-	likePic := bson.M{
+	likeBlog := bson.M{
 		"$inc": bson.M{
 			"like": likedVisitor.Increase,
 		},
@@ -329,8 +333,8 @@ func (this BlogAPI) LikePic(ctx *gin.Context) {
 		},
 	}
 
-	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), likePic); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(BlogId), likeBlog); blogErr != nil {
+		fmt.Printf("%s\n", blogErr)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
