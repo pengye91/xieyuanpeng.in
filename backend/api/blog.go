@@ -15,41 +15,41 @@ import (
 	"path/filepath"
 )
 
-type PictureAPI struct {
+type BlogAPI struct {
 	*gin.Context
 }
 
-type PictureAlias models.Blog
+type BlogAlias models.Blog
 
-func (this PictureAPI) GetAllPics(ctx *gin.Context) {
+func (this BlogAPI) GetAllPics(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
-	pics := []models.Blog{}
+	blogs := []models.Blog{}
 
-	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
+	if err := Db.C("blog").Find(nil).All(&blogs); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 	}
-	ctx.JSON(http.StatusOK, pics)
+	ctx.JSON(http.StatusOK, blogs)
 	Db.Close()
 }
 
-func (this PictureAPI) GetPicById(ctx *gin.Context) {
+func (this BlogAPI) GetBlogById(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
-	pic := models.Blog{}
+	blog := models.Blog{}
 
-	picId := ctx.Param("id")
+	blogId := ctx.Param("id")
 
-	if err := Db.C("picture").FindId(bson.ObjectIdHex(picId)).One(&pic); err != nil {
+	if err := Db.C("blog").FindId(bson.ObjectIdHex(blogId)).One(&blog); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 	}
-	ctx.JSON(http.StatusOK, pic)
+	ctx.JSON(http.StatusOK, blog)
 	Db.Close()
 }
 
-func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
+func (this BlogAPI) PostPicToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
@@ -69,7 +69,7 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db.Close()
 }
 
-func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
+func (this BlogAPI) PostPicsToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
@@ -101,7 +101,7 @@ func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	}
 }
 
-func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
+func (this BlogAPI) UploadPicsToStorage(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -138,7 +138,7 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 
-func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
+func (this BlogAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
@@ -173,7 +173,7 @@ func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, comment)
 
 }
-func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
+func (this BlogAPI) PostCommentToPic(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()
 	Db := db.MgoDb{}
 	Db.Init()
@@ -223,7 +223,7 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 }
 
 // Delete picture by Id but remain all comments
-func (this PictureAPI) DeletePic(ctx *gin.Context) {
+func (this BlogAPI) DeletePic(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
@@ -238,7 +238,7 @@ func (this PictureAPI) DeletePic(ctx *gin.Context) {
 }
 
 // Delete all pics
-func (this PictureAPI) DeletePics(ctx *gin.Context) {
+func (this BlogAPI) DeletePics(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
@@ -253,14 +253,14 @@ func (this PictureAPI) DeletePics(ctx *gin.Context) {
 	Db.Close()
 }
 
-func (this PictureAPI) UpdatePic(ctx *gin.Context) {
+func (this BlogAPI) UpdatePic(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
 	Db.Close()
 }
 
-func (this PictureAPI) GetPicComments(ctx *gin.Context) {
+func (this BlogAPI) GetPicComments(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
@@ -275,7 +275,7 @@ func (this PictureAPI) GetPicComments(ctx *gin.Context) {
 	Db.Close()
 }
 
-func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
+func (this BlogAPI) DeleteCommentByPicId(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
@@ -302,7 +302,7 @@ func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
 }
 
-func (this PictureAPI) LikePic(ctx *gin.Context) {
+func (this BlogAPI) LikePic(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
