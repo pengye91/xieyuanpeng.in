@@ -7,7 +7,7 @@ import (
 )
 
 
-type Blog struct {
+type Picture struct {
 	Id          bson.ObjectId   `json:"id" bson:"_id"  form:"id"`
 	Title       string          `json:"title" bson:"title"  form:"title"`
 	Project     string          `json:"project" bson:"project"  form:"project"`

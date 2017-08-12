@@ -27,7 +27,7 @@
     "quill": "^1.2.4",
     "sass-loader": "^6.0.6",
     "scss-loader": "0.0.1",
-    "showdown": "^1.6.4",
+    "showdown": "^1.7.2",
     "vue": "^2.3.4",
     "vue-images": "^1.0.4",
     "vue-img-loader": "^0.1.6",

@@ -19,13 +19,14 @@ type PictureAPI struct {
 	*gin.Context
 }
 
-type PictureAlias models.Blog
+type PictureAlias models.Picture
+
 
 func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
-	pics := []models.Blog{}
+	pics := []models.Picture{}
 
 	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
@@ -38,7 +39,7 @@ func (this PictureAPI) GetPicById(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
-	pic := models.Blog{}
+	pic := models.Picture{}
 
 	picId := ctx.Param("id")
 
@@ -54,7 +55,7 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 
-	pic := models.Blog{}
+	pic := models.Picture{}
 	if err := ctx.BindJSON(&pic); err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 	}
@@ -76,7 +77,7 @@ func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	defer Db.Close()
 
 	var insertPics []interface{}
-	pics := []models.Blog{}
+	pics := []models.Picture{}
 
 	if err := ctx.BindJSON(&pics); err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
@@ -266,7 +267,7 @@ func (this PictureAPI) GetPicComments(ctx *gin.Context) {
 
 	picId := ctx.Param("id")
 
-	pic := models.Blog{}
+	pic := models.Picture{}
 
 	if err := Db.C("picture").FindId(bson.IsObjectIdHex(picId)).One(&pic); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))

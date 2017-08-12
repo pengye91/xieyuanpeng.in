@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
+import blog from '../components/Blog'
 import Operations from '../components/Operations'
 // import Uploads from '../components/Uploads'
 import SideMenuView from '../components/SideMenuView'
@@ -90,7 +91,7 @@ export default new Router({
         {
           path: 'python',
           name: 'python',
-          component: photo
+          component: blog
         },
         {
           path: 'golang',

@@ -18,7 +18,7 @@ func DbMain() {
 
 var (
 	auth = &api.AuthAPI{}
-	pic  = &api.BlogAPI{}
+	pic  = &api.PictureAPI{}
 )
 
 func main() {
@@ -33,8 +33,11 @@ func main() {
 	go api.InitialSetsFromDB()
 	app.Use(middlewares.CORSMiddleware)
 
+
 	apiV1 := app.Group("/api/v1")
 	{
+		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
+		apiV1.Static("/md", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/md")
 		a := apiV1.Group("/auth", middlewares.Session_middleware)
 		{
 			a.POST("/register", auth.Register)
