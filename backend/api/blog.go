@@ -11,8 +11,8 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
-	"strconv"
 	"path/filepath"
+	"strconv"
 )
 
 type BlogAPI struct {
