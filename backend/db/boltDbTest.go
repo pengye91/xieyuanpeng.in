@@ -23,13 +23,14 @@ func b() error {
 	defer tx.Rollback()
 
 	// Use the transaction...
-	_, err := tx.CreateBucket([]byte("MyBucket"))
+	_, createErr := tx.CreateBucket([]byte("MyBucket"))
 	if err != nil {
-		return err
+		return createErr
 	}
 
 	// Commit the transaction and check for error.
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+	return nil
 }
