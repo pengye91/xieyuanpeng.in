@@ -3,7 +3,8 @@
 1. xixi
 2. haha
 
-~~~ python 
+``` python
+
 import time
 
 def hello():
@@ -11,4 +12,4 @@ def hello():
     
 if __name__ == "__main__":
     hello()
-~~~
+```

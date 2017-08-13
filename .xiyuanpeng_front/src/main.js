@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import iView from 'iview'
 import './assets/theme/index.less'
+import './assets/css/github.min.css'
 import Vuex from 'vuex'
 import store from './store'
 

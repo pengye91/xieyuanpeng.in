@@ -1,6 +1,10 @@
 <template>
   <div style="height: 100%;">
-    <div v-html="blogContent" style="height: 94.5%; width: 100%"></div>
+    <!--<div v-html="blogContent" style="height: 94.5%; width: 100%"></div>-->
+    <div id="vue-frame">
+      <VueFrame text="VueJS" :url="`${config.BASE_URL}/api/v1/html/test-markdown.html`" frame="myframe" type="button" class="form-control"></VueFrame>
+    </div>
+    <iframe id="myframe" width="800"></iframe>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
       <Col span="8" class="comment-box">
       <Input @keydown.left.native.stop="" @keydown.right.native.stop="" type="textarea"
@@ -116,6 +120,7 @@
   import { EventBus } from '../store/EventBus'
   import { config } from '../config/dev'
   import { mapState } from 'vuex'
+  import VueFrame from 'vue-frame'
 
   export default {
     data () {
@@ -289,7 +294,8 @@
       }
     },
     components: {
-      'comments': Comments
+      'comments': Comments,
+      'VueFrame': VueFrame
     }
   }
 </script>
