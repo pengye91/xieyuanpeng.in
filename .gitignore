@@ -22,7 +22,6 @@ appspec.yml
 logs/
 
 .xiyuanpeng_front/node_modules/
-.xiyuanpeng_front/build/
 .xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
 /xieyuanpeng.in/static/
