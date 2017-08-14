@@ -38,6 +38,8 @@ func (w Password) Compare(hs string, p string) bool {
 	r := false
 	if err == nil {
 		r = true
+	} else {
+		println(err)
 	}
 
 	return r

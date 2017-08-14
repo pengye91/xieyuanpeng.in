@@ -9,7 +9,6 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/authorization"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 )
 
 func DbMain() {
@@ -32,11 +31,13 @@ func main() {
 	app := gin.Default()
 
 	go api.InitialSetsFromDB()
-	go utils.TestConsumer("nsq_reader", "chan1", utils.OnMessage)
 	app.Use(middlewares.CORSMiddleware)
+
 
 	apiV1 := app.Group("/api/v1")
 	{
+		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
+		apiV1.Static("/md", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/md")
 		a := apiV1.Group("/auth", middlewares.Session_middleware)
 		{
 			a.POST("/register", auth.Register)
@@ -64,7 +65,6 @@ func main() {
 		{
 			u.GET("/auto-search", api.AutoSearch)
 		}
-
 	}
 
 	app.Run("0.0.0.0:8000")

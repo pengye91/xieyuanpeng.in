@@ -6,7 +6,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type VisitorNameId map[bson.ObjectId]string
 
 type Picture struct {
 	Id          bson.ObjectId   `json:"id" bson:"_id"  form:"id"`

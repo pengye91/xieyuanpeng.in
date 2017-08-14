@@ -1,0 +1,520 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Made with Remarkable!
+  </title>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <style type="text/css">
+   h1,h2,h3,h4{color:#6495ed}body,table tr{background-color:#fff}table tr td,table tr th{border:1px solid #ccc;text-align:left;padding:6px 13px;margin:0}pre code,table,table tr{padding:0}body{font-family:Helvetica,Arial,sans-serif}h1,h2{text-align:center}blockquote{background:#f9f9f9;border-left:10px solid #6495ed;margin:1.5em 10px;padding:.5em 10px;font-style:italic}blockquote p{display:inline}hr{clear:both;float:none;width:100%;height:2.5px;margin:1.4em 0;border:none;background:#ddd;background:-webkit-gradient(linear,left bottom,right bottom,color-stop(0,#fff),color-stop(.1,#ddd),color-stop(.9,#ddd),color-stop(1,#fff)) #ddd;background:-moz-linear-gradient(left center,#fff 0,#ddd 10%,#ddd 90%,#fff 100%) #ddd}table tr{border-top:1px solid #ccc;margin:0}table tr:nth-child(2n){background-color:#aaa}table tr th{font-weight:700}table tr td :first-child,table tr th :first-child{margin-top:0}table tr td:last-child,table tr th :last-child{margin-bottom:0}code,tt{margin:0 2px;padding:0 5px;white-space:nowrap;border:1px solid #eaeaea;background-color:#f8f8f8;border-radius:3px}pre code{margin:0;white-space:pre;border:none;background:0 0}.highlight pre,pre{background-color:#f8f8f8;border:1px solid #ccc;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px;border-radius:3px}
+  </style>
+ </head>
+ <body>
+  <h1 id="utils">
+   Utils
+  </h1>
+  <h3 id="python-global-variable-best-practice">
+   Python Global Variable Best Practice
+  </h3>
+  <ul>
+   <li>
+    <p>
+     In a single module:
+    </p>
+    <ul>
+     <li>
+      <p>
+       Just use
+       <code>
+        global
+       </code>
+       keyword to claim a global variable in a function or class which aims to modify it.
+      </p>
+     </li>
+     <li>
+      <p>
+       Do not need the
+       <code>
+        global
+       </code>
+       keyword when trying to read it.
+      </p>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     Cross modules:
+    </p>
+    <ul>
+     <li>
+      <p>
+       Use a specific module such as
+       <code>
+        settings.py
+       </code>
+       to hold all global variables in the project.
+      </p>
+     </li>
+     <li>
+      <p>
+       Import them in other modules if you try to use them or write them.
+      </p>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <h2 id="python-concurrency">
+   Python Concurrency
+  </h2>
+  <h3 id="threading">
+   Threading
+  </h3>
+  <ul>
+   <li>
+    <p>
+     <strong>
+      GIL
+     </strong>
+     :
+    </p>
+    <ul>
+     <li>
+      <p>
+       Only one single thread can access the Python object or C API.
+      </p>
+     </li>
+     <li>
+      <p>
+       Threading module is not suitable for CPU bound tasks(where Processing module is useful), but good for IO bound tasks.
+      </p>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Sync
+     </strong>
+     :
+    </p>
+    <ul>
+     <li>
+      <p>
+       <strong>
+        Semaphore
+       </strong>
+       :
+      </p>
+      <ul>
+       <li>
+        <p>
+         Semaphore is a counter for some  resource, it increases by
+         <code>
+          1
+         </code>
+         when
+         <code>
+          aquire()
+         </code>
+         function is called, and decreases by
+         <code>
+          1
+         </code>
+         when
+         <code>
+          release()
+         </code>
+         function is called, the
+         <code>
+          aquire()
+         </code>
+         function will be blocked if the counter is
+         <code>
+          0
+         </code>
+         .
+        </p>
+       </li>
+       <li>
+        <p>
+         Use
+         <code>
+          with semaphore:
+         </code>
+         context manager:
+        </p>
+        <pre><code>    sema = Semaphore(3)
+    def foo(tid):
+        with sema:
+            print(f'{tid} acquire sema')
+            wt = random() * 2
+            time.sleep(wt)
+         print(f'{tid} released sema')
+</code></pre>
+       </li>
+      </ul>
+     </li>
+     <li>
+      <p>
+       <strong>
+        Lock
+       </strong>
+       :
+      </p>
+      <ul>
+       <li>
+        <p>
+         Lock is a semaphore with imuutale value of
+         <code>
+          1
+         </code>
+        </p>
+       </li>
+       <li>
+        <p>
+         Also use
+         <code>
+          with lock
+         </code>
+         context manager.
+        </p>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Queue
+     </strong>
+     :
+     <br/>
+     <code>
+      queue.Queue
+     </code>
+     module is thread safe in
+     <code>
+      Python
+     </code>
+     .
+    </p>
+    <ul>
+     <li>
+      <p>
+       The usage of
+       <code>
+        Queue
+       </code>
+       is very simple, only 4 methods need using:
+      </p>
+      <ol>
+       <li>
+        <code>
+         put
+        </code>
+        : append an item into the queue.
+       </li>
+       <li>
+        <code>
+         get
+        </code>
+        : same as
+        <code>
+         pop
+        </code>
+        in
+        <code>
+         list
+        </code>
+        . The
+        <code>
+         get
+        </code>
+        method has an argument
+        <code>
+         block
+        </code>
+        with default value
+        <code>
+         True
+        </code>
+        , which means that the thread will be blocked until there is a new item.
+       </li>
+       <li>
+        <code>
+         task_done
+        </code>
+        : should be called once  the task is done.
+       </li>
+       <li>
+        <code>
+         join
+        </code>
+        : block all tasks until all of them are done.
+        <pre><code>    q = Queue()
+
+    def double(n):
+        return n * 2
+
+    def producer():
+        while 1:
+            wt = random()
+            q.put((double, wt))
+
+    def consumer():
+        while 1:
+            task, arg = q.get()
+            print(arg, task(arg))
+            q.task_done()
+
+    for target in(producer, consumer):
+            t = threading.Thread(target=target)
+            t.start()
+</code></pre>
+       </li>
+      </ol>
+     </li>
+     <li>
+      <p>
+       <code>
+        PriorityQueue
+       </code>
+       is almost the same as normal
+       <code>
+        Queue
+       </code>
+       except it is with a priority number, thus the
+       <code>
+        put
+       </code>
+       method accept a specific argument:
+       <code>
+        priority_number
+       </code>
+       .
+      </p>
+      <ul>
+       <li>
+        The
+        <code>
+         get
+        </code>
+        method returns the result with the same order of the
+        <code>
+         priority_number
+        </code>
+        ascend(smallest out first):
+        <pre><code>q = PriorityQueue()
+
+def double(n):
+    return n * 2
+
+def producer():
+    count = 0
+    while 1:
+        if count &gt; 5:
+            break
+        pri = randint(0, 100)
+        print(f'put :{pri}')
+        q.put((pri, double, pri))  # (priority, func, args)
+        count += 1
+
+def consumer():
+    while 1:
+        if q.empty():
+            break
+        pri, task, arg = q.get()
+        print(f'[PRI:{pri}] {arg} * 2 = {task(arg)}')
+        q.task_done()
+        time.sleep(0.1)
+
+t = threading.Thread(target=producer)
+t.start()
+time.sleep(1)
+
+t = threading.Thread(target=consumer)
+t.start()
+</code></pre>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      ThreadPool
+     </strong>
+     :
+    </p>
+    <p>
+     A very  handy tool for using multi-threading model is
+     <code>
+      ThreadPool
+     </code>
+     , in which the tasks can reuse certain numbers of the pre-defined
+     <code>
+      ThreadPool
+     </code>
+     :
+    </p>
+    <pre><code>from multiprocessing.pool import ThreadPool
+
+pool = ThreadPool(5)
+pool.map(lambda x: x**2, range(5))  # out: [0, 1, 4, 9, 16]
+</code></pre>
+   </li>
+  </ul>
+  <h3 id="multi-processing">
+   Multi-Processing
+  </h3>
+  <p>
+   For CPU bound tasks,
+   <code>
+    Multi-Processing
+   </code>
+   should be used instead of
+   <code>
+    Multi-Threading
+   </code>
+   .
+  </p>
+  <p>
+   There is a handy tool if you don’t know which one should be used:
+  </p>
+  <pre><code>from multiprocessing import Pool
+from multiprocessing.dummy import Pool
+</code></pre>
+  <p>
+   The
+   <code>
+    .dummy
+   </code>
+   method is just a wrapper of
+   <code>
+    Multi-threading
+   </code>
+   module with the same API of
+   <code>
+    Multi-Processing
+   </code>
+   module.
+  </p>
+  <p>
+   A personal suggestion if you  are not sure which one should be used is
+   <code>
+    USE multiprocess.Pool
+   </code>
+   only.
+  </p>
+  <ul>
+   <li>
+    <p>
+     <strong>
+      Queue
+     </strong>
+     <br/>
+     <code>
+      multiprocessing
+     </code>
+     module also has
+     <code>
+      Queue
+     </code>
+     to store tasks.
+    </p>
+    <ul>
+     <li>
+      The normal
+      <code>
+       Queue
+      </code>
+      module do not include
+      <code>
+       .join()
+      </code>
+      and
+      <code>
+       .task_done()
+      </code>
+      methods.
+     </li>
+     <li>
+      Use
+      <code>
+       JoinableQueue
+      </code>
+      if you want those two methods.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      PoolExecutor
+     </strong>
+    </p>
+    <pre><code>from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def fib(n):
+    if n &lt;= 2:
+        return 1
+    return fib(n-1) + fib(n-2)
+
+with ProcessPoolExecutor(max_workers=3) as e:
+    for num, result in zip(range(25, 38), e.map(fib, range(25, 38))):
+        print(f'fib({num}) = {result}')
+</code></pre>
+    <p>
+     <code>
+      map
+     </code>
+     method is the same as the built-in
+     <code>
+      map
+     </code>
+     method, it’s very handy if the tasks are bounded with the same method, otherwise, there is another function ready to use:
+     <code>
+      submit
+     </code>
+     :
+    </p>
+    <pre><code>with ThreadPoolExecutor(max_workers=3) as executor:
+    future_to_num = {executor.submit(fib, num): num for num in NUMBERS}
+    for future in as_completed(future_to_num):
+        num = future_to_num[future]
+    try:
+        result = future.result()
+    except Exception as e:
+        print 'raise an exception: {}'.format(e)
+    else:
+        print 'fib({}) = {}'.format(num, result)
+</code></pre>
+    <p>
+     Both
+     <code>
+      Pool
+     </code>
+     and
+     <code>
+      PoolExecutor
+     </code>
+     have same perfoemance.
+    </p>
+   </li>
+  </ul>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad();
+  </script>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+   MathJax.Hub.Config({"showProcessingMessages" : false,"messageStyle" : "none","tex2jax": { inlineMath: [ [ "$", "$" ] ] }});
+  </script>
+ </body>
+</html>

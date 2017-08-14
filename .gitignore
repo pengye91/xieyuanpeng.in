@@ -20,12 +20,13 @@ appspec.yml
 .glide/
 
 logs/
+*/vendor/
 
 .xiyuanpeng_front/node_modules/
 .xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
 /xieyuanpeng.in/static/
 /xieyuanpeng.in/index.html
-*/vendors
+*/vendors/
 */node_modules/
 

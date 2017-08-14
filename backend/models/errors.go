@@ -6,6 +6,7 @@ type Error struct {
 	ErrorNo  uint8  `json:"errorno" bson:"errorno"`
 }
 
+// TODO: Need a more detailed Error model.
 func Err(errIn string) Error {
 	switch errIn {
 	case "1", "Results":

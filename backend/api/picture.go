@@ -21,6 +21,7 @@ type PictureAPI struct {
 
 type PictureAlias models.Picture
 
+
 func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}

@@ -16,6 +16,8 @@ type (
 		UpdatedAt time.Time     `json:"updated_at,omitempty" bson:"updated_at" form:"updated_at"`
 	}
 
+	VisitorNameId map[bson.ObjectId]string
+
 	Visitor struct {
 		Id       bson.ObjectId `json:"id" bson:"_id"  form:"id"`
 		Basic    VisitorBasic  `json:"basic" bson:"basic" form:"basic"`

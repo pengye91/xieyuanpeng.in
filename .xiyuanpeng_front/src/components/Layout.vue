@@ -119,7 +119,9 @@
       <Row type="flex" style="height: 100%;" justify="space-between" align="middle">
         <Col span="1">
         <div class="layout-logo">
-          <img src="../assets/logo.png" alt="logo" height="40" width="40">
+          <router-link :to="'/photography'">
+            <img src="../assets/logo.png" alt="logo" height="40" width="40">
+          </router-link>
         </div>
         </Col>
         <Col span="3" offset="1">

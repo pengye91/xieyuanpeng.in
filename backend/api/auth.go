@@ -98,6 +98,8 @@ func (this AuthAPI) Login(ctx *gin.Context) {
 
 	pass := libs.Password{}
 	var cp = pass.Compare(result.Pass, _pass)
+	println("xixi")
+	println(_pass)
 
 	if cp {
 		token := pass.Token()
