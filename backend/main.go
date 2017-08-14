@@ -9,6 +9,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/authorization"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 )
 
 func DbMain() {
@@ -31,6 +32,7 @@ func main() {
 	app := gin.Default()
 
 	go api.InitialSetsFromDB()
+	go utils.TestConsumer("nsq_reader", "chan1", utils.OnMessage)
 	app.Use(middlewares.CORSMiddleware)
 
 	apiV1 := app.Group("/api/v1")
