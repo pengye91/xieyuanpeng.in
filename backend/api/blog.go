@@ -21,17 +21,24 @@ type BlogAPI struct {
 
 type BlogAlias models.Blog
 
-func (this BlogAPI) GetAllPics(ctx *gin.Context) {
+func (this BlogAPI) GetAllBlogs(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
+
 	blogs := []models.Blog{}
 
-	if err := Db.C("blog").Find(nil).All(&blogs); err != nil {
+	if tag := ctx.Query("tag"); tag != "" {
+		if err := Db.C("blog").Find(bson.M{"tags": tag}).All(&blogs); err != nil {
+			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+			return
+		}
+	} else if err := Db.C("blog").Find(nil).All(&blogs); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, blogs)
-	Db.Close()
 }
 
 func (this BlogAPI) GetBlogById(ctx *gin.Context) {
@@ -60,6 +67,7 @@ func (this BlogAPI) PostBlogToMain(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 	}
 	blog.CreatedAt = time.Now()
+	blog.PublishedAt = time.Now()
 	blog.Id = bson.NewObjectId()
 
 	if err := Db.C("blog").Insert(&blog); err != nil {

@@ -6,23 +6,28 @@ import (
 	"strings"
 	"time"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type AuthAPI struct {
-	*gin.Context
-}
-type Set map[interface{}]bool
+type (
+	AuthAPI struct{ *gin.Context }
+	Set     map[interface{}]bool
+)
 
 var (
 	UsernameSet = make(Set)
 	EmailSet    = make(Set)
+
+	AllUserNamesRedisKey  = "allUserNames"
+	AllUserEmailsRedisKey = "allUserEmails"
 )
 
 type LoginInfo struct {
@@ -33,8 +38,11 @@ type LoginInfo struct {
 func (this AuthAPI) Register(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 
+	conn := utils.GlobalUserRedisPool.Get()
 	Db := db.MgoDb{}
 	Db.Init()
+
+	defer conn.Close()
 	defer Db.Close()
 
 	visitor := models.VisitorBasic{}
@@ -61,8 +69,20 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		session.Set("visitor", visitor.Id.String())
 		session.Save()
 
-		UsernameSet[visitor.Name] = true
-		EmailSet[visitor.Email] = true
+		//UsernameSet[visitor.Name] = true
+		//EmailSet[visitor.Email] = true
+
+		if reply, err := conn.Do("SADD", AllUserNamesRedisKey, visitor.Name); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(reply)
+		}
+
+		if reply, err := conn.Do("SADD", AllUserEmailsRedisKey, visitor.Email); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(reply)
+		}
 
 		ctx.JSON(http.StatusCreated, visitor)
 	}
@@ -171,30 +191,43 @@ func (this AuthAPI) LogOut(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"OK": "DONE"})
 }
 
+// Use redis set to check if username or email is a member
 func AutoSearch(ctx *gin.Context) {
+	conn := utils.GlobalUserRedisPool.Get()
+	defer conn.Close()
+
 	username := ctx.Query("username")
 	email := ctx.Query("email")
 
 	if username != "" {
-		if UsernameSet[username] {
+		if reply, err := redis.Bool(conn.Do("SISMEMBER", AllUserNamesRedisKey, username)); err != nil {
+			fmt.Println(err)
+		} else if reply {
 			ctx.JSON(http.StatusOK, gin.H{
 				username: "Registered",
 			})
+			return
 		} else {
 			ctx.JSON(http.StatusNoContent, gin.H{
 				username: "Not Registered",
 			})
+			return
 		}
-	} else if email != "" {
-		if EmailSet[email] {
+	}
+
+	if email != "" {
+		if reply, err := redis.Bool(conn.Do("SISMEMBER", AllUserEmailsRedisKey, email)); err != nil {
+			fmt.Println(err)
+		} else if reply {
 			ctx.JSON(http.StatusOK, gin.H{
 				email: "Ooops, Registered",
 			})
+			return
 		} else {
 			ctx.JSON(http.StatusNoContent, gin.H{
 				email: "OK, Not Registered",
 			})
-
+			return
 		}
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -230,5 +263,69 @@ func InitialSetsFromDB() {
 
 	for _, v := range emails {
 		EmailSet[v.Email] = true
+	}
+}
+
+// This time-consuming func should only run once at the beginning of the whole backend, and in a independent goroutine.
+func InitialUserInRedis() {
+	// get a connection from redis pool
+	conn := utils.GlobalUserRedisPool.Get()
+	Db := &db.MgoDb{}
+	Db.Init()
+
+	defer conn.Close()
+	defer Db.Close()
+
+	var (
+		usernames []struct {
+			Name string `json:"name" bson:"name"  form:"name"`
+		}
+		emails []struct {
+			Email string `json:"email" bson:"email"  form:"email"`
+		}
+		plainUsernames []string
+		plainEmails    []string
+	)
+
+	if usernameErr := Db.C("auth").Find(nil).Select(bson.M{"name": 1}).All(&usernames); usernameErr != nil {
+		fmt.Println(usernameErr)
+	} else {
+		for _, structedUsername := range usernames {
+			plainUsernames = append(plainUsernames, structedUsername.Name)
+		}
+	}
+	if emailErr := Db.C("auth").Find(nil).Select(bson.M{"email": 1}).All(&emails); emailErr != nil {
+		fmt.Println(emailErr)
+	} else {
+		for _, structedEmail := range emails {
+			plainEmails = append(plainEmails, structedEmail.Email)
+		}
+	}
+
+	// remove all before add
+	conn.Do("SREM", "allUserNames", usernames)
+	conn.Do("SREM", "allUserEmails", emails)
+	if reply, err := conn.Do("SREM", redis.Args{}.Add("allUserNames").AddFlat(usernames).AddFlat(plainUsernames)...); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(reply)
+	}
+	if reply, err := conn.Do("SREM", redis.Args{}.Add("allUserEmails").AddFlat(emails).AddFlat(plainEmails)...); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(reply)
+	}
+
+	// use a redis set to store all users' name
+	// another set to store email
+	if reply, err := conn.Do("SADD", redis.Args{}.Add("allUserNames").AddFlat(plainUsernames)...); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(reply)
+	}
+	if reply, err := conn.Do("SADD", redis.Args{}.Add("allUserEmails").AddFlat(plainEmails)...); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(reply)
 	}
 }

@@ -9,7 +9,7 @@ import (
 type Blog struct {
 	Id          bson.ObjectId   `json:"id" bson:"_id"  form:"id"`
 	Title       string          `json:"title" bson:"title"  form:"title"`
-	Tags        string          `json:"tags" bson:"tags"  form:"tags"`
+	Tags        []string        `json:"tags" bson:"tags"  form:"tags"`
 	Path        string          `json:"path" bson:"path"  form:"path"`
 	Like        int             `json:"like" bson:"like"  form:"like"`
 	Views       int             `json:"views" bson:"views"  form:"views"`

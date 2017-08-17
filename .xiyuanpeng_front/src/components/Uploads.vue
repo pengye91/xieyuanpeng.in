@@ -1,23 +1,13 @@
 <template>
   <div style="margin: 30px 10px">
-    <!--<div>-->
-    <!--<template v-if="item.status === 'finished'">-->
     <div v-for="(item, index) in withSrcUploadList" :key="index" style="margin-bottom: 20px" class="dropbox">
       <Row type="flex" justify="space-around" align="middle" style="margin-top: 10px">
         <Col span="20">
         <img :src="item.src" width="100%" style="max-height: 600px">
         </Col>
-        <!--// TODO: Don't know where the fuck is wrong-->
-        <!--<Button type="ghost" size="large" @click="preview(index)">-->
-        <!--<Icon type="ios-eye" size="20"></Icon>-->
-        <!--</Button>-->
-        <!--<Modal-->
-        <!--:value="modalIsVisible[index]">-->
-        <!--<img :src="item.src" width="100%">-->
-        <!--</Modal>-->
         <Col span="1">
         <Button type="ghost" size="large" @click="deleteItemFromUploadList(index)">
-          <Icon type="ios-trash" size="20"></Icon>
+          <Icon type="ios-trash" size="20" color="red"></Icon>
         </Button>
         </Col>
       </Row>
@@ -51,16 +41,6 @@
       </Col>
     </Row>
 
-
-    <!--<div class="demo-upload-list-cover">-->
-    <!--<Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>-->
-    <!--<Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>-->
-    <!--</div>-->
-    <!--</template>-->
-    <!--<template v-else>-->
-    <!--<Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>-->
-    <!--</template>-->
-    <!--</div>-->
     <Row>
       <Upload
         ref="upload"
@@ -237,7 +217,7 @@
     color: dimgray;
     padding: 10px 10px;
     min-height: 150px; /* minimum height */
-    max-height: 650px; /* maximum height */
+    max-height: 730px; /* maximum height */
     position: relative;
     margin: 10px 40px 20px 40px;
     /*cursor: pointer;*/

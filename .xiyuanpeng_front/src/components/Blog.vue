@@ -1,18 +1,22 @@
 <template>
   <div style="height: 100%;">
-    <div style="height: 94.5%; width: 100%;" >
-      <iframe :src="iframeSrc" height="100%" width="90%" frameborder="0"></iframe>
+    <div style="height: 94.5%; width: 100%;">
+      <Row type="flex" style="height: 100%;" justify="space-between">
+        <Col span="20" style="height: 100%;">
+        <iframe :src="iframeSrc + blogPath + '.html'" height="100%" width="100%" frameborder="0"></iframe>
+        </Col>
+        <Col span="4" class="comment-main">
+        <Row type="flex">
+          <Input @keydown.left.native.stop="" @keydown.right.native.stop="" type="textarea"
+                 :autosize="{minRows:19, maxRows:22}" placeholder="点击评论此图片" v-model="newPicComment" class="comment-box">
+          </Input>
+        </Row>
+        <Row type="flex" justify="end">
+          <Button type="primary" @click="commentOnPic" :disabled="commentIsEmpty" class="comment-button">评论</Button>
+        </Row>
+        </Col>
+      </Row>
     </div>
-    <Row type="flex" justify="start" align="bottom" style="height: 0">
-      <Col span="8" class="comment-box">
-      <Input @keydown.left.native.stop="" @keydown.right.native.stop="" type="textarea"
-             :autosize="{minRows:14, maxRows:14}" placeholder="点击评论此图片" v-model="newPicComment">
-      </Input>
-      <div>
-        <Button type="primary" @click="commentOnPic" :disabled="commentIsEmpty" class="comment-button">评论</Button>
-      </div>
-      </Col>
-    </Row>
     <Row type="flex" justify="space-between" align="top"
          style="border-bottom: 0.5px solid lightgray; height: 5.5%; min-height: 28px; max-height: 44px">
       <Col span="4" class="description-bar">
@@ -50,6 +54,12 @@
   </div>
 </template>
 <style scoped>
+  .blog-main {
+    height: 94.5%;
+    display: flex;
+
+  }
+
   .description-bar {
     margin-top: 0.5%;
     height: 4%;
@@ -65,60 +75,27 @@
     font-size: 16px;
   }
 
+  .comment-main {
+    display: flex;
+    flex-direction: column;
+    /*align-items: flex-end;*/
+    margin-top: 20px;
+  }
+
   .comment-box {
-    position: fixed;
-    left: 2px;
-    width: 12.2%;
-    height: 50%;
-    bottom: 50px;
+    margin-left: 10px;
   }
 
   .comment-button {
-    position: fixed;
-    left: 6%;
-    margin-top: 4px;
+    margin-top: 5px;
   }
 
-  .slider-img {
-    width: 90%;
-    max-height: 90%;
-  }
-
-  .is-src {
-    box-shadow: 8px 8px 8px #484848;
-    margin-bottom: 10%;
-  }
-
-  .img {
-    box-shadow: 15px 20px 15px #484848;
-    /*height: 100%;*/
-    /*width: auto;*/
-    max-height: 100%;
-    width: auto;
-    max-width: 100%;
-  }
-
-  .pre-button {
-    height: 100%;
-    width: 100%;
-  }
-
-  .next-button {
-    height: 100%;
-    width: 100%;
-  }
-
-  .ivu-btn-large {
-    font-size: 70px;
-    transform: scale(0.8, 1);
-  }
 </style>
 <script>
   import Comments from './Comments.vue'
-  import { EventBus } from '../store/EventBus'
-  import { config } from '../config/dev'
-  import { mapState } from 'vuex'
-  import VueFrame from 'vue-frame'
+  import {EventBus} from '../store/EventBus'
+  import {config} from '../config/dev'
+  import {mapState} from 'vuex'
 
   export default {
     data () {
@@ -126,7 +103,7 @@
         imgUrl: '1.jpg',
         src: 1,
         images: [],
-        iframeSrc: `${config.BASE_URL}/api/v1/html/test-markdown.html`,
+        iframeSrc: `${config.BASE_URL}/api/v1/html/`,
         urls: [],
         baseUrl: `${config.IMAGE_BASE_URL}`,
         imgs: [],
@@ -137,6 +114,7 @@
         blogContent: ''
       }
     },
+    props: ['blogPath'],
     computed: {
       likeIconType () {
         let userIdName = {}
@@ -293,8 +271,7 @@
       }
     },
     components: {
-      'comments': Comments,
-      'VueFrame': VueFrame
+      'comments': Comments
     }
   }
 </script>

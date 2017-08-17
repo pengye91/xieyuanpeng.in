@@ -17,7 +17,6 @@ const (
 	ALLOW_ORIGINS       = "http://localhost:8080"
 	BASE_MONGOURL       = "localhost:27017"
 	BASE_DOMAIN         = "localhost"
-	REDIS_URL           = "localhost:6379"
 	MONGO_AUTH_USERNAME = "root"
 	MONGO_AUTH_PASSWORD = "2901307001"
 	AWS_REGION          = "ap-northeast-2"

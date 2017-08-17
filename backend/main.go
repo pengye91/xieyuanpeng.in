@@ -19,6 +19,7 @@ func DbMain() {
 var (
 	auth = &api.AuthAPI{}
 	pic  = &api.PictureAPI{}
+	blog  = &api.BlogAPI{}
 )
 
 func main() {
@@ -30,8 +31,9 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
 
-	go api.InitialSetsFromDB()
+	go api.InitialUserInRedis()
 	app.Use(middlewares.CORSMiddleware)
+	app.Use(middlewares.TotalHitMiddleware())
 
 
 	apiV1 := app.Group("/api/v1")
@@ -60,6 +62,17 @@ func main() {
 		}
 		apiV1.POST("/picses", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), pic.PostPicsToMain)
 		apiV1.POST("/upload-pics", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), pic.UploadPicsToStorage)
+
+		b := apiV1.Group("/blogs")
+		{
+			b.POST("/", blog.PostBlogToMain)
+			b.GET("/", blog.GetAllBlogs)
+			b.GET("/:id", blog.GetBlogById)
+			b.PUT("/:id/like", blog.LikeBlog)
+			b.POST("/:id/comments", middlewares.JWTMiddlewareFactory(authorization.All).MiddlewareFunc(), blog.PostCommentToBlog)
+			b.PUT("/:id/comments", middlewares.JWTMiddlewareFactory(authorization.All).MiddlewareFunc(), blog.UpdateCommentByBlogId)
+			b.DELETE("/:id/comments", blog.DeleteCommentByBlogId)
+		}
 
 		u := apiV1.Group("/users")
 		{

@@ -2,12 +2,14 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
+import blogs from '../components/Blogs'
 import blog from '../components/Blog'
-import Operations from '../components/Operations'
+// import Operations from '../components/Operations'
 // import Uploads from '../components/Uploads'
-import SideMenuView from '../components/SideMenuView'
-import AllUploads from '../components/AllUploads'
-import {config} from '@/config/dev'
+// import SideMenuView from '../components/SideMenuView'
+// import AllUploads from '../components/AllUploads'
+// import {config} from '@/config/dev'
+import {adminRouter} from './admin.js'
 Vue.use(Router)
 
 const scrollBehavior = (to, from, savedPosition) => {
@@ -31,57 +33,7 @@ export default new Router({
   mode: 'history',
   scrollBehavior,
   routes: [
-    {
-      path: '/admin',
-      name: 'admin',
-      redirect: {
-        name: 'operation',
-        params: {
-          post: Object.keys(config.SIDE_MENU_ITEMS)[0],
-          sideMenu: config.SIDE_MENU_ITEMS[Object.keys(config.SIDE_MENU_ITEMS)[0]][0],
-          operation: 'all'
-        }
-      }
-    },
-    {
-      path: '/admin/:post',
-      name: 'post',
-      component: SideMenuView,
-      redirect: to => {
-        return {
-          name: 'operation',
-          params: {
-            post: to.params.post,
-            sideMenu: config.SIDE_MENU_ITEMS[to.params.post][0],
-            operation: 'all'
-          }
-        }
-      },
-      children: [
-        {
-          path: ':sideMenu',
-          component: AllUploads,
-          name: 'sideMenu',
-          redirect: to => {
-            return {
-              name: 'operation',
-              params: {
-                post: to.params.post,
-                sideMenu: to.params.sideMenu,
-                operation: 'all'
-              }
-            }
-          },
-          children: [
-            {
-              path: ':operation',
-              name: 'operation',
-              component: Operations
-            }
-          ]
-        }
-      ]
-    },
+    ...adminRouter,
     {
       path: '/blog',
       name: 'blog',
@@ -91,7 +43,14 @@ export default new Router({
         {
           path: 'python',
           name: 'python',
-          component: blog
+          component: blogs,
+          props: {'tag': 'python'}
+        },
+        {
+          path: 'python/:blogPath',
+          name: 'blogPath',
+          component: blog,
+          props: (route) => ({'blogPath': route.params.blogPath})
         },
         {
           path: 'golang',
