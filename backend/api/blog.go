@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,9 +13,9 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 	"gopkg.in/mgo.v2/bson"
-	"path/filepath"
-	"strconv"
 )
+
+// TODO: Add cache
 
 type BlogAPI struct {
 	*gin.Context

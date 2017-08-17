@@ -33,7 +33,7 @@ func main() {
 
 	go api.InitialUserInRedis()
 	app.Use(middlewares.CORSMiddleware)
-	app.Use(middlewares.TotalHitMiddleware())
+	app.Use(middlewares.GlobalStatisticsMiddleware())
 
 
 	apiV1 := app.Group("/api/v1")
