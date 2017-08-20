@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"strconv"
 )
 
 var (
@@ -20,7 +21,6 @@ func GlobalStatisticsMiddleware() gin.HandlerFunc {
 		go TotalHitsCount()
 		go TimeSliceCount()
 		go GetTimeSliceCount(&timeSliceCountChan)
-		//go ConsumeFromChan(&timeSliceCountChan)
 		ctx.Next()
 	}
 }
@@ -36,6 +36,7 @@ func TotalHitsCount() {
 }
 
 // update the hit number when got hit
+// Counter.
 func TimeSliceCount() {
 	conn := utils.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
@@ -46,7 +47,7 @@ func TimeSliceCount() {
 		// why starting with 08:00?
 		preNowInUnix := pre * (now / pre)
 		preNowHuman := time.Unix(preNowInUnix, 0).Format("2006/01/02/15-04-05")
-		hash := "from-" + preNowHuman + ":hits"
+		hash := strconv.FormatInt(pre, 10) + ":hits"
 		conn.Send("ZADD", "known:", 0, hash)
 		conn.Send("HINCRBY", "count:"+hash, preNowHuman, 1)
 	}
@@ -58,18 +59,19 @@ func TimeSliceCount() {
 }
 
 // Get allTimeSliceCount from Redis, not sorted
+// Counter.
 func GetTimeSliceCount(c *chan map[string]int64) {
 	conn := utils.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
 	defer conn.Close()
 
-	now := time.Now().Unix()
-	for i, pre := range configs.PRECISION {
-		fmt.Println(i)
+	for _, pre := range configs.PRECISION {
 		// why starting with 08:00?
-		preNowInUnix := pre * (now / pre)
-		preNowHuman := time.Unix(preNowInUnix, 0).Format("2006/01/02/15-04-05")
-		hash := "from-" + preNowHuman + ":hits"
+
+		// "count" is first type layer.
+		// "pre" is second layer.
+		// "hits" is type.
+		hash := strconv.FormatInt(pre, 10) + ":hits"
 
 		// Use Int64Map to get "HGETALL" results
 		if timeSliceCountMaps, err := redis.Int64Map(conn.Do("HGETALL", "count:"+hash)); err != nil {
@@ -78,16 +80,17 @@ func GetTimeSliceCount(c *chan map[string]int64) {
 			*c <- timeSliceCountMaps
 		}
 	}
-
 	go ConsumeFromChan(c)
 }
 
+// Counter helper.
 func ConsumeFromChan(c *chan map[string]int64) {
 	// TODO: replace this into real logic
 	for t := range *c {
 		fmt.Println(t)
-		for timeSlice, hits := range t {
-			fmt.Printf("HITS IN %s: %d \n", timeSlice, hits)
-		}
+		//for timeSlice, hits := range t {
+		//	fmt.Printf("HITS IN %s: %d \n", timeSlice, hits)
+		//}
 	}
 }
+

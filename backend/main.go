@@ -9,6 +9,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/authorization"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils"
 )
 
 func DbMain() {
@@ -32,6 +33,7 @@ func main() {
 	app := gin.Default()
 
 	go api.InitialUserInRedis()
+	go utils.CleanTimeSlice()
 	app.Use(middlewares.CORSMiddleware)
 	app.Use(middlewares.GlobalStatisticsMiddleware())
 
