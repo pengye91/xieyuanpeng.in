@@ -8,11 +8,13 @@ import (
 var (
 	dialConnectTimeout       redis.DialOption = redis.DialConnectTimeout(configs.RedisTimeout)
 	dialUserDatabase         redis.DialOption = redis.DialDatabase(configs.UserRelateDatabase)
-	dialStaticDatabase       redis.DialOption = redis.DialDatabase(configs.StaticRelateDatabase)
+	dialStatisticDatabase    redis.DialOption = redis.DialDatabase(configs.StatisticRelateDatabase)
+	dialIPDatabase           redis.DialOption = redis.DialDatabase(configs.IPRelateDatabase)
 	dialReadTimeout          redis.DialOption = redis.DialReadTimeout(configs.RedisTimeout)
 	dialWriteTimeout         redis.DialOption = redis.DialWriteTimeout(configs.RedisTimeout)
 	GlobalUserRedisPool      *redis.Pool      = XypRedisUserPool(configs.REDIS_URL)
-	GlobalStatisticRedisPool *redis.Pool      = XypRedisStaticPool(configs.REDIS_URL)
+	GlobalStatisticRedisPool *redis.Pool      = XypRedisStatisticPool(configs.REDIS_URL)
+	GlobalIPRedisPool        *redis.Pool      = XypRedisIPPool(configs.REDIS_URL)
 )
 
 func XypRedisUserPool(addr string) *redis.Pool {
@@ -29,9 +31,23 @@ func XypRedisUserPool(addr string) *redis.Pool {
 	}
 }
 
-func XypRedisStaticPool(addr string) *redis.Pool {
+func XypRedisStatisticPool(addr string) *redis.Pool {
 	dialOptions := []redis.DialOption{
-		dialConnectTimeout, dialStaticDatabase, dialReadTimeout, dialWriteTimeout,
+		dialConnectTimeout, dialStatisticDatabase, dialReadTimeout, dialWriteTimeout,
+	}
+	return &redis.Pool{
+		// Basic dial configuration
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", addr, dialOptions...)
+		},
+		MaxIdle:     configs.RedisPoolMaxIdleNumber,
+		IdleTimeout: configs.RedisPoolIdleTimeout,
+	}
+}
+
+func XypRedisIPPool(addr string) *redis.Pool {
+	dialOptions := []redis.DialOption{
+		dialConnectTimeout, dialIPDatabase, dialReadTimeout, dialWriteTimeout,
 	}
 	return &redis.Pool{
 		// Basic dial configuration
