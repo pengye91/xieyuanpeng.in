@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -20,7 +21,7 @@ func ipToScore(ip string) (score int64) {
 		if field, err := strconv.ParseInt(v, 10, 64); err != nil {
 			fmt.Println(err)
 		} else {
-			score = score * 256 + field
+			score = score*256 + field
 		}
 	}
 	return
@@ -68,6 +69,7 @@ func ImportIPToRedis(filename string) error {
 	fmt.Println(header)
 	count := 0
 	conn.Do("DEL", "IP2CityID")
+	zaddPipe := 0
 
 	for rec := range ch {
 		count++
@@ -89,11 +91,23 @@ func ImportIPToRedis(filename string) error {
 		}
 
 		cityID = rec[1] + "_" + strconv.Itoa(count)
-		if _, err := conn.Do("ZADD", "IP2CityID", startIPScore, cityID); err != nil {
+
+		if err := conn.Send("ZADD", "IP2CityID", startIPScore, cityID); err != nil {
 			fmt.Println("ZADD cityID startIPScore err:")
 			fmt.Println(err)
 			return err
+		} else {
+			zaddPipe++
 		}
+		if zaddPipe == 100 {
+			if _, err := conn.Do(""); err != nil {
+				fmt.Println("ZADD cityID startIPScore err:")
+				fmt.Println(err)
+				return err
+			}
+			zaddPipe = 0
+		}
+
 	}
 	return nil
 }
@@ -137,13 +151,14 @@ func ImportCitiesToRedis(filename string) error {
 
 func FindCityByIP(ip string) ([]string, error) {
 	conn := GlobalIPRedisPool.Get()
-	conn.Close()
+	defer conn.Close()
 	var (
-		cityID string
+		cityID   string
 		cityInfo []string
 	)
 
 	ipScore := ipToScore(ip)
+	fmt.Println(ipScore)
 	if reply, err := redis.Strings(conn.Do("ZREVRANGEBYSCORE", "IP2CityID", ipScore, 0, "LIMIT", 0, 1)); err != nil {
 		fmt.Println(err)
 		return cityInfo, err
@@ -151,11 +166,11 @@ func FindCityByIP(ip string) ([]string, error) {
 		cityID = strings.Split(reply[0], "_")[0]
 	}
 
-	if reply, err := redis.Bytes( conn.Do("HGET", "CityID2CityName", cityID)); err != nil {
+	if reply, err := redis.Bytes(conn.Do("HGET", "CityID2CityName:", cityID)); err != nil {
 		fmt.Println(err)
 		return cityInfo, err
 	} else {
-		err := json.Unmarshal(reply, cityInfo)
+		err := json.Unmarshal(reply, &cityInfo)
 		if err != nil {
 			fmt.Println(err)
 			return cityInfo, err
@@ -164,3 +179,6 @@ func FindCityByIP(ip string) ([]string, error) {
 	}
 }
 
+//func AutoComplete(prefix string) {
+//	strings.S
+//}

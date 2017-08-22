@@ -36,16 +36,16 @@ func main() {
 	go utils.CleanTimeSlice()
 
 	// this two function only need to run one time.
-	go utils.ImportCitiesToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Locations-zh-CN.csv")
-	go utils.ImportIPToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Blocks-IPv4.csv")
+	//go utils.ImportCitiesToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Locations-zh-CN.csv")
+	//go utils.ImportIPToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Blocks-IPv4.csv")
 	app.Use(middlewares.CORSMiddleware)
 	app.Use(middlewares.GlobalStatisticsMiddleware())
 
-	//if cityInfo, err := utils.FindCityByIP("110.185.16.73"); err != nil {
-	//	fmt.Println(err)
-	//} else {
-	//	fmt.Println(cityInfo)
-	//}
+	if cityInfo, err := utils.FindCityByIP("110.185.16.73"); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(cityInfo)
+	}
 
 
 	apiV1 := app.Group("/api/v1")
