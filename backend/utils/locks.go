@@ -9,11 +9,32 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func AcquireLock(lockname string, acquireTimeout int64, lockTimeout int64) (string, error) {
+func AcquireLock(lockname string, acquireTimeout int64) (string, error) {
 	conn := GlobalLockRedisPool.Get()
 	defer conn.Close()
 
-	identifier := string(uuid.NewV4())
+	identifier := uuid.NewV4().String()
+
+	endTime := time.Now().Unix() + acquireTimeout
+
+	for time.Now().Unix() < endTime {
+		if reply, err := redis.Bool(conn.Do("SET", "lock:"+lockname, identifier, "NX")); err != nil {
+			fmt.Println("setnx wrong:")
+			fmt.Println(err)
+			time.Sleep(1 * time.Millisecond)
+		} else {
+			fmt.Println(reply)
+			return identifier, nil
+		}
+	}
+	return "", errors.New("TimeOut")
+}
+
+func AcquireLockWithTimeout(lockname string, acquireTimeout int64, lockTimeout int64) (string, error) {
+	conn := GlobalLockRedisPool.Get()
+	defer conn.Close()
+
+	identifier := uuid.NewV4().String()
 
 	endTime := time.Now().Unix() + acquireTimeout
 
@@ -49,7 +70,6 @@ func ReleaseLock(lockname string, identifier string) bool {
 				fmt.Println(reply)
 				return true
 			}
-
 		}
 		break
 	}

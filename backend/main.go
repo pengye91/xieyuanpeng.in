@@ -20,7 +20,7 @@ func DbMain() {
 var (
 	auth = &api.AuthAPI{}
 	pic  = &api.PictureAPI{}
-	blog  = &api.BlogAPI{}
+	blog = &api.BlogAPI{}
 )
 
 func main() {
@@ -47,6 +47,19 @@ func main() {
 		fmt.Println(cityInfo)
 	}
 
+	for i := 0; i < 20; i++ {
+		if id, err := utils.AcquireFairSemaphore("testSema", 10, 10); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(id)
+			if in, err := utils.ReleaseFairSemaphore("testSema", id); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(in)
+			}
+		}
+	}
+	//utils.ReleaseSemaphoreBasedOnTime("testSema", "")
 
 	apiV1 := app.Group("/api/v1")
 	{
