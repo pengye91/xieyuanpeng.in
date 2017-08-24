@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -9,7 +10,9 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/authorization"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/background"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/sync"
 )
 
 func DbMain() {
@@ -33,7 +36,7 @@ func main() {
 	app := gin.Default()
 
 	go api.InitialUserInRedis()
-	go utils.CleanTimeSlice()
+	go background.CleanTimeSlice()
 
 	// this two function only need to run one time.
 	//go utils.ImportCitiesToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Locations-zh-CN.csv")
@@ -41,22 +44,22 @@ func main() {
 	app.Use(middlewares.CORSMiddleware)
 	app.Use(middlewares.GlobalStatisticsMiddleware())
 
-	if cityInfo, err := utils.FindCityByIP("110.185.16.73"); err != nil {
+	if cityInfo, err := cache.FindCityByIP("110.185.16.73"); err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println(cityInfo)
 	}
 
 	for i := 0; i < 20; i++ {
-		if id, err := utils.AcquireFairSemaphore("testSema", 10, 10); err != nil {
+		if id, err := sync.AcquireFairSemaphore("testSema", 10, 30*time.Second); err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println(id)
-			if in, err := utils.ReleaseFairSemaphore("testSema", id); err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Println(in)
-			}
+			//if in, err := utils.ReleaseFairSemaphore("testSema", id); err != nil {
+			//	fmt.Println(err)
+			//} else {
+			//	fmt.Println(in)
+			//}
 		}
 	}
 	//utils.ReleaseSemaphoreBasedOnTime("testSema", "")

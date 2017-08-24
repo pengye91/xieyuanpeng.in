@@ -1,20 +1,22 @@
-package utils
+package background
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
-	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"math"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/pengye91/xieyuanpeng.in/backend/configs"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 )
 
 // Create a background goroutine deleting Redis keys periodically.
 // TODO: add logging
 func CleanTimeSlice() {
-	conn := GlobalStatisticRedisPool.Get()
+	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
 	defer conn.Close()
 

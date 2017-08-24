@@ -7,7 +7,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"strconv"
 )
 
@@ -20,13 +20,13 @@ func GlobalStatisticsMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		go TotalHitsCount()
 		go TimeSliceCount()
-		go GetTimeSliceCount(&timeSliceCountChan)
+		//go GetTimeSliceCount(&timeSliceCountChan)
 		ctx.Next()
 	}
 }
 
 func TotalHitsCount() {
-	conn := utils.GlobalStatisticRedisPool.Get()
+	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
 	defer conn.Close()
 
@@ -38,7 +38,7 @@ func TotalHitsCount() {
 // update the hit number when got hit
 // Counter.
 func TimeSliceCount() {
-	conn := utils.GlobalStatisticRedisPool.Get()
+	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
 	defer conn.Close()
 
@@ -61,7 +61,7 @@ func TimeSliceCount() {
 // Get allTimeSliceCount from Redis, not sorted
 // Counter.
 func GetTimeSliceCount(c *chan map[string]int64) {
-	conn := utils.GlobalStatisticRedisPool.Get()
+	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
 	defer conn.Close()
 

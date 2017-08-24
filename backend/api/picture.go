@@ -3,16 +3,16 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/aws"
 	"gopkg.in/mgo.v2/bson"
-	"strconv"
-	"path/filepath"
 )
 
 type PictureAPI struct {
@@ -20,7 +20,6 @@ type PictureAPI struct {
 }
 
 type PictureAlias models.Picture
-
 
 func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	// TODO: add authentication
@@ -125,7 +124,7 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	}
 
 	if configs.STATIC_S3_STORAGE {
-		utils.UploadToS3(files, contentTypes, intSizes)
+		aws.UploadToS3(files, contentTypes, intSizes)
 	} else {
 		for _, file := range files {
 			fmt.Println("filename: " + file.Filename)

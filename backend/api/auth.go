@@ -13,7 +13,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -38,7 +38,7 @@ type LoginInfo struct {
 func (this AuthAPI) Register(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 
-	conn := utils.GlobalUserRedisPool.Get()
+	conn := cache.GlobalUserRedisPool.Get()
 	Db := db.MgoDb{}
 	Db.Init()
 
@@ -193,7 +193,7 @@ func (this AuthAPI) LogOut(ctx *gin.Context) {
 
 // Use redis set to check if username or email is a member
 func AutoSearch(ctx *gin.Context) {
-	conn := utils.GlobalUserRedisPool.Get()
+	conn := cache.GlobalUserRedisPool.Get()
 	defer conn.Close()
 
 	username := ctx.Query("username")
@@ -269,7 +269,7 @@ func InitialSetsFromDB() {
 // This time-consuming func should only run once at the beginning of the whole backend, and in a independent goroutine.
 func InitialUserInRedis() {
 	// get a connection from redis pool
-	conn := utils.GlobalUserRedisPool.Get()
+	conn := cache.GlobalUserRedisPool.Get()
 	Db := &db.MgoDb{}
 	Db.Init()
 

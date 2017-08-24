@@ -11,7 +11,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/aws"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -138,7 +138,7 @@ func (this BlogAPI) UploadBlogsToStorage(ctx *gin.Context) {
 	}
 
 	if configs.STATIC_S3_STORAGE {
-		utils.UploadToS3(files, contentTypes, intSizes)
+		aws.UploadToS3(files, contentTypes, intSizes)
 	} else {
 		for _, file := range files {
 			fmt.Println("filename: " + file.Filename)

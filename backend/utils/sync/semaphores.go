@@ -1,4 +1,4 @@
-package utils
+package sync
 
 import (
 	"fmt"
@@ -7,17 +7,18 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/kataras/go-errors"
 	"github.com/satori/go.uuid"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 )
 
-func AcquireSemaphoreBasedOnTime(semaName string, limit int, semaExpire int64) (string, error) {
-	conn := GlobalLockRedisPool.Get()
+func AcquireSemaphoreBasedOnTime(semaName string, limit int, semaExpire time.Duration) (string, error) {
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	identifier := uuid.NewV4().String()
 	now := time.Now().UnixNano()
 
 	conn.Send("MULTI")
-	conn.Send("ZREMRANGEBYSCORE", semaName, 0, now-(semaExpire*1e9)) // clean expired semaphore
+	conn.Send("ZREMRANGEBYSCORE", semaName, 0, now-int64(semaExpire)) // clean expired semaphore
 	conn.Send("ZADD", semaName, now, identifier)                     // trying to acquire a semaphore
 	conn.Send("ZRANK", semaName, identifier)
 	if replies, err := redis.Ints(conn.Do("EXEC")); err != nil {
@@ -35,7 +36,7 @@ func AcquireSemaphoreBasedOnTime(semaName string, limit int, semaExpire int64) (
 }
 
 func ReleaseSemaphoreBasedOnTime(semaName string, identifier string) (int, error) {
-	conn := GlobalLockRedisPool.Get()
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	reply, err := redis.Int(conn.Do("ZREM", semaName, identifier))
@@ -53,8 +54,8 @@ func ReleaseSemaphoreBasedOnTime(semaName string, identifier string) (int, error
 // return identifier string and error:
 // 	1. Acquire success: return identifier string and nil.
 //	2. Acquire fail: return "" and the corresponding error.
-func AcquireFairSemaphore(semaName string, limit int, semaExpire int64) (string, error) {
-	conn := GlobalLockRedisPool.Get()
+func AcquireFairSemaphore(semaName string, limit int, semaExpire time.Duration) (string, error) {
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	identifier := uuid.NewV4().String()
@@ -63,7 +64,7 @@ func AcquireFairSemaphore(semaName string, limit int, semaExpire int64) (string,
 	counter := semaName + ":counter"
 
 	conn.Send("MULTI")
-	conn.Send("ZREMRANGEBYSCORE", semaName, 0, now-(semaExpire*1e9))                 // clean expired semaphore
+	conn.Send("ZREMRANGEBYSCORE", semaName, 0, now-int64(semaExpire))                 // clean expired semaphore
 	conn.Send("ZINTERSTORE", counterZset, 2, counterZset, semaName, "WEIGHTS", 1, 0) // clean expired semaphore, 妙啊
 	conn.Send("INCR", counter)
 	replies, err0 := redis.Ints(conn.Do("EXEC"))
@@ -96,7 +97,7 @@ func AcquireFairSemaphore(semaName string, limit int, semaExpire int64) (string,
 // 	1. If release succeed, return true and nil.
 // 	2. If failed, return false and error.
 func ReleaseFairSemaphore(semaName string, identifier string) (bool, error) {
-	conn := GlobalLockRedisPool.Get()
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	counterZset := semaName + ":owner"
@@ -118,7 +119,7 @@ func ReleaseFairSemaphore(semaName string, identifier string) (bool, error) {
 // if the identifier is expired, return false.
 // else, just update the score of the identifier in semaName zset.
 func RefreshFairSemaphore(semaName string, identifier string) (bool, error) {
-	conn := GlobalLockRedisPool.Get()
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 	now := time.Now().UnixNano()
 
@@ -137,16 +138,19 @@ func RefreshFairSemaphore(semaName string, identifier string) (bool, error) {
 	return true, nil
 }
 
-func AcquireSemaphoreWithLock(semaName string, limit int, semaExpire int64) (string, error) {
-	conn := GlobalLockRedisPool.Get()
+func AcquireSemaphoreWithLock(semaName string, limit int, semaExpire time.Duration) (string, error) {
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	// true key name of the lock is "lock:{semaName}" instead of just sameName.
-	_, err := AcquireLock(semaName, 0.01)
+	lockId, err := AcquireLock(semaName, 10 * time.Millisecond)
 	if err != nil {
 		fmt.Println("AcquireLock err:")
 		fmt.Println(err)
 		return "", err
+	}
+	if released := ReleaseLock(semaName, lockId); !released {
+		return "", errors.New("Release Lock Failed")
 	}
 	id, err0 := AcquireFairSemaphore(semaName, limit, semaExpire)
 	if err0 != nil {

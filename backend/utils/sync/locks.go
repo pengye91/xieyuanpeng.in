@@ -1,4 +1,4 @@
-package utils
+package sync
 
 import (
 	"errors"
@@ -6,18 +6,19 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"github.com/satori/go.uuid"
 )
 
-func AcquireLock(lockname string, acquireTimeout int64) (string, error) {
-	conn := GlobalLockRedisPool.Get()
+func AcquireLock(lockname string, acquireTimeout time.Duration) (string, error) {
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	identifier := uuid.NewV4().String()
 
-	endTime := time.Now().Unix() + acquireTimeout
+	endTime := time.Now().UnixNano() + int64(acquireTimeout)
 
-	for time.Now().Unix() < endTime {
+	for time.Now().UnixNano() < endTime {
 		if reply, err := redis.Bool(conn.Do("SET", "lock:"+lockname, identifier, "NX")); err != nil {
 			fmt.Println("setnx wrong:")
 			fmt.Println(err)
@@ -30,15 +31,15 @@ func AcquireLock(lockname string, acquireTimeout int64) (string, error) {
 	return "", errors.New("TimeOut")
 }
 
-func AcquireLockWithTimeout(lockname string, acquireTimeout int64, lockTimeout int64) (string, error) {
-	conn := GlobalLockRedisPool.Get()
+func AcquireLockWithTimeout(lockname string, acquireTimeout time.Duration, lockTimeout time.Duration) (string, error) {
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	identifier := uuid.NewV4().String()
 
-	endTime := time.Now().Unix() + acquireTimeout
+	endTime := time.Now().UnixNano() + int64(acquireTimeout)
 
-	for time.Now().Unix() < endTime {
+	for time.Now().UnixNano() < endTime {
 		if reply, err := redis.Bool(conn.Do("SET", "lock:"+lockname, identifier, "EX", lockTimeout, "NX")); err != nil {
 			fmt.Println("setnx wrong:")
 			fmt.Println(err)
@@ -52,7 +53,7 @@ func AcquireLockWithTimeout(lockname string, acquireTimeout int64, lockTimeout i
 }
 
 func ReleaseLock(lockname string, identifier string) bool {
-	conn := GlobalLockRedisPool.Get()
+	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()
 
 	lockname = "lock:" + lockname
@@ -63,6 +64,9 @@ func ReleaseLock(lockname string, identifier string) bool {
 			conn.Send("MULTI")
 			conn.Send("DEL", lockname)
 			if reply, err := conn.Do("EXEC"); err != nil {
+
+				// err != nil means that the transaction failed.
+				// should repeat the operation
 				fmt.Println("EXEC err:")
 				fmt.Println(err)
 				continue
