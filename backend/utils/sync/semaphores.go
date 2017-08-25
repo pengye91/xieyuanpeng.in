@@ -94,8 +94,8 @@ func AcquireFairSemaphore(semaName string, limit int, semaExpire time.Duration) 
 }
 
 // return:
-// 	1. If release succeed, return true and nil.
-// 	2. If failed, return false and error.
+// 	- If release succeed, return true and nil.
+// 	- If failed, return false and error.
 func ReleaseFairSemaphore(semaName string, identifier string) (bool, error) {
 	conn := cache.GlobalLockRedisPool.Get()
 	defer conn.Close()

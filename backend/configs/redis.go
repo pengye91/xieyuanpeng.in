@@ -7,6 +7,7 @@ const (
 	StatisticRelateDatabase = 3
 	IPRelateDatabase        = 4
 	LockRelateDatabase      = 5
+	MQRelateDatabase        = 6
 	RedisTimeout            = 10 * time.Second
 	RedisPoolMaxIdleNumber  = 20
 	// 0 means never close idle connections

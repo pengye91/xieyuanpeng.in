@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -12,7 +12,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/background"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils/sync"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/mq"
 )
 
 func DbMain() {
@@ -38,6 +38,16 @@ func main() {
 	go api.InitialUserInRedis()
 	go background.CleanTimeSlice()
 
+	go mq.ProcessEmailQueue()
+
+	for i := 0; i <20; i++ {
+		var m =  make(map[string]string)
+		m[strconv.Itoa(i)] = strconv.Itoa(i + 100)
+		m[strconv.Itoa(i + 20)] = strconv.Itoa(i + 200)
+		m[strconv.Itoa(i + 30)] = strconv.Itoa(i + 300)
+		mq.SendEmailViaQueue(m)
+	}
+
 	// this two function only need to run one time.
 	//go utils.ImportCitiesToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Locations-zh-CN.csv")
 	//go utils.ImportIPToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Blocks-IPv4.csv")
@@ -50,18 +60,16 @@ func main() {
 		fmt.Println(cityInfo)
 	}
 
-	for i := 0; i < 20; i++ {
-		if id, err := sync.AcquireFairSemaphore("testSema", 10, 30*time.Second); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(id)
-			//if in, err := utils.ReleaseFairSemaphore("testSema", id); err != nil {
-			//	fmt.Println(err)
-			//} else {
-			//	fmt.Println(in)
-			//}
-		}
-	}
+	T := mq.CreateTT(1, 2)
+	T.TestTT()
+
+	//for i := 0; i < 20; i++ {
+	//	if id, err := sync.AcquireFairSemaphore("testSema", 10, 30*time.Second); err != nil {
+	//		fmt.Println(err)
+	//	} else {
+	//		fmt.Println(id)
+	//	}
+	//}
 	//utils.ReleaseSemaphoreBasedOnTime("testSema", "")
 
 	apiV1 := app.Group("/api/v1")
