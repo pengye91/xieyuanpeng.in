@@ -3,11 +3,11 @@ package mq
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
-	"time"
 )
 
 // Use RPUSH to push an email content into a redis list.
