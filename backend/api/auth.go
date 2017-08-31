@@ -14,6 +14,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -69,13 +70,19 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		session.Set("visitor", visitor.Id.String())
 		session.Save()
 
-		//UsernameSet[visitor.Name] = true
-		//EmailSet[visitor.Email] = true
-
 		if reply, err := conn.Do("SADD", AllUserNamesRedisKey, visitor.Name); err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("SADD alluserNamesRedisKey Error",
+				"module", "redis",
+				"time", time.Now(),
+			)
+			ctx.JSON(http.StatusInternalServerError, err)
+			return
 		} else {
-			fmt.Println(reply)
+			log.LoggerSugar.Infow("SADD alluserNamesRedisKey succeed",
+				"module", "redis",
+				"time", time.Now(),
+				"reply", reply,
+			)
 		}
 
 		if reply, err := conn.Do("SADD", AllUserEmailsRedisKey, visitor.Email); err != nil {

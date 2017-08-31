@@ -12,6 +12,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/aws"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -28,8 +29,16 @@ func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	pics := []models.Picture{}
 
 	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
+		log.LoggerSugar.Errorw("GetAllPics error",
+			"time", time.Now(),
+			"err", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
+	log.LoggerSugar.Infow("GetAllPics Succeed",
+		"time", time.Now(),
+	)
 	ctx.JSON(http.StatusOK, pics)
 	Db.Close()
 }
@@ -44,6 +53,7 @@ func (this PictureAPI) GetPicById(ctx *gin.Context) {
 
 	if err := Db.C("picture").FindId(bson.ObjectIdHex(picId)).One(&pic); err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, pic)
 	Db.Close()

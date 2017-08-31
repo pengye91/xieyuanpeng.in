@@ -6,8 +6,8 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/kataras/go-errors"
-	"github.com/satori/go.uuid"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
+	"github.com/satori/go.uuid"
 )
 
 func AcquireSemaphoreBasedOnTime(semaName string, limit int, semaExpire time.Duration) (string, error) {

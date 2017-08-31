@@ -7,10 +7,11 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
+	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/pengye91/xieyuanpeng.in/backend/libs"
 )
 
 var user models.VisitorBasic
@@ -40,10 +41,18 @@ var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 
 		if strings.Contains(loginID, "@") {
 			if err := Db.C("auth").Find(bson.M{"email": loginID}).One(&user); err != nil {
+				log.LoggerSugar.Errorw("Login Error",
+					"time", time.Now(),
+					"err", err,
+				)
 				return loginID, false
 			}
 		} else {
 			if err := Db.C("auth").Find(bson.M{"name": loginID}).One(&user); err != nil {
+				log.LoggerSugar.Errorw("Login Error",
+					"time", time.Now(),
+					"err", err,
+				)
 				return loginID, false
 			}
 		}
@@ -83,7 +92,7 @@ var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 	TimeFunc:      time.Now,
 }
 
-func JWTMiddlewareFactory(authorizator func (string, *gin.Context) bool) *jwt.GinJWTMiddleware {
+func JWTMiddlewareFactory(authorizator func(string, *gin.Context) bool) *jwt.GinJWTMiddleware {
 	authorizatorVaryMiddleware := JWTAuthMiddleware
 	authorizatorVaryMiddleware.Authorizator = authorizator
 	return &authorizatorVaryMiddleware

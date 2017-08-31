@@ -14,6 +14,7 @@ type AwsConfigs struct {
 }
 
 const (
+	DEBUG               = true
 	ALLOW_ORIGINS       = "http://localhost:8080"
 	BASE_MONGOURL       = "localhost:27017"
 	BASE_DOMAIN         = "localhost"

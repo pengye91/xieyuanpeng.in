@@ -2,13 +2,13 @@ package middlewares
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
-	"strconv"
 )
 
 var (

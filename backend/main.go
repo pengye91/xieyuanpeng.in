@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,21 +31,12 @@ func main() {
 		fmt.Println(envErr)
 	}
 	DbMain()
-	//gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
+	app.Use(middlewares.GlobalLoggingMiddleware())
 
 	go api.InitialUserInRedis()
 	go background.CleanTimeSlice()
-
-	go mq.ProcessEmailQueue()
-
-	for i := 0; i <20; i++ {
-		var m =  make(map[string]string)
-		m[strconv.Itoa(i)] = strconv.Itoa(i + 100)
-		m[strconv.Itoa(i + 20)] = strconv.Itoa(i + 200)
-		m[strconv.Itoa(i + 30)] = strconv.Itoa(i + 300)
-		mq.SendEmailViaQueue(m)
-	}
 
 	// this two function only need to run one time.
 	//go utils.ImportCitiesToRedis("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/backend/utils/ip_scripts/GeoLite2-City-CSV_20170801/GeoLite2-City-Locations-zh-CN.csv")

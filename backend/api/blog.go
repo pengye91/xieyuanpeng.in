@@ -12,6 +12,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/models"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/aws"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -33,6 +34,9 @@ func (this BlogAPI) GetAllBlogs(ctx *gin.Context) {
 
 	if tag := ctx.Query("tag"); tag != "" {
 		if err := Db.C("blog").Find(bson.M{"tags": tag}).All(&blogs); err != nil {
+			log.LoggerSugar.Errorw("GetAllBlogs Error",
+				"time", time.Now(),
+			)
 			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 			return
 		}
