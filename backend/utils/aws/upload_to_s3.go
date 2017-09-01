@@ -10,28 +10,39 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
-func UploadToS3(files []*multipart.FileHeader, contentTypes []string, sizes []int64) {
+func UploadToS3(files []*multipart.FileHeader, contentTypes []string, sizes []int64) error {
 	creds := credentials.NewEnvCredentials()
 	_, err := creds.Get()
 	if err != nil {
-		fmt.Printf("bad credentials: %s", err)
+		log.LoggerSugar.Errorw("UploadToS3 Error: creds.Get() error",
+			"module", "AWS S3",
+			"bad credentials", err,
+		)
+		return err
 	}
 	cfg := aws.NewConfig().WithRegion(configs.AWS_REGION).WithCredentials(creds)
 	s3Session, s3SessionErr := session.NewSession()
 
 	if s3SessionErr != nil {
-		fmt.Println(s3SessionErr)
-		return
+		log.LoggerSugar.Errorw("UploadToS3 Error: session.NewSession error",
+			"module", "AWS S3",
+			"bad credentials", s3SessionErr,
+		)
+		return s3SessionErr
 	}
 	svc := s3.New(s3Session, cfg)
 
 	for index, item := range files {
 		file, err := item.Open()
 		if err != nil {
-			fmt.Println(err)
-			return
+			log.LoggerSugar.Errorw("UploadToS3 Error: file.Open error",
+				"module", "application []*multipart.FileHeader",
+				"bad credentials", err,
+			)
+			return err
 		}
 
 		path := "/public/images/" + item.Filename
@@ -44,10 +55,14 @@ func UploadToS3(files []*multipart.FileHeader, contentTypes []string, sizes []in
 		}
 
 		if resp, err := svc.PutObject(params); err != nil {
-			fmt.Printf("bad response: %s", err)
-			return
+			log.LoggerSugar.Errorw("UploadToS3 Error: PutObject error",
+				"module", "AWS S3 service.PutObject",
+				"bad response", err,
+			)
+			return err
 		} else {
 			fmt.Printf("response %s", awsutil.StringValue(resp))
 		}
 	}
+	return nil
 }

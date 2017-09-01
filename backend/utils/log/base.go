@@ -3,11 +3,11 @@ package log
 import (
 	"os"
 	"sort"
+	"time"
 
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"time"
 )
 
 var (
@@ -128,13 +128,15 @@ func ProdLogger() (*zap.Logger, error) {
 	return prodLogger()
 }
 
-func globalLogger(status int, elapsed string, ip string, path string, method string) (*zap.Logger, error) {
+func globalLogger(status int, elapsed string, ip string, path string, method string, data []byte) (*zap.Logger, error) {
 	InitialFields := map[string]interface{}{
-		"status":    status,
-		"elapsed":   elapsed,
-		"remote ip": ip,
-		"path":      path,
-		"method":    method,
+		"status":       status,
+		"elapsed":      elapsed,
+		"remote ip":    ip,
+		"path":         path,
+		"method":       method,
+		// binary type data is encoded in base64 string
+		"request data": data,
 	}
 	opts := []zap.Option{}
 	fs := []zapcore.Field{}
@@ -160,6 +162,14 @@ func globalLogger(status int, elapsed string, ip string, path string, method str
 		return true
 	})
 	allToConsoleFile := zapcore.AddSync(os.Stdout)
+
+	allToFilePriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return true
+	})
+	allToFileFile, _, openErr := zap.Open([]string{configs.AllToOneFilePath}...)
+	if openErr != nil {
+		panic(openErr)
+	}
 
 	errorFile, _, errorErr := zap.Open([]string{configs.ErrorLogPath}...)
 	if errorErr != nil {
@@ -199,11 +209,13 @@ func globalLogger(status int, elapsed string, ip string, path string, method str
 	errorEncoder := zapcore.NewJSONEncoder(errorEncoderConfig)
 	accessEncoder := zapcore.NewJSONEncoder(accessEncoderConfig)
 	allToConsoleEncoder := zapcore.NewConsoleEncoder(accessEncoderConfig)
+	allToFileEncoder := zapcore.NewJSONEncoder(errorEncoderConfig)
 
 	core := zapcore.NewTee(
 		zapcore.NewCore(errorEncoder, errorFile, errorPriority),
 		zapcore.NewCore(accessEncoder, accessFile, accessPriority),
 		zapcore.NewCore(allToConsoleEncoder, allToConsoleFile, allToConsolePriority),
+		zapcore.NewCore(allToFileEncoder, allToFileFile, allToFilePriority),
 	)
 
 	opts = append(opts, []zap.Option{zap.AddCaller(), zap.AddStacktrace(errorPriority)}...)
@@ -215,6 +227,6 @@ func readableTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05.000 Z0700"))
 }
 
-func GlobalLogger(status int, elapsed string, ip string, path string, method string) (*zap.Logger, error) {
-	return globalLogger(status, elapsed, ip, path, method)
+func GlobalLogger(status int, elapsed string, ip string, path string, method string, data []byte) (*zap.Logger, error) {
+	return globalLogger(status, elapsed, ip, path, method, data)
 }

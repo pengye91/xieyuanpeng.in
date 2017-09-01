@@ -48,6 +48,10 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 
 	visitor := models.VisitorBasic{}
 	if err := ctx.BindJSON(&visitor); err != nil {
+		log.LoggerSugar.Errorw("BindJson to visitor error",
+			"module", "application frontend",
+			"err", err,
+		)
 		ctx.JSON(http.StatusBadRequest, models.Err("4"))
 		return
 	}
@@ -62,6 +66,10 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 	// Insert Visitor
 	if err := Db.C("auth").Insert(&visitor); err != nil {
 		// Is a duplicate key, but we don't know which one
+		log.LoggerSugar.Errorw("Insert into mongo error",
+			"module", "mongo",
+			"err", err,
+		)
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 		return
 	} else {
@@ -73,34 +81,45 @@ func (this AuthAPI) Register(ctx *gin.Context) {
 		if reply, err := conn.Do("SADD", AllUserNamesRedisKey, visitor.Name); err != nil {
 			log.LoggerSugar.Errorw("SADD alluserNamesRedisKey Error",
 				"module", "redis",
-				"time", time.Now(),
+				"err", err,
 			)
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		} else {
 			log.LoggerSugar.Infow("SADD alluserNamesRedisKey succeed",
 				"module", "redis",
-				"time", time.Now(),
 				"reply", reply,
 			)
 		}
 
 		if reply, err := conn.Do("SADD", AllUserEmailsRedisKey, visitor.Email); err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("SADD alluserEmailsRedisKey Error",
+				"module", "redis",
+				"err", err,
+			)
+			return
 		} else {
-			fmt.Println(reply)
+			log.LoggerSugar.Infow("SADD alluserEmailsKey succeed",
+				"module", "redis",
+				"reply", reply,
+			)
 		}
 
 		ctx.JSON(http.StatusCreated, visitor)
 	}
 }
 
+// This is replaced by jwt.LoginHandler
 func (this AuthAPI) Login(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	result := models.VisitorBasic{}
 	loginInfo := LoginInfo{}
 	err := ctx.BindJSON(&loginInfo)
 	if err != nil {
+		log.LoggerSugar.Errorw("BindJson to loginInfo error",
+			"module", "application",
+			"err", err,
+		)
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 		return
 	}
@@ -183,9 +202,17 @@ func (this AuthAPI) GetAllUsers(ctx *gin.Context) {
 	defer Db.Close()
 
 	if err := Db.C("auth").Find(nil).All(&visitors); err != nil {
+		log.LoggerSugar.Warnw("GetAllUsers from mongo warn",
+			"module", "mongo",
+			"err", err,
+		)
 		ctx.JSON(http.StatusNotFound, models.Err("1"))
 		return
 	}
+	log.LoggerSugar.Infow("GetAllUsers from mongo succeed",
+		"module", "mongo",
+		"visitors", visitors,
+	)
 	ctx.JSON(http.StatusOK, visitors)
 
 }
@@ -195,6 +222,9 @@ func (this AuthAPI) LogOut(ctx *gin.Context) {
 		fmt.Println(v)
 	}
 	ctx.SetCookie("sessionid", "", -1, "/", configs.BASE_DOMAIN, false, false)
+	log.LoggerSugar.Infow("logout: clear cookie succeed",
+		"module", "application",
+	)
 	ctx.JSON(http.StatusOK, gin.H{"OK": "DONE"})
 }
 
@@ -237,9 +267,14 @@ func AutoSearch(ctx *gin.Context) {
 			return
 		}
 	} else {
+		log.LoggerSugar.Errorw("autoSearch error.",
+			"module", "application",
+			"status", "400",
+		)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"WRONG QUERY": "Query params must contain one of username and email.",
 		})
+		return
 	}
 }
 
@@ -295,14 +330,22 @@ func InitialUserInRedis() {
 	)
 
 	if usernameErr := Db.C("auth").Find(nil).Select(bson.M{"name": 1}).All(&usernames); usernameErr != nil {
-		fmt.Println(usernameErr)
+		log.LoggerSugar.Errorw("InititalUserInRedis error",
+			"module", "mongo",
+			"error", usernameErr,
+		)
+		return
 	} else {
 		for _, structedUsername := range usernames {
 			plainUsernames = append(plainUsernames, structedUsername.Name)
 		}
 	}
 	if emailErr := Db.C("auth").Find(nil).Select(bson.M{"email": 1}).All(&emails); emailErr != nil {
-		fmt.Println(emailErr)
+		log.LoggerSugar.Errorw("InititalUserInRedis error",
+			"module", "mongo",
+			"error", emailErr,
+		)
+		return
 	} else {
 		for _, structedEmail := range emails {
 			plainEmails = append(plainEmails, structedEmail.Email)
@@ -313,26 +356,54 @@ func InitialUserInRedis() {
 	conn.Do("SREM", "allUserNames", usernames)
 	conn.Do("SREM", "allUserEmails", emails)
 	if reply, err := conn.Do("SREM", redis.Args{}.Add("allUserNames").AddFlat(usernames).AddFlat(plainUsernames)...); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("InititalUserInRedis SREM error",
+			"module", "redis",
+			"error", err,
+		)
+		return
 	} else {
-		fmt.Println(reply)
+		log.LoggerSugar.Infow("InititalUserInRedis SREM succeed",
+			"module", "redis",
+			"reply", reply,
+		)
 	}
 	if reply, err := conn.Do("SREM", redis.Args{}.Add("allUserEmails").AddFlat(emails).AddFlat(plainEmails)...); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("InititalUserInRedis SREM error",
+			"module", "redis",
+			"error", err,
+		)
+		return
 	} else {
-		fmt.Println(reply)
+		log.LoggerSugar.Infow("InititalUserInRedis SREM succeed",
+			"module", "redis",
+			"reply", reply,
+		)
 	}
 
 	// use a redis set to store all users' name
 	// another set to store email
 	if reply, err := conn.Do("SADD", redis.Args{}.Add("allUserNames").AddFlat(plainUsernames)...); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("InititalUserInRedis SADD error",
+			"module", "redis",
+			"error", err,
+		)
+		return
 	} else {
-		fmt.Println(reply)
+		log.LoggerSugar.Infow("InititalUserInRedis SADD succeed",
+			"module", "redis",
+			"reply", reply,
+		)
 	}
 	if reply, err := conn.Do("SADD", redis.Args{}.Add("allUserEmails").AddFlat(plainEmails)...); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("InititalUserInRedis SADD error",
+			"module", "redis",
+			"error", err,
+		)
+		return
 	} else {
-		fmt.Println(reply)
+		log.LoggerSugar.Infow("InititalUserInRedis SADD succeed",
+			"module", "redis",
+			"reply", reply,
+		)
 	}
 }

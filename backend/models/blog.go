@@ -7,6 +7,7 @@ import (
 )
 
 type Blog struct {
+	// TODO: Add bindings
 	Id          bson.ObjectId   `json:"id" bson:"_id"  form:"id"`
 	Title       string          `json:"title" bson:"title"  form:"title"`
 	Tags        []string        `json:"tags" bson:"tags"  form:"tags"`

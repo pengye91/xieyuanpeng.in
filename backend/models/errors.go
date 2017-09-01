@@ -33,6 +33,9 @@ func Err(errIn string) Error {
 	case "8", "Session":
 		return Error{Error: "Session not match.", ErrorNo: 8}
 		break
+	case "400", "BadRequest":
+		return Error{Error: "BadRequest", ErrorNo: 404}
+		break
 
 	default:
 		return Error{Error: "Error.", ErrorNo: 0}

@@ -35,12 +35,17 @@ func (this BlogAPI) GetAllBlogs(ctx *gin.Context) {
 	if tag := ctx.Query("tag"); tag != "" {
 		if err := Db.C("blog").Find(bson.M{"tags": tag}).All(&blogs); err != nil {
 			log.LoggerSugar.Errorw("GetAllBlogs Error",
-				"time", time.Now(),
+				"module", "mongo",
+				"error", err,
 			)
 			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 			return
 		}
 	} else if err := Db.C("blog").Find(nil).All(&blogs); err != nil {
+		log.LoggerSugar.Errorw("GetAllBlogs Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -55,8 +60,14 @@ func (this BlogAPI) GetBlogById(ctx *gin.Context) {
 
 	blogId := ctx.Param("id")
 
+	// bson.ObjectIdHex() do not return an error, not cool
 	if err := Db.C("blog").FindId(bson.ObjectIdHex(blogId)).One(&blog); err != nil {
+		log.LoggerSugar.Errorw("GetAllBlogById Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, blog)
 	Db.Close()
@@ -70,14 +81,24 @@ func (this BlogAPI) PostBlogToMain(ctx *gin.Context) {
 
 	blog := models.Blog{}
 	if err := ctx.BindJSON(&blog); err != nil {
+		log.LoggerSugar.Errorw("PostBlogToMain BindJSON Error",
+			"module", "application",
+			"error", err,
+		)
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		return
 	}
 	blog.CreatedAt = time.Now()
 	blog.PublishedAt = time.Now()
 	blog.Id = bson.NewObjectId()
 
 	if err := Db.C("blog").Insert(&blog); err != nil {
+		log.LoggerSugar.Errorw("PostBlogToMain Insert to Mongo Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	} else {
 		ctx.JSON(http.StatusCreated, blog)
 	}
@@ -93,8 +114,11 @@ func (this BlogAPI) PostBlogsToMain(ctx *gin.Context) {
 	blogs := []models.Blog{}
 
 	if err := ctx.BindJSON(&blogs); err != nil {
+		log.LoggerSugar.Errorw("PostBlogsToMain BindJSON Error",
+			"module", "application",
+			"error", err,
+		)
 		ctx.JSON(http.StatusBadRequest, err)
-		fmt.Println(err)
 		return
 	}
 
@@ -107,9 +131,13 @@ func (this BlogAPI) PostBlogsToMain(ctx *gin.Context) {
 	bulk := Db.C("blog").Bulk()
 	bulk.Insert(insertBlogs...)
 	if bulkResult, bulkErr := bulk.Run(); bulkErr != nil {
-		fmt.Println(bulkErr)
-		fmt.Println(bulkResult)
+		log.LoggerSugar.Errorw("PostBlogsToMain Bulk Insert Error",
+			"module", "mongo",
+			"error", bulkErr,
+			"bulkResult", bulkResult,
+		)
 		ctx.JSON(http.StatusInternalServerError, bulkErr)
+		return
 	} else {
 		ctx.JSON(http.StatusCreated, blogs)
 	}
@@ -134,7 +162,10 @@ func (this BlogAPI) UploadBlogsToStorage(ctx *gin.Context) {
 	for _, v := range sizes {
 		tmp, err := strconv.Atoi(v)
 		if err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("UploadBlogsToStorage read form.Value['size'] Error",
+				"module", "application: uploadBlogsToStorage",
+				"error", err,
+			)
 			return
 		} else {
 			intSizes = append(intSizes, int64(tmp))
@@ -142,17 +173,32 @@ func (this BlogAPI) UploadBlogsToStorage(ctx *gin.Context) {
 	}
 
 	if configs.STATIC_S3_STORAGE {
-		aws.UploadToS3(files, contentTypes, intSizes)
+		err := aws.UploadToS3(files, contentTypes, intSizes)
+		if err != nil {
+			log.LoggerSugar.Errorw("upload blogs to AWS s3 Error",
+				"module", "application: uploadBlogsToStorage: uploadToS3",
+				"error", err,
+			)
+		}
+		log.LoggerSugar.Infow("upload blogs to AWS s3",
+			"module", "application: uploadBlogsToStorage: uploadToS3",
+		)
 	} else {
 		for _, file := range files {
-			fmt.Println("filename: " + file.Filename)
+			log.LoggerSugar.Infow("upload blogs to local server",
+				"module", "application: uploadBlogsToStorage",
+				"filename", file.Filename,
+			)
 			if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
-				ctx.JSON(http.StatusBadRequest, err)
+				log.LoggerSugar.Errorw("upload blogs to local server Error",
+					"module", "application: uploadBlogsToStorage",
+					"error", err,
+				)
 				return
 			}
 		}
 	}
-
+	log.LoggerSugar.Info("upload blog succeed")
 	ctx.JSON(http.StatusCreated, gin.H{"done": "ok"})
 }
 
@@ -165,10 +211,13 @@ func (this BlogAPI) UpdateCommentByBlogId(ctx *gin.Context) {
 	comment := models.Comment{}
 
 	blogId := ctx.Param("id")
-	fmt.Printf("%s\n", blogId)
 
 	if err := ctx.BindJSON(&comment); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("UpdateConmmentByBlogId BindJSON Error",
+			"module", "application: bindJson Error",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	} else {
 		comment.ModifiedAt = time.Now()
@@ -183,7 +232,10 @@ func (this BlogAPI) UpdateCommentByBlogId(ctx *gin.Context) {
 	}
 
 	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(blogId), updateComment); blogErr != nil {
-		fmt.Printf("%s\n", blogErr)
+		log.LoggerSugar.Errorw("UpdateCommentByBlogId UpdateId error",
+			"module", "mongo",
+			"error", blogErr,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -206,8 +258,11 @@ func (this BlogAPI) PostCommentToBlog(ctx *gin.Context) {
 	blogId := ctx.Param("id")
 
 	if err := ctx.BindJSON(&comment); err != nil {
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, err)
+		log.LoggerSugar.Errorw("PostCommentToBlog BindJSON Error",
+			"module", "application: bindJson Error",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	} else {
 		comment.Id = bson.NewObjectId()
@@ -232,7 +287,10 @@ func (this BlogAPI) PostCommentToBlog(ctx *gin.Context) {
 	}
 
 	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(blogId), appendComment); blogErr != nil {
-		fmt.Printf("%s\n", blogErr)
+		log.LoggerSugar.Errorw("PostCommentToBlog UpdateBlog error",
+			"module", "mongo",
+			"error", blogErr,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -245,14 +303,20 @@ func (this BlogAPI) DeleteBlog(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
+
 	BlogId := ctx.Param("id")
 
 	if err := Db.C("blog").RemoveId(bson.ObjectIdHex(BlogId)); err != nil {
+		log.LoggerSugar.Errorw("DeleteBlog RemoveId error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"details": "deleted"})
 
-	Db.Close()
 }
 
 // Delete all Blogs
@@ -263,11 +327,15 @@ func (this BlogAPI) DeleteBlogs(ctx *gin.Context) {
 	defer Db.Close()
 
 	if changeInfo, err := Db.C("blog").RemoveAll(nil); err != nil {
+		log.LoggerSugar.Errorw("DeleteBlogs RemoveAll error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	} else {
-		fmt.Printf("%v\n", *changeInfo)
+		ctx.JSON(http.StatusOK, gin.H{"changeInfo": *changeInfo})
 	}
-	ctx.JSON(http.StatusOK, gin.H{"details": "deleted"})
 }
 
 // Blog may need edit, but not pic
@@ -288,7 +356,12 @@ func (this BlogAPI) GetBlogComments(ctx *gin.Context) {
 	blog := models.Blog{}
 
 	if err := Db.C("blog").FindId(bson.IsObjectIdHex(blogId)).One(&blog); err != nil {
+		log.LoggerSugar.Errorw("GetBlogComments FindId error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, blog.Comments)
 }
@@ -314,7 +387,11 @@ func (this BlogAPI) DeleteCommentByBlogId(ctx *gin.Context) {
 	}
 
 	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(BlogId), deleteComment); blogErr != nil {
-		fmt.Printf("%s\n", blogErr)
+		log.LoggerSugar.Errorw("DeleteCommentByBlogId UpdateId error",
+			"module", "mongo",
+			"error", blogErr,
+		)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
@@ -332,6 +409,10 @@ func (this BlogAPI) LikeBlog(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindJSON(&likedVisitor); err != nil {
+		log.LoggerSugar.Errorw("LikeBlog BindJSON Error",
+			"module", "application: bindJson error",
+			"error", err,
+		)
 		ctx.JSON(http.StatusBadRequest, models.Err("5"))
 		return
 	}
@@ -348,7 +429,11 @@ func (this BlogAPI) LikeBlog(ctx *gin.Context) {
 	}
 
 	if blogErr := Db.C("blog").UpdateId(bson.ObjectIdHex(BlogId), likeBlog); blogErr != nil {
-		fmt.Printf("%s\n", blogErr)
+		log.LoggerSugar.Errorw("LikeBlog UpdateId error",
+			"module", "mongo",
+			"error", blogErr,
+		)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})

@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	//"bytes"
+	//"io/ioutil"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +12,10 @@ import (
 func GlobalLoggingMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
-		ip, path, method := requestInfo(ctx)
+		ip, path, method, data := requestInfo(ctx)
 		ctx.Next()
 		elapsed, status := responseInfo(ctx, start)
-		globalLogger, _ := log.GlobalLogger(status, elapsed, ip, path, method)
+		globalLogger, _ := log.GlobalLogger(status, elapsed, ip, path, method, data)
 		if status < 400 {
 			globalLogger.Info("[global access]")
 		} else {
@@ -22,7 +24,7 @@ func GlobalLoggingMiddleware() gin.HandlerFunc {
 	}
 }
 
-func requestInfo(ctx *gin.Context) (string, string, string) {
+func requestInfo(ctx *gin.Context) (string, string, string, []byte) {
 	ip := ctx.ClientIP()
 	path := ctx.Request.URL.Path
 	if ctx.Request.URL.RawQuery != "" {
@@ -30,7 +32,23 @@ func requestInfo(ctx *gin.Context) (string, string, string) {
 		path += ctx.Request.URL.RawQuery
 	}
 	method := ctx.Request.Method
-	return ip, path, method
+	var requestBody []byte
+	//var (
+	//	requestBody []byte
+	//	err         error
+	//)
+	//if ctx.Request.Body != nil {
+	//	requestBody, err = ioutil.ReadAll(ctx.Request.Body)
+	//	if err != nil {
+	//		log.LoggerSugar.Errorw("getrequestInfo read request body error",
+	//			"module", "application: loging",
+	//			"error", err,
+	//		)
+	//	}
+	//	// store back to the Body
+	//	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(requestBody))
+	//}
+	return ip, path, method, requestBody
 }
 
 func responseInfo(ctx *gin.Context, start time.Time) (string, int) {

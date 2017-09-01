@@ -30,15 +30,12 @@ func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 
 	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
 		log.LoggerSugar.Errorw("GetAllPics error",
-			"time", time.Now(),
+			"module", "mongo",
 			"err", err,
 		)
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	}
-	log.LoggerSugar.Infow("GetAllPics Succeed",
-		"time", time.Now(),
-	)
 	ctx.JSON(http.StatusOK, pics)
 	Db.Close()
 }
@@ -52,6 +49,10 @@ func (this PictureAPI) GetPicById(ctx *gin.Context) {
 	picId := ctx.Param("id")
 
 	if err := Db.C("picture").FindId(bson.ObjectIdHex(picId)).One(&pic); err != nil {
+		log.LoggerSugar.Errorw("GetPicById error",
+			"module", "mongo",
+			"err", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -63,20 +64,30 @@ func (this PictureAPI) PostPicToMain(ctx *gin.Context) {
 	//TODO: only admin can do this
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 
 	pic := models.Picture{}
 	if err := ctx.BindJSON(&pic); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		log.LoggerSugar.Errorw("PostPicToMain BindJSON Error",
+			"module", "application",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
+		return
 	}
 	pic.CreatedAt = time.Now()
 	pic.Id = bson.NewObjectId()
 
 	if err := Db.C("picture").Insert(&pic); err != nil {
+		log.LoggerSugar.Errorw("PostPicToMain Insert Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	} else {
 		ctx.JSON(http.StatusCreated, pic)
 	}
-	Db.Close()
 }
 
 func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
@@ -89,12 +100,15 @@ func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	pics := []models.Picture{}
 
 	if err := ctx.BindJSON(&pics); err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("PostPicsToMain BindJSON Error",
+			"module", "application",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	}
 
-	for index, _ := range pics {
+	for index := range pics {
 		pics[index].CreatedAt = time.Now()
 		insertPics = append(insertPics, pics[index])
 	}
@@ -103,10 +117,16 @@ func (this PictureAPI) PostPicsToMain(ctx *gin.Context) {
 	bulk := Db.C("picture").Bulk()
 	bulk.Insert(insertPics...)
 	if bulkResult, bulkErr := bulk.Run(); bulkErr != nil {
-		fmt.Println(bulkErr)
-		fmt.Println(bulkResult)
+		log.LoggerSugar.Errorw("PostPicsToMain BulkInsert Error",
+			"module", "mongo",
+			"error", bulkErr,
+		)
 		ctx.JSON(http.StatusInternalServerError, bulkErr)
+		return
 	} else {
+		log.LoggerSugar.Infow("PostPicsToMain BulkInsert Succeed",
+			"bulkResult", *bulkResult,
+		)
 		ctx.JSON(http.StatusCreated, pics)
 	}
 }
@@ -126,7 +146,11 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	for _, v := range sizes {
 		tmp, err := strconv.Atoi(v)
 		if err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("UploadPicsToStorage sizes conv error",
+				"module", "form.Value[\"value\"]",
+				"err", err,
+			)
+			ctx.JSON(http.StatusInternalServerError, models.Err("2"))
 			return
 		} else {
 			intSizes = append(intSizes, int64(tmp))
@@ -134,11 +158,23 @@ func (this PictureAPI) UploadPicsToStorage(ctx *gin.Context) {
 	}
 
 	if configs.STATIC_S3_STORAGE {
-		aws.UploadToS3(files, contentTypes, intSizes)
+		err := aws.UploadToS3(files, contentTypes, intSizes)
+		if err != nil {
+			log.LoggerSugar.Errorw("UploadPicsToStorage UploadToS3 error",
+				"module", "AWS S3 UploadToS3",
+				"err", err,
+			)
+			ctx.JSON(http.StatusInternalServerError, models.Err("2"))
+			return
+		}
 	} else {
 		for _, file := range files {
 			fmt.Println("filename: " + file.Filename)
 			if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
+				log.LoggerSugar.Errorw("Upload to local server error",
+					"module", "application: uploadPicsToStorage",
+					"err", err,
+				)
 				ctx.JSON(http.StatusBadRequest, err)
 				return
 			}
@@ -160,7 +196,11 @@ func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	fmt.Printf("%s\n", picId)
 
 	if err := ctx.BindJSON(&comment); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("UpdateCommentByPicId BindJSON Error",
+			"module", "application: BindJSON",
+			"err", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	} else {
 		comment.ModifiedAt = time.Now()
@@ -175,7 +215,10 @@ func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), updateComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+		log.LoggerSugar.Errorw("UPdateCommentByPicId UpdateId Error",
+			"module", "mongo",
+			"error", picErr,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -198,8 +241,11 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	picId := ctx.Param("id")
 
 	if err := ctx.BindJSON(&comment); err != nil {
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, err)
+		log.LoggerSugar.Errorw("PostCommentToPic BindJSON error",
+			"module", "application: bindJSON",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	} else {
 		comment.Id = bson.NewObjectId()
@@ -224,7 +270,10 @@ func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), appendComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+		log.LoggerSugar.Errorw("PostCommentToPic UpdateId Error",
+			"module", "mongo",
+			"error", picErr,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
@@ -252,15 +301,22 @@ func (this PictureAPI) DeletePics(ctx *gin.Context) {
 	// TODO: add admin authentication
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 
 	if changeInfo, err := Db.C("picture").RemoveAll(nil); err != nil {
+		log.LoggerSugar.Errorw("DeletePics RemoveAll Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	} else {
-		fmt.Printf("%v\n", *changeInfo)
+		log.LoggerSugar.Infow("DeletePics RemoveAll Succeed",
+			"changeInfo", *changeInfo,
+		)
 	}
 	ctx.JSON(http.StatusOK, gin.H{"details": "deleted"})
 
-	Db.Close()
 }
 
 func (this PictureAPI) UpdatePic(ctx *gin.Context) {
@@ -273,16 +329,21 @@ func (this PictureAPI) UpdatePic(ctx *gin.Context) {
 func (this PictureAPI) GetPicComments(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 
 	picId := ctx.Param("id")
 
 	pic := models.Picture{}
 
 	if err := Db.C("picture").FindId(bson.IsObjectIdHex(picId)).One(&pic); err != nil {
+		log.LoggerSugar.Errorw("GetPicComments FindId Error",
+			"module", "mongo",
+			"error", err,
+		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
 	}
 	ctx.JSON(http.StatusOK, pic.Comments)
-	Db.Close()
 }
 
 func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
@@ -306,7 +367,11 @@ func (this PictureAPI) DeleteCommentByPicId(ctx *gin.Context) {
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), deleteComment); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+		log.LoggerSugar.Errorw("DeleteCommentByPicId UpdateId Error",
+			"module", "mongo",
+			"error", picErr,
+		)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
@@ -324,7 +389,11 @@ func (this PictureAPI) LikePic(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindJSON(&likedVisitor); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Err("5"))
+		log.LoggerSugar.Errorw("LikePic BindJSON Error",
+			"module", "application: BindJSON",
+			"error", err,
+		)
+		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	}
 
@@ -340,7 +409,11 @@ func (this PictureAPI) LikePic(ctx *gin.Context) {
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(PicId), likePic); picErr != nil {
-		fmt.Printf("%s\n", picErr)
+		log.LoggerSugar.Errorw("LikePic UpdateId Error",
+			"module", "mongo",
+			"error", picErr,
+		)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"ok": "done"})
