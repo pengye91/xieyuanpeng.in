@@ -50,7 +50,10 @@ export default new Router({
           path: 'python/:blogPath',
           name: 'blogPath',
           component: blog,
-          props: (route) => ({'blogPath': route.params.blogPath})
+          props: (route) => ({
+            'blogPath': route.params.blogPath,
+            'tag': 'python'
+          })
         },
         {
           path: 'golang',

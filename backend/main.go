@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/pengye91/xieyuanpeng.in/backend/api"
@@ -10,6 +8,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/background"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 var (
@@ -38,14 +37,17 @@ func init() {
 		"blog",
 		[]string{"title"},
 	)
-}
 
-
-func main() {
 	envErr := godotenv.Load("../.env")
 	if envErr != nil {
-		fmt.Println(envErr)
+		log.LoggerSugar.Errorw("godotenv.Load file Error",
+			"module", "godotenv",
+			"error", envErr,
+		)
 	}
+}
+
+func main() {
 	DbMain()
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()

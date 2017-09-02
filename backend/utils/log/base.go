@@ -67,14 +67,14 @@ func prodLogger() (*zap.Logger, error) {
 		return lvl < zapcore.ErrorLevel
 	})
 
-	errorFile, _, errorErr := zap.Open([]string{configs.ErrorLogPath, "stderr"}...)
+	errorFile, _, errorErr := zap.Open([]string{configs.ErrorLogPath}...)
 	if errorErr != nil {
 		panic(errorErr)
 	}
 	accessConsole := zapcore.AddSync(os.Stdout)
 	errorConsole := zapcore.AddSync(os.Stderr)
 
-	accessFile, _, accessErr := zap.Open([]string{configs.AccessLogPath, "stdout"}...)
+	accessFile, _, accessErr := zap.Open([]string{configs.AccessLogPath}...)
 	if accessErr != nil {
 		panic(accessErr)
 	}
@@ -88,7 +88,7 @@ func prodLogger() (*zap.Logger, error) {
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeTime:     readableTimeEncoder,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.FullCallerEncoder,
 	}
@@ -101,13 +101,13 @@ func prodLogger() (*zap.Logger, error) {
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeTime:     readableTimeEncoder,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 	errorEncoder := zapcore.NewJSONEncoder(errorEncoderConfig)
-	accessEncoder := zapcore.NewConsoleEncoder(accessEncoderConfig)
-	accessConsoleEncoder := zapcore.NewJSONEncoder(accessEncoderConfig)
+	accessEncoder := zapcore.NewJSONEncoder(accessEncoderConfig)
+	accessConsoleEncoder := zapcore.NewConsoleEncoder(accessEncoderConfig)
 	errorConsoleEncoder := zapcore.NewConsoleEncoder(errorEncoderConfig)
 
 	core := zapcore.NewTee(

@@ -26,6 +26,7 @@ func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	// TODO: add authentication
 	Db := db.MgoDb{}
 	Db.Init()
+	defer Db.Close()
 	pics := []models.Picture{}
 
 	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
@@ -36,8 +37,11 @@ func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.Err("2"))
 		return
 	}
+	log.LoggerSugar.Infow("GetAllPics succeed",
+		"module", "mongo",
+		"err", pics,
+	)
 	ctx.JSON(http.StatusOK, pics)
-	Db.Close()
 }
 
 func (this PictureAPI) GetPicById(ctx *gin.Context) {

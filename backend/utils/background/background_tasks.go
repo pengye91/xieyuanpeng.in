@@ -79,8 +79,8 @@ func CleanTimeSlice() {
 			}
 		}
 		passes += 1
-		duration := math.Min(time.Since(start).Seconds(), 60)
-		time.Sleep(time.Duration(math.Max(60-duration, 1)) * time.Second)
+		duration := math.Min(time.Since(start).Seconds(), 600)
+		time.Sleep(time.Duration(math.Max(600-duration, 1)) * time.Second)
 	}
 }
 

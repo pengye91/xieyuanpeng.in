@@ -33,7 +33,7 @@ func (this BlogAPI) GetAllBlogs(ctx *gin.Context) {
 	blogs := []models.Blog{}
 
 	if tag := ctx.Query("tag"); tag != "" {
-		if err := Db.C("blog").Find(bson.M{"tags": tag}).All(&blogs); err != nil {
+		if err := Db.C("blog").Find(bson.M{"tags": tag}).Sort("-created_at").All(&blogs); err != nil {
 			log.LoggerSugar.Errorw("GetAllBlogs Error",
 				"module", "mongo",
 				"error", err,
@@ -41,7 +41,7 @@ func (this BlogAPI) GetAllBlogs(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 			return
 		}
-	} else if err := Db.C("blog").Find(nil).All(&blogs); err != nil {
+	} else if err := Db.C("blog").Find(nil).Sort("-created_at").All(&blogs); err != nil {
 		log.LoggerSugar.Errorw("GetAllBlogs Error",
 			"module", "mongo",
 			"error", err,
