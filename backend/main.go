@@ -10,8 +10,12 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/db"
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/background"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
-	"github.com/pengye91/xieyuanpeng.in/backend/utils/mq"
+)
+
+var (
+	auth = &api.AuthAPI{}
+	pic  = &api.PictureAPI{}
+	blog = &api.BlogAPI{}
 )
 
 func DbMain() {
@@ -19,11 +23,23 @@ func DbMain() {
 	DB.Init()
 }
 
-var (
-	auth = &api.AuthAPI{}
-	pic  = &api.PictureAPI{}
-	blog = &api.BlogAPI{}
-)
+func init() {
+	Db := db.MgoDb{}
+	Db.Init()
+	Db.Index(
+		"auth",
+		[]string{"name", "email"},
+	)
+	Db.Index(
+		"picture",
+		[]string{"title"},
+	)
+	Db.Index(
+		"blog",
+		[]string{"title"},
+	)
+}
+
 
 func main() {
 	envErr := godotenv.Load("../.env")
@@ -44,14 +60,11 @@ func main() {
 	app.Use(middlewares.CORSMiddleware)
 	app.Use(middlewares.GlobalStatisticsMiddleware())
 
-	if cityInfo, err := cache.FindCityByIP("110.185.16.73"); err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(cityInfo)
-	}
-
-	T := mq.CreateTT(1, 2)
-	T.TestTT()
+	//if cityInfo, err := cache.FindCityByIP("110.185.16.73"); err != nil {
+	//	fmt.Println(err)
+	//} else {
+	//	fmt.Println(cityInfo)
+	//}
 
 	//for i := 0; i < 20; i++ {
 	//	if id, err := sync.AcquireFairSemaphore("testSema", 10, 30*time.Second); err != nil {

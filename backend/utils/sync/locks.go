@@ -2,12 +2,12 @@ package sync
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"github.com/satori/go.uuid"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 func AcquireLock(lockname string, acquireTimeout time.Duration) (string, error) {
@@ -20,11 +20,16 @@ func AcquireLock(lockname string, acquireTimeout time.Duration) (string, error) 
 
 	for time.Now().UnixNano() < endTime {
 		if reply, err := redis.Bool(conn.Do("SET", "lock:"+lockname, identifier, "NX")); err != nil {
-			fmt.Println("setnx wrong:")
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("redis lock acquireLock SET Error",
+				"module", "redis",
+				"error", err,
+			)
 			time.Sleep(1 * time.Millisecond)
 		} else {
-			fmt.Println(reply)
+			log.LoggerSugar.Infow("redis lock acquireLock SET Info",
+				"module", "redis",
+				"reply", reply,
+			)
 			return identifier, nil
 		}
 	}
@@ -41,11 +46,16 @@ func AcquireLockWithTimeout(lockname string, acquireTimeout time.Duration, lockT
 
 	for time.Now().UnixNano() < endTime {
 		if reply, err := redis.Bool(conn.Do("SET", "lock:"+lockname, identifier, "EX", lockTimeout, "NX")); err != nil {
-			fmt.Println("setnx wrong:")
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("sync lock AcquireLockWithTimeout SET lock error",
+				"module", "redis",
+				"error", err,
+			)
 			time.Sleep(1 * time.Millisecond)
 		} else {
-			fmt.Println(reply)
+			log.LoggerSugar.Infow("redis lock acquireLock SET Info",
+				"module", "redis",
+				"reply", reply,
+			)
 			return identifier, nil
 		}
 	}
@@ -67,11 +77,16 @@ func ReleaseLock(lockname string, identifier string) bool {
 
 				// err != nil means that the transaction failed.
 				// should repeat the operation
-				fmt.Println("EXEC err:")
-				fmt.Println(err)
+				log.LoggerSugar.Errorw("sync lock ReleaseLock Error",
+					"module", "application: redis",
+					"error", err,
+				)
 				continue
 			} else {
-				fmt.Println(reply)
+				log.LoggerSugar.Infow("redis lock acquireLock SET Info",
+					"module", "redis",
+					"reply", reply,
+				)
 				return true
 			}
 		}

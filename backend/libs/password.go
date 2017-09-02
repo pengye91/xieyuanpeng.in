@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 
 	"golang.org/x/crypto/bcrypt"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 type Password struct {
@@ -20,11 +21,13 @@ func (w Password) Gen(p string) string {
 	// Hashing the password with the default cost of 10
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 	if err != nil {
+		log.LoggerSugar.Errorw("Gen Password Error",
+			"module", "application: password",
+			"error", err,
+		)
 		panic(err)
 	}
-
 	w.Pass = string(hashedPassword)
-
 	return string(hashedPassword)
 }
 
@@ -34,18 +37,25 @@ func (w Password) Compare(hs string, p string) bool {
 	// Comparing the password with the hash
 	err := bcrypt.CompareHashAndPassword(hash, pass)
 	// fmt.Println(err) // nil means it is a match
-
 	r := false
 	if err == nil {
 		r = true
+	} else {
+		log.LoggerSugar.Errorw("Compare passwords Error",
+			"module", "application: password: Compare",
+			"error", err,
+		)
 	}
-
 	return r
 }
 
 func (w Password) Token() string {
 	t, err := w.Random(32)
 	if err != nil {
+		log.LoggerSugar.Errorw("Generate Token Error",
+			"module", "application: password: Token",
+			"error", err,
+		)
 		panic(err)
 	}
 

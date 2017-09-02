@@ -1,7 +1,6 @@
 package background
 
 import (
-	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -11,10 +10,10 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 // Create a background goroutine deleting Redis keys periodically.
-// TODO: add logging
 func CleanTimeSlice() {
 	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
@@ -22,9 +21,7 @@ func CleanTimeSlice() {
 
 	for {
 		start := time.Now()
-		fmt.Printf("%s: %s\n", "start", start)
 		hashes, _ := redis.Strings(conn.Do("ZRANGE", "known:", 0, -1))
-		fmt.Printf("%s: %s\n", "hashes", hashes)
 		passes := 0
 		for _, hash := range hashes {
 			if hash == "" {
@@ -44,23 +41,41 @@ func CleanTimeSlice() {
 
 			timeSlices, err := redis.Strings(conn.Do("HKEYS", hashCounter))
 			if err != nil {
-				fmt.Println(err)
+				log.LoggerSugar.Errorw("utils background tasks HKEYS error",
+					"module", "redis",
+					"error", err,
+				)
 			} else {
 				sort.Strings(timeSlices)
-				fmt.Printf("%s: %s\n", "timeSlices", timeSlices)
+				log.LoggerSugar.Infow("utils background tasks HKEYS Info",
+					"module", "application and redis",
+					"timeSlices", timeSlices,
+				)
 			}
 
 			if len(timeSlices) > configs.SAMPLE_COUNT {
-				fmt.Println("gt")
-				fmt.Println(hashCounter)
-				fmt.Printf("%s: %s\n", "addFlat", timeSlices[:len(timeSlices)-configs.SAMPLE_COUNT])
+				log.LoggerSugar.Infow("utils background tasks HKEYS Info",
+					"module", "application and redis",
+					"info", "greater than sample count",
+					"hashCounter", hashCounter,
+					"HDEL", timeSlices[:len(timeSlices)-configs.SAMPLE_COUNT],
+				)
 				if reply, err := redis.Int(conn.Do("HDEL", redis.Args{}.Add(hashCounter).AddFlat(timeSlices[:len(timeSlices)-configs.SAMPLE_COUNT])...)); err != nil {
-					fmt.Println(err)
+					log.LoggerSugar.Errorw("utils background tasks HDEL error",
+						"module", "redis",
+						"error", err,
+					)
 				} else {
-					fmt.Printf("%s: %s\n", "reply", reply)
+					log.LoggerSugar.Infow("utils background tasks HDEL Info",
+						"module", "application and redis",
+						"reply", reply,
+					)
 				}
 			} else {
-				fmt.Println("lt")
+				log.LoggerSugar.Infow("utils background tasks HDEL Info",
+					"module", "application and redis",
+					"info", "less than sample count, no need to clean",
+				)
 			}
 		}
 		passes += 1

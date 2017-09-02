@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 // convert IP to redis zset score type
@@ -19,7 +20,10 @@ func ipToScore(ip string) (score int64) {
 
 	for _, v := range strings.Split(ip, ".") {
 		if field, err := strconv.ParseInt(v, 10, 64); err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("cache IpToScore ParseInt Error",
+				"module", "application: ipToScore",
+				"error", err,
+			)
 		} else {
 			score = score*256 + field
 		}
@@ -43,6 +47,11 @@ func parseCSV(c io.Reader) chan []string {
 			if err != nil {
 				if err == io.EOF {
 					break
+				} else {
+					log.LoggerSugar.Errorw("cache ipToScore parseCSV Error",
+						"module", "application: csv",
+						"error", err,
+					)
 				}
 			}
 
@@ -60,13 +69,18 @@ func ImportIPToRedis(filename string) error {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("cache ip ImportToRedis Open csv file Error",
+			"module", "application: redis",
+			"error", err,
+		)
 		return err
 	}
 	ch := parseCSV(file)
 
 	header := <-ch
-	fmt.Println(header)
+	log.LoggerSugar.Infow("cache ip ImportToRedis Info: ip.csv header",
+		"header", header,
+	)
 	count := 0
 	conn.Do("DEL", "IP2CityID")
 	zaddPipe := 0
@@ -93,8 +107,10 @@ func ImportIPToRedis(filename string) error {
 		cityID = rec[1] + "_" + strconv.Itoa(count)
 
 		if err := conn.Send("ZADD", "IP2CityID", startIPScore, cityID); err != nil {
-			fmt.Println("ZADD cityID startIPScore err:")
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("cache ip importIpToRedis Error",
+				"module", "redis",
+				"error", err,
+			)
 			return err
 		} else {
 			zaddPipe++
@@ -107,7 +123,6 @@ func ImportIPToRedis(filename string) error {
 			}
 			zaddPipe = 0
 		}
-
 	}
 	return nil
 }
@@ -120,13 +135,19 @@ func ImportCitiesToRedis(filename string) error {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("cache ip ImportToRedis Open Cities csv file Error",
+			"module", "application: redis",
+			"error", err,
+		)
 		return err
 	}
 	ch := parseCSV(file)
 
 	header := <-ch
-	fmt.Println(header)
+	log.LoggerSugar.Infow("cache ip ImportToRedis Open Cities csv file Info",
+		"module", "application: redis",
+		"csv file header", header,
+	)
 	conn.Do("DEL", "CityID2CityName:")
 
 	for rec := range ch {
@@ -140,7 +161,10 @@ func ImportCitiesToRedis(filename string) error {
 		cityInfo = append(cityInfo, cityID, countryName, cityName)
 
 		if cityInfoJson, err := json.Marshal(cityInfo); err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("cache ip importIpToRedis json.Marshal() Error",
+				"module", "application: redis",
+				"error", err,
+			)
 			return err
 		} else {
 			conn.Do("HSET", "CityID2CityName:", cityID, cityInfoJson)
@@ -158,27 +182,31 @@ func FindCityByIP(ip string) ([]string, error) {
 	)
 
 	ipScore := ipToScore(ip)
-	fmt.Println(ipScore)
 	if reply, err := redis.Strings(conn.Do("ZREVRANGEBYSCORE", "IP2CityID", ipScore, 0, "LIMIT", 0, 1)); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("cache ip FindCityByIp ZREVRANGEBYSCORE Error",
+			"module", "redis",
+			"error", err,
+		)
 		return cityInfo, err
 	} else {
 		cityID = strings.Split(reply[0], "_")[0]
 	}
 
 	if reply, err := redis.Bytes(conn.Do("HGET", "CityID2CityName:", cityID)); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("cache ip FindCityByIp HGET Error",
+			"module", "redis",
+			"error", err,
+		)
 		return cityInfo, err
 	} else {
 		err := json.Unmarshal(reply, &cityInfo)
 		if err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("cache ip FindCityByIp json.Unmarshal Error",
+				"module", "application: json",
+				"error", err,
+			)
 			return cityInfo, err
 		}
 		return cityInfo, nil
 	}
 }
-
-//func AutoComplete(prefix string) {
-//	strings.S
-//}

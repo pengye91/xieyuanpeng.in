@@ -22,9 +22,11 @@ type passUser struct {
 	Email string        `json:"email" bson:"email"  form:"email"`
 }
 
-const Month = 30 * 24 * time.Hour
-const Year = 30 * 24 * time.Hour * 12
-const TenYears = 30 * 24 * time.Hour * 12 * 10
+const (
+	Month    = 30 * 24 * time.Hour
+	Year     = 30 * 24 * time.Hour * 12
+	TenYears = 30 * 24 * time.Hour * 12 * 10
+)
 
 var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 	Realm:      "xyp",
@@ -41,17 +43,17 @@ var JWTAuthMiddleware = jwt.GinJWTMiddleware{
 
 		if strings.Contains(loginID, "@") {
 			if err := Db.C("auth").Find(bson.M{"email": loginID}).One(&user); err != nil {
-				log.LoggerSugar.Errorw("Login Error",
-					"time", time.Now(),
-					"err", err,
+				log.LoggerSugar.Errorw("JWTAuthMiddleware email Login Error",
+					"module", "jwt",
+					"error", err,
 				)
 				return loginID, false
 			}
 		} else {
 			if err := Db.C("auth").Find(bson.M{"name": loginID}).One(&user); err != nil {
-				log.LoggerSugar.Errorw("Login Error",
-					"time", time.Now(),
-					"err", err,
+				log.LoggerSugar.Errorw("JWTAuthMiddleware name Login Error",
+					"module", "application: jwt",
+					"error", err,
 				)
 				return loginID, false
 			}

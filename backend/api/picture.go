@@ -215,16 +215,14 @@ func (this PictureAPI) UpdateCommentByPicId(ctx *gin.Context) {
 	}
 
 	if picErr := Db.C("picture").UpdateId(bson.ObjectIdHex(picId), updateComment); picErr != nil {
-		log.LoggerSugar.Errorw("UPdateCommentByPicId UpdateId Error",
+		log.LoggerSugar.Errorw("UpdateCommentByPicId UpdateId Error",
 			"module", "mongo",
 			"error", picErr,
 		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
-
 	ctx.JSON(http.StatusCreated, comment)
-
 }
 func (this PictureAPI) PostCommentToPic(ctx *gin.Context) {
 	// TODO: a minxin function like login_required()

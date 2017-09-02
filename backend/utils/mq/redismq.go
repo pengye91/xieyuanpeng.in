@@ -1,3 +1,5 @@
+// Nope, use rabbit to do mq thing.
+
 package mq
 
 import (

@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 )
 
 var (
@@ -31,7 +31,10 @@ func TotalHitsCount() {
 	defer conn.Close()
 
 	if _, err := redis.Int(conn.Do("INCR", "TotalHit")); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("statistics TotalHitsCount INCR Error",
+			"module", "redis",
+			"error", err,
+		)
 	}
 }
 
@@ -54,12 +57,15 @@ func TimeSliceCount() {
 
 	// use Send and Do to implement pipeline
 	if _, err := conn.Do(""); err != nil {
-		fmt.Println(err)
+		log.LoggerSugar.Errorw("statistic Do TimeSliceCount Error",
+			"module", "redis",
+			"error", err,
+		)
+		return
 	}
 }
 
-// Get allTimeSliceCount from Redis, not sorted
-// Counter.
+// Get allTimeSliceCount from Redis, not sorted Counter.
 func GetTimeSliceCount(c *chan map[string]int64) {
 	conn := cache.GlobalStatisticRedisPool.Get()
 	// Never forget to close the connection
@@ -75,7 +81,11 @@ func GetTimeSliceCount(c *chan map[string]int64) {
 
 		// Use Int64Map to get "HGETALL" results
 		if timeSliceCountMaps, err := redis.Int64Map(conn.Do("HGETALL", "count:"+hash)); err != nil {
-			fmt.Println(err)
+			log.LoggerSugar.Errorw("statistics GetTimeSliceCount HGETALL Error",
+				"module", "redis",
+				"error", err,
+			)
+			return
 		} else {
 			*c <- timeSliceCountMaps
 		}
@@ -87,10 +97,12 @@ func GetTimeSliceCount(c *chan map[string]int64) {
 func ConsumeFromChan(c *chan map[string]int64) {
 	// TODO: replace this into real logic
 	for t := range *c {
-		fmt.Println(t)
+		log.LoggerSugar.Infow("statistics ConsumeFromChan Info",
+			"module", "redis and application",
+			"info", t,
+		)
 		//for timeSlice, hits := range t {
 		//	fmt.Printf("HITS IN %s: %d \n", timeSlice, hits)
 		//}
 	}
 }
-
