@@ -93,15 +93,16 @@
       }
     },
     methods: {
-      preview (index) {
-        this.modalIsVisible[index] = true
-        console.log(this.modalIsVisible)
-        console.log(this.modalIsVisible[index])
-      },
+//      preview (index) {
+//        this.modalIsVisible[index] = true
+//        console.log(this.modalIsVisible)
+//        console.log(this.modalIsVisible[index])
+//      },
       deleteItemFromUploadList (index) {
         this.withSrcUploadList.splice(index, 1)
         this.uploadList.splice(index, 1)
         this.uploadForms.splice(index, 1)
+        this.uploadPicMetas.splice(index, 1)
         this.modalIsVisible.splice(index, 1)
       },
       createURL (item) {
@@ -114,9 +115,9 @@
         this.$refs.upload.fileList.splice(fileList.indexOf(file), 1)
       },
       handleSuccess (res, file) {
-        // 因为上传过程为实例，这里模拟添加 url
-        //        file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
-        //        file.name = '7eb99afb9d5f317c912f08b5212fd69a'
+        console.log('handle success')
+        this.uploadPicMetas = []
+        console.log(this.uploadPicMetas)
       },
       handleFormatError (file) {
         this.$Notice.warning({
@@ -131,7 +132,8 @@
         })
       },
       handleBeforeUpload (file) {
-        var reader = new FileReader()
+        console.log('handlebeforeupload', this.uploadPicMetas)
+        let reader = new FileReader()
         // This is very tricky.
         reader.addEventListener('load', () => {
           file.src = reader.result
@@ -142,25 +144,29 @@
             fileName: file.name
           }
           this.uploadForms.push(form)
-          this.modalIsVisible.push(false)
           // Cool enough
           let realFile = new File([file], file.name, {type: file.type})
           delete realFile.src
-          console.log(realFile)
           this.uploadList.push(realFile)
         }, false)
         if (file) {
           reader.readAsDataURL(file)
         }
-        console.log(file)
         return false
       },
       submitAll () {
+        console.log('submitall', this.uploadPicMetas)
         this.uploadForms.forEach(i => {
           i.comments = []
           i.id = String(ObjectId())
           i.path = i.fileName
-          i.project = this.$route.params.sideMenu
+          if (this.type === 'blogs') {
+            i.tags = []
+            i.tags.push(this.$route.params.sideMenu)
+          } else {
+            i.project = this.$route.params.sideMenu
+          }
+          console.log(this.uploadPicMetas)
           this.uploadPicMetas.push(i)
         })
         let data = new FormData()
@@ -175,17 +181,19 @@
         config.HTTP.post(`/upload-${this.type}`, data)
           .then(response => {
             if (response.status === 201) {
+              console.log(this.uploadPicMetas)
               config.HTTP.post(`/${this.type}es`, this.uploadPicMetas)
                 .then(response => {
                   if (response.status === 201) {
+                    this.uploadPicMetas = []
+                    console.log('succeed', this.uploadPicMetas)
+                    this.withSrcUploadList = []
+                    this.uploadList = []
+                    this.uploadForm = []
                     this.$Notice.success({
                       title: '提交成功',
                       desc: `所有图片成功提交至${this.$route.params.sideMenu}`
                     })
-                    this.uploadPicMetas = []
-                    this.uploadList = []
-                    this.uploadForm = []
-                    this.withSrcUploadList = []
                   }
                 })
                 .catch(error => {
@@ -193,6 +201,10 @@
                     title: '提交失败',
                     desc: error.response.data
                   })
+                  this.uploadPicMetas = []
+                  console.log('failed', this.uploadPicMetas)
+                  this.uploadList = []
+                  this.uploadForm = []
                 })
             }
           })
