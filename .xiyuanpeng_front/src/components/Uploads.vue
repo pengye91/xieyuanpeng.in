@@ -3,7 +3,12 @@
     <div v-for="(item, index) in withSrcUploadList" :key="index" style="margin-bottom: 20px" class="dropbox">
       <Row type="flex" justify="space-around" align="middle" style="margin-top: 10px">
         <Col span="20">
-        <img :src="item.src" width="100%" style="max-height: 600px">
+        <img v-if="type==='pics'" :src="item.src" width="100%" style="max-height: 600px">
+        <Card v-else :bordered="false">
+          <p slot="title">{{uploadForms[index].title}}</p>
+          <p class="card-description">{{uploadForms[index].description}}</p>
+          <p class="card-foot">{{uploadForms[index].published_at}}</p>
+        </Card>
         </Col>
         <Col span="1">
         <Button type="ghost" size="large" @click="deleteItemFromUploadList(index)">
@@ -62,6 +67,7 @@
 <script>
   import {config} from '@/config/dev'
   import ObjectId from 'bson-objectid'
+  import moment from 'moment'
 
   export default {
     name: 'operation-upload',
@@ -93,11 +99,6 @@
       }
     },
     methods: {
-//      preview (index) {
-//        this.modalIsVisible[index] = true
-//        console.log(this.modalIsVisible)
-//        console.log(this.modalIsVisible[index])
-//      },
       deleteItemFromUploadList (index) {
         this.withSrcUploadList.splice(index, 1)
         this.uploadList.splice(index, 1)
@@ -115,9 +116,6 @@
         this.$refs.upload.fileList.splice(fileList.indexOf(file), 1)
       },
       handleSuccess (res, file) {
-        console.log('handle success')
-        this.uploadPicMetas = []
-        console.log(this.uploadPicMetas)
       },
       handleFormatError (file) {
         this.$Notice.warning({
@@ -132,7 +130,6 @@
         })
       },
       handleBeforeUpload (file) {
-        console.log('handlebeforeupload', this.uploadPicMetas)
         let reader = new FileReader()
         // This is very tricky.
         reader.addEventListener('load', () => {
@@ -155,7 +152,6 @@
         return false
       },
       submitAll () {
-        console.log('submitall', this.uploadPicMetas)
         this.uploadForms.forEach(i => {
           i.comments = []
           i.id = String(ObjectId())
@@ -163,10 +159,10 @@
           if (this.type === 'blogs') {
             i.tags = []
             i.tags.push(this.$route.params.sideMenu)
+            i.published_at = moment().format()
           } else {
             i.project = this.$route.params.sideMenu
           }
-          console.log(this.uploadPicMetas)
           this.uploadPicMetas.push(i)
         })
         let data = new FormData()
@@ -181,19 +177,20 @@
         config.HTTP.post(`/upload-${this.type}`, data)
           .then(response => {
             if (response.status === 201) {
-              console.log(this.uploadPicMetas)
               config.HTTP.post(`/${this.type}es`, this.uploadPicMetas)
                 .then(response => {
                   if (response.status === 201) {
-                    this.uploadPicMetas = []
-                    console.log('succeed', this.uploadPicMetas)
-                    this.withSrcUploadList = []
-                    this.uploadList = []
-                    this.uploadForm = []
                     this.$Notice.success({
                       title: '提交成功',
                       desc: `所有图片成功提交至${this.$route.params.sideMenu}`
                     })
+                    this.uploadPicMetas = []
+                    this.withSrcUploadList = []
+                    this.uploadList = []
+                    // be very careful with the uploadForms and uploadForm.
+                    // Very tricky.
+                    // And this is the most important part, not this.uploadPicMetas.
+                    this.uploadForms = []
                   }
                 })
                 .catch(error => {
@@ -201,10 +198,10 @@
                     title: '提交失败',
                     desc: error.response.data
                   })
-                  this.uploadPicMetas = []
-                  console.log('failed', this.uploadPicMetas)
-                  this.uploadList = []
-                  this.uploadForm = []
+//                  this.uploadPicMetas = []
+                  // be very careful with the uploadForms and uploadForm.
+                  // Very tricky.
+                  this.uploadForms = []
                 })
             }
           })
