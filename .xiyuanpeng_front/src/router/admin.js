@@ -52,7 +52,10 @@ export const adminRouter = [
           {
             path: ':operation',
             name: 'operation',
-            component: Operations
+            component: Operations,
+            props: (route) => ({
+              'type': route.params.post === 'blog' ? 'blogs' : 'pics'
+            })
           }
         ]
       }

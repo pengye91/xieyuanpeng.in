@@ -1,10 +1,11 @@
 <template>
   <div>
     <MyUpload v-if="$route.params.operation === 'upload'" :post="$route.params.post"
-             :sideMenu="$route.params.sideMenu">
+             :sideMenu="$route.params.sideMenu" :type="type">
     </MyUpload>
     <PostAll v-if="$route.params.operation === 'all'" :post="$route.params.post"
-             :sideMenu="$route.params.sideMenu"></PostAll>
+             :sideMenu="$route.params.sideMenu" :type="type">
+    </PostAll>
   </div>
 </template>
 

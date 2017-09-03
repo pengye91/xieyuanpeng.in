@@ -52,9 +52,9 @@
         :on-exceeded-size="handleMaxSize"
         :before-upload="handleBeforeUpload"
         type="drag"
-        :action="`${baseUrl}/api/v1/picses`"
+        :action="`${baseUrl}/api/v1/${type}es`"
         class="upload">
-        <Icon type="camera" size="80"></Icon>
+        <Icon :type="this.type==='blogs'?'document-text':'camera'" size="80"></Icon>
       </Upload>
     </Row>
   </div>
@@ -66,7 +66,7 @@
   export default {
     name: 'operation-upload',
     props: [
-      'post', 'sideMenu'
+      'post', 'sideMenu', 'type'
     ],
     data () {
       return {
@@ -172,10 +172,10 @@
             data.append('content-type', this.uploadList[i].type)
             data.append('size', this.uploadList[i].size)
           })
-        config.HTTP.post('/upload-pics', data)
+        config.HTTP.post(`/upload-${this.type}`, data)
           .then(response => {
             if (response.status === 201) {
-              config.HTTP.post('/picses', this.uploadPicMetas)
+              config.HTTP.post(`/${this.type}es`, this.uploadPicMetas)
                 .then(response => {
                   if (response.status === 201) {
                     this.$Notice.success({

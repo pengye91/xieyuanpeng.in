@@ -47,8 +47,8 @@
     </Row>
     <Row type="flex" justify="center">
       <Col span="24">
-      <comments v-if="curBlog" :picture="curBlog.id" :comments="cComments" :path="'comments.'"
-                style="padding-bottom: 5%"></comments>
+      <comments v-if="curBlog" :post="curBlog.id" :comments="cComments" :path="'comments.'"
+                type="blogs" style="padding-bottom: 5%"></comments>
       </Col>
     </Row>
   </div>
@@ -91,7 +91,10 @@
         return this.src === 0
       },
       curBlog () {
-        return this.blogs[this.src]
+        if (this.blogs[this.src] !== undefined) {
+          this.cComments = this.blogs[this.src].comments
+          return this.blogs[this.src]
+        }
       },
       rightDisabled () {
         return this.blogs.length === this.src + 1

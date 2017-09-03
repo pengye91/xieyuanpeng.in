@@ -16,7 +16,7 @@
   export default {
     name: 'operation-all',
     props: [
-      'post', 'sideMenu'
+      'post', 'sideMenu', 'type'
     ],
     watch: {
       '$route' (to, from) {
@@ -24,9 +24,9 @@
         this.innerPost = to.params.post
         this.initTable = []
         this.metaData.forEach(i => {
-          if (i.project === this.innerSideMenu) {
-            this.initTable.push(i)
-          }
+          if (i.hasOwnProperty('tags')) {
+            if (i.tags.includes(this.innerSideMenu)) { this.initTable.push(i) }
+          } else if (i.project === this.innerSideMenu) { this.initTable.push(i) }
         })
       }
     },
@@ -34,9 +34,9 @@
       allTable () {
         if (this.initTable.length === 0) {
           this.metaData.forEach(i => {
-            if (i.project === this.sideMenu) {
-              this.initTable.push(i)
-            }
+            if (i.hasOwnProperty('tags')) {
+              if (i.tags.includes(this.sideMenu)) { this.initTable.push(i) }
+            } else if (i.project === this.sideMenu) { this.initTable.push(i) }
           })
         }
         return this.initTable
@@ -47,6 +47,7 @@
         innerSideMenu: '',
         innerPost: '',
         initTable: [],
+//        type: '',
         columns: [
           {
             type: 'selection',
@@ -55,7 +56,7 @@
           },
           {
             title: '标题',
-            width: 70,
+            width: 150,
             align: 'center',
             key: 'title'
           },
@@ -73,7 +74,7 @@
           {
             title: '创建时间',
             align: 'center',
-            width: 200,
+            width: 150,
             key: 'created_at'
           },
           {
@@ -115,7 +116,8 @@
       }
     },
     mounted () {
-      config.HTTP.get('/pics/')
+//      console.log(this.type)
+      config.HTTP.get(`/${this.type}/`)
         .then(response => {
           if (response.status === 200) {
             this.metaData = JSON.parse(JSON.stringify(response.data, (key, value) => {
@@ -132,6 +134,7 @@
               return value
             }))
           }
+//          console.log(this.metaData)
         })
         .catch(error => {
           console.log(error.response.data)

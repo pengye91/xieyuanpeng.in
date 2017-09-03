@@ -48,9 +48,9 @@
       <Button type="primary" style="font-size: 13px" @click="realReply" :disabled="!replyWordContent">回复</Button>
       </Col>
     </Row>
-    <comments v-if="(comment.comments !== null) && comment.comments.length" :picture="picture"
+    <comments v-if="(comment.comments !== null) && comment.comments.length" :post="post"
               :path="path + '.comments.'"
-              class="comment-comments" :comments="comment.comments">
+              class="comment-comments" :comments="comment.comments" :type="type">
     </comments>
   </div>
 </template>
@@ -77,7 +77,7 @@
     beforeCreate () {
       this.$options.components.Comments = require('./Comments.vue')
     },
-    props: ['comment', 'path', 'picture'],
+    props: ['comment', 'path', 'post', 'type'],
     computed: {
       isTheUser () {
         return this.user.id === this.comment.byId
@@ -92,7 +92,7 @@
     methods: {
       deleteComment () {
         config.HTTP.delete(
-          `/pics/${this.picture}/comments?id=${this.commentId}&internalPath=${this.path.slice(0, -2)}`
+          `/${this.type}/${this.post}/comments?id=${this.commentId}&internalPath=${this.path.slice(0, -2)}`
         )
           .then(response => {
             console.log(this.commentId)
@@ -108,7 +108,7 @@
       },
       realEdit () {
         config.HTTP.put(
-          `/pics/${this.picture}/comments`,
+          `/${this.type}/${this.post}/comments`,
           {
             'wordContent': this.comment.wordContent,
             'comments': [],
@@ -130,7 +130,7 @@
       },
       realReply () {
         config.HTTP.post(
-          `/pics/${this.picture}/comments`,
+          `/${this.type}/${this.post}/comments`,
           {
             'wordContent': this.replyWordContent,
             'comments': [],

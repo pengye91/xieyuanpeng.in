@@ -60,8 +60,8 @@
     </Row>
     <Row type="flex" justify="center">
       <Col span="24">
-      <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
-                style="padding-bottom: 5%"></comments>
+      <comments v-if="currentPic" :post="currentPic.id" :comments="cComments" :path="'comments.'"
+                :type="'pics'" style="padding-bottom: 5%"></comments>
       </Col>
     </Row>
   </div>

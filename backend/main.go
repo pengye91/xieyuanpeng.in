@@ -114,6 +114,8 @@ func main() {
 			b.PUT("/:id/comments", middlewares.JWTMiddlewareFactory(authorization.All).MiddlewareFunc(), blog.UpdateCommentByBlogId)
 			b.DELETE("/:id/comments", blog.DeleteCommentByBlogId)
 		}
+		apiV1.POST("/blogses", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), blog.PostBlogsToMain)
+		apiV1.POST("/upload-blogs", middlewares.JWTMiddlewareFactory(authorization.IsAdmin).MiddlewareFunc(), blog.UploadBlogsToStorage)
 
 		u := apiV1.Group("/users")
 		{

@@ -35,7 +35,7 @@ var (
 		MONGO_AUTH_PASSWORD: "pengye2901307001",
 	}
 	// TODO: not good here, use a configuration tool like viper later
-	BACKEND_ROOT, _ = filepath.Abs("../")
+	BACKEND_ROOT, _ = filepath.Abs("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in")
 	MEDIA_ROOT      = filepath.Join(BACKEND_ROOT, "public", "media")
 	IMAGE_ROOT      = filepath.Join(BACKEND_ROOT, "static", "images")
 )

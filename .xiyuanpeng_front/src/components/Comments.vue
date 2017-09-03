@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row v-for="(comment, index) in comments" :key="comment" class="list-group-item">
-      <comment :picture="picture" :comment="comment" :path="path + index"></comment>
+      <comment :post="post" :comment="comment" :path="path + index" :type="type"></comment>
     </Row>
   </div>
 </template>
@@ -10,7 +10,7 @@
 
   export default{
     name: 'comments',
-    props: ['picture', 'comments', 'path'],
+    props: ['post', 'comments', 'path', 'type'],
     data () {
       return {
         replyToComment: false
