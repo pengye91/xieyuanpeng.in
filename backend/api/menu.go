@@ -6,6 +6,7 @@ import (
 )
 
 // Todo: Add MenuItems API. This should the root of all front-end classification.
+// This should also be reflected in front-end router and vuex.
 
 type MenuApi struct {
 	*gin.Context
