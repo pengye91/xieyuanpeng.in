@@ -5,7 +5,7 @@ import {config} from '../config/dev'
 
 let menu = {}
 
-config.HTTP.get('/menu-items')
+config.HTTP.get('/menu')
   .then(response => {
     if (response.status < 400) {
       menu = response.data
