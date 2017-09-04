@@ -1,0 +1,2 @@
+package api
+//{"blog":{"ref":"blog","name":"博客","sideMenuItems":{"python":"python","golang":"golang","django":"django","miscellaneous":"杂"},"adminSideMenuItems":{"all":"所有","upload":"上传","with-selected":"选中操作"}},"photography":{"ref":"photography","name":"摄影","sideMenuItems":{"project-1":"项目1","project-2":"项目2"},"adminSideMenuItems":{"all":"所有","upload":"上传","with-selected":"选中操作"}},"contact":{"ref":"contact","name":"联系我","sideMenuItems":{"github":"github","wechat":"wechat"},"adminSideMenuItems":{"all":"所有","upload":"上传","with-selected":"选中操作"}}}

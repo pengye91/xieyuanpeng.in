@@ -15,6 +15,7 @@ var (
 	auth = &api.AuthAPI{}
 	pic  = &api.PictureAPI{}
 	blog = &api.BlogAPI{}
+	menu = &api.MenuApi{}
 )
 
 func DbMain() {
@@ -81,6 +82,16 @@ func main() {
 	{
 		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
 		apiV1.Static("/md", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/md")
+
+		m := apiV1.Group("/menu")
+		{
+			m.GET("/", menu.GetMenu)
+			m.POST("/", menu.PostMenu)
+			m.PUT("/menu-item", menu.PutMenuItem)
+			m.PUT("/side-menu-item", menu.PutSideMenuItem)
+			m.PUT("/admin-side-menu-item", menu.PutAdminSideMenuItem)
+		}
+
 		a := apiV1.Group("/auth", middlewares.Session_middleware)
 		{
 			a.POST("/register", auth.Register)
@@ -122,6 +133,7 @@ func main() {
 		{
 			u.GET("/auto-search", api.AutoSearch)
 		}
+
 	}
 
 	app.Run("0.0.0.0:8000")

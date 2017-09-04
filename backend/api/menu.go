@@ -99,7 +99,8 @@ func (this MenuApi) GetMenu(ctx *gin.Context) {
 		return
 	}
 	if reply[1] != nil {
-		unmarshalError := json.Unmarshal(reply[1].([]byte), menuItems)
+		// Always Unmarshal to a pointer.
+		unmarshalError := json.Unmarshal(reply[1].([]byte), &menuItems)
 		if unmarshalError != nil {
 			log.LoggerSugar.Errorw("menu GetMenu json.Unmarshal Error",
 				"module", "application",
@@ -165,7 +166,7 @@ func (this MenuApi) PutSideMenuItem(ctx *gin.Context) {
 	defer redisConn.Close()
 
 	var (
-		sideMenuItems   models.SideMenuItems
+		sideMenuItems   = make(models.SideMenuItems)
 		cachedMenuItems = make(map[string]models.MenuItem)
 	)
 
@@ -202,7 +203,7 @@ func (this MenuApi) PutSideMenuItem(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
-	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), cachedMenuItems)
+	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), &cachedMenuItems)
 	if jsonUnmarshalError != nil {
 		log.LoggerSugar.Errorw("menu PutAdminSideMenuItem json.Unmarshal Error",
 			"module", "application: json.Unmarshal",
@@ -272,7 +273,7 @@ func (this MenuApi) PutAdminSideMenuItem(ctx *gin.Context) {
 	defer redisConn.Close()
 
 	var (
-		adminSideMenuItems models.AdminSideMenuItems
+		adminSideMenuItems = make(models.AdminSideMenuItems)
 		cachedMenuItems    = make(map[string]models.MenuItem)
 	)
 
@@ -309,7 +310,7 @@ func (this MenuApi) PutAdminSideMenuItem(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
-	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), cachedMenuItems)
+	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), &cachedMenuItems)
 	if jsonUnmarshalError != nil {
 		log.LoggerSugar.Errorw("menu PutAdminSideMenuItem json.Unmarshal Error",
 			"module", "application: json.Unmarshal",
@@ -378,7 +379,7 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	defer Db.Close()
 	defer redisConn.Close()
 	var (
-		cachedSideMenuItems models.SideMenuItems
+		cachedSideMenuItems = make(models.SideMenuItems)
 		menuItem            = make(map[string]models.MenuItem)
 		cachedMenuItems     = make(map[string]models.MenuItem)
 	)
@@ -414,8 +415,8 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	}
-	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), cachedMenuItems)
-	jsonUnmarshalError0 := json.Unmarshal(hMgetreply[2].([]byte), cachedSideMenuItems)
+	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), &cachedMenuItems)
+	jsonUnmarshalError0 := json.Unmarshal(hMgetreply[2].([]byte), &cachedSideMenuItems)
 	if (jsonUnmarshalError != nil) || (jsonUnmarshalError0 != nil) {
 		log.LoggerSugar.Errorw("menu PutMenuItem json.Unmarshal Error",
 			"module", "application: json.Unmarshal",
@@ -483,7 +484,7 @@ func (this MenuApi) PostMenu(ctx *gin.Context) {
 	defer redisConn.Close()
 
 	var (
-		sideMenuItems      models.SideMenuItems
+		sideMenuItems      = make(models.SideMenuItems)
 		menu               models.Menu
 		adminSideMenuItems = make(map[string]map[string]string)
 		menuItem           = make(map[string]models.MenuItem)
@@ -533,6 +534,7 @@ func (this MenuApi) PostMenu(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
 	} else {
+		log.LoggerSugar.Info(menuItem)
 		log.LoggerSugar.Infow("menu PostMenu HMSET menu succeed",
 			"reply", reply,
 		)
