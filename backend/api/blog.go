@@ -189,7 +189,7 @@ func (this BlogAPI) UploadBlogsToStorage(ctx *gin.Context) {
 				"module", "application: uploadBlogsToStorage",
 				"filename", file.Filename,
 			)
-			if err := ctx.SaveUploadedFile(file, filepath.Join(configs.IMAGE_ROOT, file.Filename)); err != nil {
+			if err := ctx.SaveUploadedFile(file, filepath.Join(configs.HTML_ROOT, file.Filename)); err != nil {
 				log.LoggerSugar.Errorw("upload blogs to local server Error",
 					"module", "application: uploadBlogsToStorage",
 					"error", err,

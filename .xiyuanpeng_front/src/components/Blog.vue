@@ -101,7 +101,7 @@
       },
       blogSrc () {
         if (this.blogs[this.src] !== undefined) {
-          return `${this.iframeSrc}${this.blogs[this.src].path}`
+          return `${this.iframeSrc}${this.blogPath}${this.iframeType}`
         }
       },
       commentIsEmpty () {

@@ -5,16 +5,16 @@ import {http} from './http-common'
 
 // TODO: this should be put into store/state
 let adminSideMenuItem = {
-  'all': '所有',
-  'upload': '上传',
-  'with-selected': '选中操作'
+  'blog': {'all': '所有', 'upload': '上传', 'with-selected': '选中操作'},
+  'photography': {'all': '所有', 'upload': '上传', 'with-selected': '选中操作'},
+  'contact': {'all': '所有', 'upload': '上传', 'with-selected': '选中操作'}
 }
 
 // TODO: this should be put into store/state
 let sideMenuItem = {
-  'blog': ['python', 'golang', 'django', 'miscellaneous'],
-  'photography': ['project-1', 'project-2'],
-  'contact': ['github', 'wechat']
+  'blog': {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': 'miscellaneous'},
+  'photography': {'project-1': '项目1', 'project-2': '项目2'},
+  'contact': {'github': 'github', 'wechat': '微信'}
 }
 
 http.interceptors.request.use(config => {
@@ -34,20 +34,31 @@ export const config = {
       ref: 'blog',
       name: '博客',
       sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
-      adminSideMenuItems: adminSideMenuItem
+      adminSideMenuItems: {
+        'all': '所有',
+        'upload': '上传',
+        'with-selected': '选中操作'
+      }
     },
     'photography': {
       ref: 'photography',
       name: '摄影',
       sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
-      adminSideMenuItems: adminSideMenuItem
+      adminSideMenuItems: {
+        'all': '所有',
+        'upload': '上传',
+        'with-selected': '选中操作'
+      }
     },
     'contact': {
       ref: 'contact',
       name: '联系我',
       sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
-      adminSideMenuItems: adminSideMenuItem
+      adminSideMenuItems: {
+        'all': '所有',
+        'upload': '上传',
+        'with-selected': '选中操作'
+      }
     }
-  },
-  SIDE_MENU_ITEMS: sideMenuItem
+  }
 }

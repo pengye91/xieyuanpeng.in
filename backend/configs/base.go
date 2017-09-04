@@ -38,4 +38,5 @@ var (
 	BACKEND_ROOT, _ = filepath.Abs("/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in")
 	MEDIA_ROOT      = filepath.Join(BACKEND_ROOT, "public", "media")
 	IMAGE_ROOT      = filepath.Join(BACKEND_ROOT, "static", "images")
+	HTML_ROOT      = filepath.Join(BACKEND_ROOT, "static", "html")
 )

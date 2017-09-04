@@ -92,7 +92,7 @@ func (this *MgoDb) Index(collection string, keys []string) bool {
 			"module", "mongo",
 			"error", err,
 		)
-		panic(err)
+		//panic(err)
 		return false
 	}
 	return true

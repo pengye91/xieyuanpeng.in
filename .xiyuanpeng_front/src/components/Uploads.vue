@@ -170,7 +170,7 @@
         Array
           .from(Array(this.uploadList.length).keys())
           .map(i => {
-            data.append('pics', this.uploadList[i])
+            data.append(this.type, this.uploadList[i])
             data.append('content-type', this.uploadList[i].type)
             data.append('size', this.uploadList[i].size)
           })
@@ -203,6 +203,8 @@
                   // Very tricky.
                   this.uploadForms = []
                 })
+            } else {
+              this.uploadForms = []
             }
           })
           .catch(error => {
@@ -210,6 +212,7 @@
               title: '提交失败',
               desc: error.response.data
             })
+            this.uploadForms = []
           })
       }
     },
