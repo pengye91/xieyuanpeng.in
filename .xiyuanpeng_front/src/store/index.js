@@ -4,6 +4,7 @@ import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
+import http from '../config/http-common'
 
 Vue.use(Vuex)
 
@@ -13,8 +14,27 @@ const anonUser = {
   'id': ObjectId(),
   'name': '匿名用户'
 }
-// const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzI3NzMwNzEsImlkIjoiNTk3MDU3N2FkNmFlMjUwNWYxODRlYThmIiwib3JpZ19pYXQiOjE1MDE2NjkwNzEsInVzZXIiOnsiaWQiOiI1OTcwNTc3YWQ2YWUyNTA1ZjE4NGVhOGYiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.AwGsNWxzl6kN8yUXNhvUS1sZpJUOzOEyCop_UZX4AHs'
 const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzM1NjcyNzIsImlkIjoiNTk4ZGJiZTIxZDBmYjgzYWI2ZjlmYmQ1Iiwib3JpZ19pYXQiOjE1MDI0NjMyNzIsInVzZXIiOnsiaWQiOiI1OThkYmJlMjFkMGZiODNhYjZmOWZiZDUiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.8SpUE8hjUXRYJ-p6lkRT_SMxA2KmaE1cWM2q80Jtk4Y'
+let menuItems = {}
+let sideMenuItems = {}
+let adminSideMenuItems = {}
+
+console.log('xixi')
+http.get('menu/')
+  .then((response) => {
+    menuItems = response.data
+  })
+
+http.get('menu/side-menu')
+  .then((response) => {
+    sideMenuItems = response.data
+  })
+
+http.get('menu/admin-side-menu')
+  .then((response) => {
+    adminSideMenuItems = response.data
+  })
+console.log('xixi')
 
 export default new Vuex.Store({
   // TODO: Add all pics here.
@@ -27,9 +47,9 @@ export default new Vuex.Store({
     isLogin: false,
     jwtToken: anonUserJwtToken,
     anonUserJwtToken: anonUserJwtToken,
-    menuItems: {},
-    sideMenuItems: {},
-    adminSideMenuItems: {},
+    menuItems: menuItems,
+    sideMenuItems: sideMenuItems,
+    adminSideMenuItems: adminSideMenuItems
   },
   mutations: {
     logout (state) {

@@ -179,27 +179,27 @@
         jwtToken: localStorage.getItem('jwtToken')
       })
 
-      let menu = {}
-      config.HTTP.get('menu/')
-        .then(response => {
-          if (response.status < 400) {
-            menu = response.data
-            this.$store.commit({
-              type: 'loadMenuItems',
-              menuItems: menu
-            })
-          } else {
-            console.log(response.data)
-          }
-        })
-        .catch(error => {
-          this.$store.commit({
-            type: 'loadMenuItems',
-            menuItems: config.MENU_ITEMS
-          })
-          console.log(error.response.data)
-          console.log(this.menuItems)
-        })
+//      let menu = {}
+//      config.HTTP.get('menu/')
+//        .then(response => {
+//          if (response.status < 400) {
+//            menu = response.data
+//            this.$store.commit({
+//              type: 'loadMenuItems',
+//              menuItems: menu
+//            })
+//          } else {
+//            console.log(response.data)
+//          }
+//        })
+//        .catch(error => {
+//          this.$store.commit({
+//            type: 'loadMenuItems',
+//            menuItems: config.MENU_ITEMS
+//          })
+//          console.log(error.response.data)
+//          console.log(this.menuItems)
+//        })
     },
     computed: {
       ...mapState([

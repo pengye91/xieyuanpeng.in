@@ -17,10 +17,30 @@ let sideMenuItem = {
   'contact': ['github', 'wechat']
 }
 
+console.log('xixi')
 http.interceptors.request.use(config => {
   config.headers.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`
   return config
 })
+
+console.log('xixi')
+let menuItems = {}
+http.get('menu/')
+  .then((response) => {
+    menuItems = response.data
+  })
+
+let sideMenuItems = {}
+http.get('menu/side-menu')
+  .then((response) => {
+    sideMenuItems = response.data
+  })
+
+let adminSideMenuItems = {}
+http.get('menu/admin-side-menu')
+  .then((response) => {
+    adminSideMenuItems = response.data
+  })
 
 export const config = {
   HTTP: http,
@@ -50,4 +70,10 @@ export const config = {
     }
   },
   SIDE_MENU_ITEMS: sideMenuItem
+}
+
+export const menu = {
+  MENU_ITEMS: menuItems,
+  SIDE_MENU_ITEMS: sideMenuItems,
+  ADMIN_SIDE_MENU_ITEMS: adminSideMenuItems
 }
