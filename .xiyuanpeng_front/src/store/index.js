@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
-import http from '../config/http-common'
+import {config} from '../config/dev'
 
 Vue.use(Vuex)
 
@@ -15,26 +14,6 @@ const anonUser = {
   'name': '匿名用户'
 }
 const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzM1NjcyNzIsImlkIjoiNTk4ZGJiZTIxZDBmYjgzYWI2ZjlmYmQ1Iiwib3JpZ19pYXQiOjE1MDI0NjMyNzIsInVzZXIiOnsiaWQiOiI1OThkYmJlMjFkMGZiODNhYjZmOWZiZDUiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.8SpUE8hjUXRYJ-p6lkRT_SMxA2KmaE1cWM2q80Jtk4Y'
-let menuItems = {}
-let sideMenuItems = {}
-let adminSideMenuItems = {}
-
-console.log('xixi')
-http.get('menu/')
-  .then((response) => {
-    menuItems = response.data
-  })
-
-http.get('menu/side-menu')
-  .then((response) => {
-    sideMenuItems = response.data
-  })
-
-http.get('menu/admin-side-menu')
-  .then((response) => {
-    adminSideMenuItems = response.data
-  })
-console.log('xixi')
 
 export default new Vuex.Store({
   // TODO: Add all pics here.
@@ -47,9 +26,9 @@ export default new Vuex.Store({
     isLogin: false,
     jwtToken: anonUserJwtToken,
     anonUserJwtToken: anonUserJwtToken,
-    menuItems: menuItems,
-    sideMenuItems: sideMenuItems,
-    adminSideMenuItems: adminSideMenuItems
+    menuItems: {},
+    sideMenuItems: {},
+    adminSideMenuItems: {}
   },
   mutations: {
     logout (state) {
@@ -63,8 +42,14 @@ export default new Vuex.Store({
       state.isLogin = loginInfo.isLogin
       state.jwtToken = localStorage.getItem('jwtToken')
     },
-    loadMenuItems (state, payload) {
-      state.menuItems = payload.menuItems
+    setMenuItems (state, { menuItems }) {
+      state.menuItems = menuItems
+    },
+    setSideMenuItems (state, { sideMenuItems }) {
+      state.sideMenuItems = sideMenuItems
+    },
+    setAdminSideMenuItems (state, { adminSideMenuItems }) {
+      state.sideMenuItems = adminSideMenuItems
     },
     check (state, payload) {
       let jwtToken = payload.jwtToken
@@ -94,8 +79,22 @@ export default new Vuex.Store({
       }
     }
   },
-  actions,
+  actions: {
+    LOAD_MENU_ITEMS: function ({ commit }) {
+      config.HTTP.get('menu/')
+        .then((response) => {
+          commit('setMenuItems', {menuItems: response.data})
+        })
+      config.HTTP.get('menu/side-menu')
+        .then((response) => {
+          commit('setSideMenuItems', {sideMenuItems: response.data})
+        })
+      config.HTTP.get('menu/admin-side-menu')
+        .then((response) => {
+          commit('setAdminSideMenuItems', {adminSideMenuItems: response.data})
+        })
+    }
+  },
   strict: debug,
   plugins: debug ? [createLogger()] : []
 })
-

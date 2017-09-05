@@ -6,6 +6,9 @@
   import Layout from './components/Layout'
 
   export default {
-    components: {Layout}
+    components: {Layout},
+    mounted: function () {
+      this.$store.dispatch('LOAD_MENU_ITEMS')
+    }
   }
 </script>
