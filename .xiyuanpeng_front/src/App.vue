@@ -7,7 +7,7 @@
 
   export default {
     components: {Layout},
-    mounted: function () {
+    beforeCreate: function () {
       this.$store.dispatch('LOAD_MENU_ITEMS')
     }
   }

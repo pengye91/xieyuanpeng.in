@@ -4,7 +4,7 @@ import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
 import blogs from '../components/Blogs'
 import blog from '../components/Blog'
-// import store from '../store/index'
+import store from '../store/index'
 // import Operations from '../components/Operations'
 // import Uploads from '../components/Uploads'
 // import SideMenuView from '../components/SideMenuView'
@@ -36,7 +36,8 @@ const keyComponentMap = {
   'contact': photo
 }
 
-let MI = config.MENU_ITEMS
+let MI = store.state.menuItems
+console.log(MI)
 
 function firstRouters () {
   let firstRoutes = []
