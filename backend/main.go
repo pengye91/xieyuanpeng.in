@@ -87,9 +87,11 @@ func main() {
 		{
 			m.GET("/", menu.GetMenu)
 			m.POST("/", menu.PostMenu)
-			m.PUT("/menu-item", menu.PutMenuItem)
-			m.PUT("/side-menu-item", menu.PutSideMenuItem)
-			m.PUT("/admin-side-menu-item", menu.PutAdminSideMenuItem)
+			m.PUT("/", menu.PutMenuItem)
+			m.GET("/side-menu", menu.GetSideMenu)
+			m.PUT("/side-menu", menu.PutSideMenuItem)
+			m.GET("/admin-side-menu", menu.GetAdminSideMenu)
+			m.PUT("/admin-side-menu", menu.PutAdminSideMenuItem)
 		}
 
 		a := apiV1.Group("/auth", middlewares.Session_middleware)

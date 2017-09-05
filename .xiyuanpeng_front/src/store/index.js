@@ -27,7 +27,9 @@ export default new Vuex.Store({
     isLogin: false,
     jwtToken: anonUserJwtToken,
     anonUserJwtToken: anonUserJwtToken,
-    menuItems: {}
+    menuItems: {},
+    sideMenuItems: {},
+    adminSideMenuItems: {},
   },
   mutations: {
     logout (state) {

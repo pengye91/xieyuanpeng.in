@@ -73,6 +73,18 @@ type MenuApi struct {
 }
 
 func (this MenuApi) GetMenu(ctx *gin.Context) {
+	getMenuItems(ctx, "menuItems")
+}
+
+func (this MenuApi) GetSideMenu(ctx *gin.Context) {
+	getMenuItems(ctx, "sideMenuItems")
+}
+
+func (this MenuApi) GetAdminSideMenu(ctx *gin.Context) {
+	getMenuItems(ctx, "adminSideMenuItems")
+}
+
+func getMenu(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
 	defer Db.Close()
@@ -154,6 +166,189 @@ func (this MenuApi) GetMenu(ctx *gin.Context) {
 		}
 		ctx.JSON(http.StatusOK, menu.MenuItems)
 		return
+	}
+}
+
+func getMenuItems(ctx *gin.Context, itemType string) {
+	Db := db.MgoDb{}
+	Db.Init()
+	defer Db.Close()
+
+	redisConn := cache.GlobalUserRedisPool.Get()
+	defer redisConn.Close()
+
+	var (
+		menu               models.Menu
+		sideMenuItems      = make(models.SideMenuItems)
+		adminSideMenuItems = make(models.AdminSideMenuItems)
+		menuItems          = make(map[string]models.MenuItem)
+	)
+
+	reply, getMenuItemsError := redis.Values(redisConn.Do("HMGET", "menu",
+		"menuID",
+		itemType,
+	))
+	if getMenuItemsError != nil {
+		log.LoggerSugar.Errorw("menu getMentItems HMGET menu Error",
+			"module", "redis",
+			"error", getMenuItemsError,
+		)
+		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+		return
+	}
+	if reply[1] != nil {
+		// Always Unmarshal to a pointer.
+		switch itemType {
+		case "menuItems":
+			unmarshalError := json.Unmarshal(reply[1].([]byte), &menuItems)
+			if unmarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems json.Unmarshal Error",
+					"module", "application",
+					"error", unmarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMentItems Get menuItems from Redis succeed",
+				"module", "redis",
+			)
+
+			ctx.JSON(http.StatusOK, menuItems)
+			return
+		case "sideMenuItems":
+			unmarshalError := json.Unmarshal(reply[1].([]byte), &sideMenuItems)
+			if unmarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems json.Unmarshal Error",
+					"module", "application",
+					"error", unmarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMentItems Get sideMenuItems from Redis succeed",
+				"module", "redis",
+			)
+
+			ctx.JSON(http.StatusOK, sideMenuItems)
+			return
+		case "adminSideMenuItems":
+			unmarshalError := json.Unmarshal(reply[1].([]byte), &adminSideMenuItems)
+			if unmarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems json.Unmarshal Error",
+					"module", "application",
+					"error", unmarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMentItems Get adminSideMenuItems from Redis succeed",
+				"module", "redis",
+			)
+
+			ctx.JSON(http.StatusOK, adminSideMenuItems)
+			return
+		}
+	} else {
+		log.LoggerSugar.Infow("menu getMentItems Get items from Redis failed, trying to get from db",
+			"module", "redis",
+		)
+		if getMenuErr := Db.C("menu").Find(nil).One(&menu); getMenuErr != nil {
+			log.LoggerSugar.Errorw("menu getMentItems Error",
+				"module", "mongo",
+				"error", getMenuErr,
+			)
+			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+			return
+		}
+		switch itemType {
+		case "menuItems":
+			dbMenuItems, jsonMarshalError := json.Marshal(menu.MenuItems)
+			if jsonMarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems Error: jsonMarshalError",
+					"module", "application json marshal",
+					"error", jsonMarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMentItems trying to get menu from db succeed",
+				"module", "mongo",
+			)
+
+			_, hmsetError := redis.String(redisConn.Do("HMSET", "menu",
+				"menuItems", dbMenuItems,
+			))
+			if hmsetError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems HMSET menu Error",
+					"module", "redis",
+					"error", hmsetError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			ctx.JSON(http.StatusOK, menu.MenuItems)
+			return
+		case "sideMenuItems":
+			for menuItemName, menuItem := range menu.MenuItems {
+				sideMenuItems[menuItemName] = menuItem.SideMenuItems
+			}
+			dbSideMenuItems, jsonMarshalError := json.Marshal(sideMenuItems)
+			if jsonMarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems Error: jsonMarshalError",
+					"module", "application json marshal",
+					"error", jsonMarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMenutItems trying to get menu from db succeed",
+				"module", "mongo",
+			)
+
+			_, hmsetError := redis.String(redisConn.Do("HMSET", "menu",
+				"sideMenuItems", dbSideMenuItems,
+			))
+			if hmsetError != nil {
+				log.LoggerSugar.Errorw("menu getMenutItems HMSET menu Error",
+					"module", "redis",
+					"error", hmsetError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			ctx.JSON(http.StatusOK, sideMenuItems)
+			return
+		case "adminSideMenuItems":
+			for menuItemName, menuItem := range menu.MenuItems {
+				adminSideMenuItems[menuItemName] = menuItem.AdminSideMenuItems
+			}
+			dbAdminSideMenuItems, jsonMarshalError := json.Marshal(adminSideMenuItems)
+			if jsonMarshalError != nil {
+				log.LoggerSugar.Errorw("menu getMentItems Error: jsonMarshalError",
+					"module", "application json marshal",
+					"error", jsonMarshalError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			log.LoggerSugar.Infow("menu getMenutItems trying to get menu from db succeed",
+				"module", "mongo",
+			)
+
+			_, hmsetError := redis.String(redisConn.Do("HMSET", "menu",
+				"adminSideMenuItems", dbAdminSideMenuItems,
+			))
+			if hmsetError != nil {
+				log.LoggerSugar.Errorw("menu getMenutItems HMSET menu Error",
+					"module", "redis",
+					"error", hmsetError,
+				)
+				ctx.JSON(http.StatusInternalServerError, models.Err("5"))
+				return
+			}
+			ctx.JSON(http.StatusOK, adminSideMenuItems)
+			return
+		}
 	}
 }
 
