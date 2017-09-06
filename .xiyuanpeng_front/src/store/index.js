@@ -101,6 +101,23 @@ const s = new Vuex.Store({
         .then((response) => {
           commit('setAdminSideMenuItems', {adminSideMenuItems: response.data})
         })
+    },
+    UPDATE_SIDE_MENU_ITEMS: function ({ commit }, payload) {
+      config.HTTP.put('menu/side-menu',
+        payload.newSideMenuItems, {
+          params: {
+            'menu-item': payload.menuItem
+          }
+        })
+        .then(response => {
+          if (response.status === 200) {
+            commit('setSideMenuItems', {sideMenuItems: response.data.sideMenuItems})
+            commit('setMenuItems', {menuItems: response.data.menuItems})
+          }
+        })
+        .catch(error => {
+          console.error(error.response.data)
+        })
     }
   },
   strict: debug,

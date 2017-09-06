@@ -3,19 +3,38 @@
  */
 import {http} from './http-common'
 
-// TODO: this should be put into store/state
-// let adminSideMenuItem = {
-//   'all': '所有',
-//   'upload': '上传',
-//   'with-selected': '选中操作'
-// }
+const defaultAdminSideMenuItem = {
+  'all': '所有',
+  'upload': '上传',
+  'with-selected': '选中操作'
+}
 
-// TODO: this should be put into store/state
-// let sideMenuItem = {
-//   'blog': {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
-//   'photography': {'project-1': '项目1', 'project-2': '项目2'},
-//   'contact': {'github': 'github', 'wechat': 'wechat'}
-// }
+const defaultSideMenuItem = {
+  'blog': {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
+  'photography': {'project-1': '项目1', 'project-2': '项目2'},
+  'contact': {'github': 'github', 'wechat': 'wechat'}
+}
+
+const defaultMenuItem = {
+  'blog': {
+    ref: 'blog',
+    name: '博客',
+    sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
+    adminSideMenuItems: defaultAdminSideMenuItem
+  },
+  'photography': {
+    ref: 'photography',
+    name: '摄影',
+    sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
+    adminSideMenuItems: defaultAdminSideMenuItem
+  },
+  'contact': {
+    ref: 'contact',
+    name: '联系我',
+    sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
+    adminSideMenuItems: defaultAdminSideMenuItem
+  }
+}
 
 http.interceptors.request.use(config => {
   config.headers.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`
@@ -29,27 +48,7 @@ export const config = {
   IMAGE_BASE_URL: 'https://www.xieyuanpeng.com/static/images/',
 
 // TODO: this should be put into store/state
-  MENU_ITEMS: JSON.parse(localStorage.getItem('menuItems')),
-  // MENU_ITEMS: {
-  //   'blog': {
-  //     ref: 'blog',
-  //     name: '博客',
-  //     sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
-  //     adminSideMenuItems: adminSideMenuItem
-  //   },
-  //   'photography': {
-  //     ref: 'photography',
-  //     name: '摄影',
-  //     sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
-  //     adminSideMenuItems: adminSideMenuItem
-  //   },
-  //   'contact': {
-  //     ref: 'contact',
-  //     name: '联系我',
-  //     sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
-  //     adminSideMenuItems: adminSideMenuItem
-  //   }
-  // },
-  SIDE_MENU_ITEMS: JSON.parse(localStorage.getItem('sideMenuItems'))
+  MENU_ITEMS: JSON.parse(localStorage.getItem('menuItems')) === null ? defaultMenuItem : JSON.parse(localStorage.getItem('menuItems')),
+  SIDE_MENU_ITEMS: JSON.parse(localStorage.getItem('sideMenuItems')) === null ? defaultSideMenuItem : JSON.parse(localStorage.getItem('sideMenuItems'))
 }
 

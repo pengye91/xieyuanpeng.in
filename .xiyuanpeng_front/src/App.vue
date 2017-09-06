@@ -13,7 +13,8 @@
         'menuItems', 'sideMenuItems'
       ])
     },
-    mounted: function () {
+    beforeCreate: function () {
+      console.log('xixi')
       this.$store.dispatch('LOAD_MENU_ITEMS')
     }
   }

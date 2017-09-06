@@ -66,6 +66,7 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2/bson"
+	"fmt"
 )
 
 type MenuApi struct {
@@ -358,7 +359,12 @@ func (this MenuApi) PutSideMenuItem(ctx *gin.Context) {
 		},
 	}
 
-	updateSideMenuItemsError := Db.C("menu").UpdateId(bson.ObjectIdHex(hMgetreply[0].(string)), updateSideMenuItem)
+	if str, ok := hMgetreply[0].([]byte); ok {
+		fmt.Println(str)
+	} else {
+		fmt.Println("NOT OK")
+	}
+	updateSideMenuItemsError := Db.C("menu").UpdateId(bson.ObjectIdHex(string(hMgetreply[0].([]uint8))), updateSideMenuItem)
 	if updateSideMenuItemsError != nil {
 		log.LoggerSugar.Errorw("menu PutAdminSideMenuItem mongo UpdateId Error",
 			"module", "mongo",

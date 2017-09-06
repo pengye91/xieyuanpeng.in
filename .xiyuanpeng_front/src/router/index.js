@@ -36,6 +36,7 @@ let sideMI = config.SIDE_MENU_ITEMS
 
 function firstRouters () {
   let firstRoutes = []
+  console.log('xixi')
   Object.keys(MI).forEach((key) => {
     let firstRoute = {}
     firstRoute.path = `/${key}`

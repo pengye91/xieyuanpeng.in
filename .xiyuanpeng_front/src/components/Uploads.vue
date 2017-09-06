@@ -35,9 +35,9 @@
             </Col>
             <Col span="6">
             <Form-item prop="description" class="form-item">
-              <Input type="text" v-model="uploadForms[index].tags" placeholder="简要描述">
+              <MyInput type="text" v-model="uploadForms[index].tags" placeholder="简要描述">
               <p slot="prepend">标签</p>
-              </Input>
+              </MyInput>
             </Form-item>
             </Col>
           </Row>
@@ -75,6 +75,8 @@
   import {config} from '@/config/dev'
   import ObjectId from 'bson-objectid'
   import moment from 'moment'
+  import MyInput from './MyInput'
+  import {mapState} from 'vuex'
 
   moment.locale('zh-cn')
 
@@ -107,6 +109,14 @@
           ]
         }
       }
+    },
+    components: {
+      MyInput
+    },
+    computed: {
+      ...mapState(
+        'sideMenuItems', 'menuItems', 'adminSideMenuItems'
+      )
     },
     methods: {
       timeConvert (t) {
@@ -169,18 +179,28 @@
         return false
       },
       submitAll () {
+        let newSideMenuItems = config.SIDE_MENU_ITEMS
+        console.log(newSideMenuItems)
         this.uploadForms.forEach(i => {
           i.comments = []
           i.id = String(ObjectId())
           i.path = i.fileName
           if (this.type === 'blogs') {
             i.tags = i.tags.split(', ')
-            console.log(i.tags)
+            i.tags.forEach((tag) => {
+              // if the tag is a new tag, update it to backend.
+              if (newSideMenuItems['blog'][tag] === undefined) {
+                newSideMenuItems['blog'][tag] = tag
+              }
+            })
           } else {
             i.project = this.$route.params.sideMenu
           }
           this.uploadPicMetas.push(i)
         })
+
+        // updateSideMenuItems first
+        this.$store.dispatch('UPDATE_SIDE_MENU_ITEMS', {'menuItem': 'blog', 'newSideMenuItems': newSideMenuItems})
         let data = new FormData()
         // very tricky
         Array
