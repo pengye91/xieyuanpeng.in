@@ -4,43 +4,23 @@
 import {http} from './http-common'
 
 // TODO: this should be put into store/state
-let adminSideMenuItem = {
-  'all': '所有',
-  'upload': '上传',
-  'with-selected': '选中操作'
-}
+// let adminSideMenuItem = {
+//   'all': '所有',
+//   'upload': '上传',
+//   'with-selected': '选中操作'
+// }
 
 // TODO: this should be put into store/state
-let sideMenuItem = {
-  'blog': ['python', 'golang', 'django', 'miscellaneous'],
-  'photography': ['project-1', 'project-2'],
-  'contact': ['github', 'wechat']
-}
+// let sideMenuItem = {
+//   'blog': {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
+//   'photography': {'project-1': '项目1', 'project-2': '项目2'},
+//   'contact': {'github': 'github', 'wechat': 'wechat'}
+// }
 
-console.log('xixi')
 http.interceptors.request.use(config => {
   config.headers.Authorization = `Bearer ${localStorage.getItem('jwtToken')}`
   return config
 })
-
-console.log('xixi')
-let menuItems = {}
-http.get('menu/')
-  .then((response) => {
-    menuItems = response.data
-  })
-
-let sideMenuItems = {}
-http.get('menu/side-menu')
-  .then((response) => {
-    sideMenuItems = response.data
-  })
-
-let adminSideMenuItems = {}
-http.get('menu/admin-side-menu')
-  .then((response) => {
-    adminSideMenuItems = response.data
-  })
 
 export const config = {
   HTTP: http,
@@ -49,31 +29,27 @@ export const config = {
   IMAGE_BASE_URL: 'https://www.xieyuanpeng.com/static/images/',
 
 // TODO: this should be put into store/state
-  MENU_ITEMS: {
-    'blog': {
-      ref: 'blog',
-      name: '博客',
-      sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
-      adminSideMenuItems: adminSideMenuItem
-    },
-    'photography': {
-      ref: 'photography',
-      name: '摄影',
-      sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
-      adminSideMenuItems: adminSideMenuItem
-    },
-    'contact': {
-      ref: 'contact',
-      name: '联系我',
-      sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
-      adminSideMenuItems: adminSideMenuItem
-    }
-  },
-  SIDE_MENU_ITEMS: sideMenuItem
+  MENU_ITEMS: JSON.parse(localStorage.getItem('menuItems')),
+  // MENU_ITEMS: {
+  //   'blog': {
+  //     ref: 'blog',
+  //     name: '博客',
+  //     sideMenuItems: {'python': 'python', 'golang': 'golang', 'django': 'django', 'miscellaneous': '杂'},
+  //     adminSideMenuItems: adminSideMenuItem
+  //   },
+  //   'photography': {
+  //     ref: 'photography',
+  //     name: '摄影',
+  //     sideMenuItems: {'project-1': '项目1', 'project-2': '项目2'},
+  //     adminSideMenuItems: adminSideMenuItem
+  //   },
+  //   'contact': {
+  //     ref: 'contact',
+  //     name: '联系我',
+  //     sideMenuItems: {'github': 'github', 'wechat': 'wechat'},
+  //     adminSideMenuItems: adminSideMenuItem
+  //   }
+  // },
+  SIDE_MENU_ITEMS: JSON.parse(localStorage.getItem('sideMenuItems'))
 }
 
-export const menu = {
-  MENU_ITEMS: menuItems,
-  SIDE_MENU_ITEMS: sideMenuItems,
-  ADMIN_SIDE_MENU_ITEMS: adminSideMenuItems
-}

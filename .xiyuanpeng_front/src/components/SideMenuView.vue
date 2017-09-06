@@ -4,14 +4,14 @@
       <Col span="3">
       <Menu style="height: 100%; border-top: 1px solid lightgray; width: 100%;">
         <div style="position: fixed; width: 12.5%;" v-if="$route.path.startsWith('/admin')">
-          <MyMenuItem v-for="(item, key) in menuItems[$route.params.post].sideMenuItems" :name="key"
-                      :key="key" :to="{name: 'sideMenu', params: {'sideMenu': `${key}`}}"
+          <MyMenuItem v-for="(item, key) in sideMenuItems[$route.params.post]" :name="key"
+                      :key="key" :to="{name: 'sideMenu', params: {'sideMenu': key, 'post': $route.params.post}}"
                       style="margin-top: 5%; width: 100%">
             {{item}}
           </MyMenuItem>
         </div>
         <div v-else>
-          <MyMenuItem v-for="(item, index) in menuItems[type].sideMenuItems" :key="index"
+          <MyMenuItem v-for="(item, key) in sideMenuItems[type]" :key="key"
                       :to="{name: item}" :name="item"
                       style="margin-top: 5%; width: 100%">
             <Icon type="ios-book" size="16"></Icon>
@@ -31,8 +31,8 @@
 
 <script>
   import MyMenuItem from './MyMenuItem'
-  //  import {mapState} from 'vuex'
-  import {config} from '@/config/dev'
+  import {mapState} from 'vuex'
+//  import {config} from '@/config/dev'
 
   export default {
     components: {
@@ -43,15 +43,15 @@
     },
     data () {
       return {
-        menuItems: config.MENU_ITEMS,
+//        sideMenuItems: config.SIDE_MENU_ITEMS,
         searchText: ''
       }
+    },
+    computed: {
+      ...mapState([
+        'menuItems', 'sideMenuItems'
+      ])
     }
-//    computed: {
-//      ...mapState([
-//        'menuItems'
-//      ])
-//    },
   }
 </script>
 <style scoped>

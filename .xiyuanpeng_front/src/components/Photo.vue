@@ -153,6 +153,28 @@
         likeColor: ''
       }
     },
+    watch: {
+      '$route' (to, from) {
+        config.HTTP.get('/pics/', {
+          params: {
+            'project': to.path.split('/')[to.path.split('/').length - 1]
+          }
+        })
+          .then((response) => {
+            this.imgs = response.data
+            for (let i in this.imgs) {
+              this.urls.push(this.baseUrl + this.imgs[i].path)
+            }
+            preloader.preload(this.urls)
+              .then(function (status) {
+              })
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        this.src = 1
+      }
+    },
     computed: {
       likeIconType () {
         let userIdName = {}
@@ -202,7 +224,11 @@
       ])
     },
     mounted () {
-      config.HTTP.get('/pics/')
+      config.HTTP.get('/pics/', {
+        params: {
+          'project': this.$route.path.split('/')[this.$route.path.split('/').length - 1]
+        }
+      })
         .then((response) => {
           this.imgs = response.data
           for (let i in this.imgs) {

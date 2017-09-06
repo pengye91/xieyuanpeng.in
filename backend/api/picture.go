@@ -29,17 +29,29 @@ func (this PictureAPI) GetAllPics(ctx *gin.Context) {
 	defer Db.Close()
 	pics := []models.Picture{}
 
-	if err := Db.C("picture").Find(nil).All(&pics); err != nil {
-		log.LoggerSugar.Errorw("GetAllPics error",
-			"module", "mongo",
-			"err", err,
-		)
-		ctx.JSON(http.StatusBadRequest, models.Err("2"))
-		return
+	project := ctx.Query("project")
+	if project == "" {
+		if err := Db.C("picture").Find(nil).All(&pics); err != nil {
+			log.LoggerSugar.Errorw("GetAllPics error",
+				"module", "mongo",
+				"err", err,
+			)
+			ctx.JSON(http.StatusBadRequest, models.Err("2"))
+			return
+		}
+	} else {
+		if err := Db.C("picture").Find(bson.M{"project": project}).All(&pics); err != nil {
+			log.LoggerSugar.Errorw("GetAllPics error",
+				"module", "mongo",
+				"err", err,
+			)
+			ctx.JSON(http.StatusBadRequest, models.Err("2"))
+			return
+		}
 	}
 	log.LoggerSugar.Infow("GetAllPics succeed",
 		"module", "mongo",
-		"err", pics,
+		"info", pics,
 	)
 	ctx.JSON(http.StatusOK, pics)
 }

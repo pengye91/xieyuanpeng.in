@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <div class="blog-item" v-for="b in blogsWithTag" :key="b.title">
-      <router-link :to="{name: 'blogPath', params: {'blogPath': b.title}}" class="active-link">
+      <router-link :to="{name: `${tag}-blogPath`, params: {'blogPath': b.title}}" class="active-link">
         <Card :bordered="false">
           <p slot="title">{{b.title}}</p>
           <p class="card-description">{{b.description}}</p>
@@ -20,6 +20,26 @@
   export default{
     name: 'blogs',
     props: ['tag'],
+    watch: {
+      '$route' (to, from) {
+        config.HTTP.get('/blogs/', {
+          params: {
+            tag: to.path.split('/')[to.path.split('/').length - 1]
+          }}
+        )
+          .then(response => {
+            if (response.status === 200) {
+              response.data.forEach(item => {
+                item.published_at = moment(item.published_at).format('LLL')
+              })
+              this.blogsWithTag = response.data
+            }
+          })
+          .catch(error => {
+            console.log(error.data)
+          })
+      }
+    },
     data () {
       return {
         replyToComment: false,

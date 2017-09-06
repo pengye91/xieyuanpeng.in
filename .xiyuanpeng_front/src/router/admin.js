@@ -6,18 +6,20 @@ import SideMenuView from '../components/SideMenuView'
 import AllUploads from '../components/AllUploads'
 import {config} from '@/config/dev'
 
+let defaultDest = {
+  name: 'operation',
+  params: {
+    post: Object.keys(config.SIDE_MENU_ITEMS)[0],
+    sideMenu: Object.keys(config.SIDE_MENU_ITEMS[Object.keys(config.SIDE_MENU_ITEMS)[0]])[0],
+    operation: 'all'
+  }
+}
+
 export const adminRouter = [
   {
     path: '/admin',
     name: 'admin',
-    redirect: {
-      name: 'operation',
-      params: {
-        post: Object.keys(config.SIDE_MENU_ITEMS)[0],
-        sideMenu: config.SIDE_MENU_ITEMS[Object.keys(config.SIDE_MENU_ITEMS)[0]][0],
-        operation: 'all'
-      }
-    }
+    redirect: defaultDest
   },
   {
     path: '/admin/:post',
@@ -28,7 +30,7 @@ export const adminRouter = [
         name: 'operation',
         params: {
           post: to.params.post,
-          sideMenu: config.SIDE_MENU_ITEMS[to.params.post][0],
+          sideMenu: Object.keys(config.SIDE_MENU_ITEMS[to.params.post])[0],
           operation: 'all'
         }
       }

@@ -130,7 +130,7 @@
         </Col>
         <Col :span="Math.floor(16/menuItems.length)" v-for="(menuItem, key) in menuItems" :key="key"
              class="layout-nav">
-        <MyMenuItem :to="$route.path.startsWith('/admin') ? `/admin/${key}` : `/${key}`">
+        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : `/${key}`">
           {{menuItem.name}}
         </MyMenuItem>
         </Col>
@@ -170,6 +170,7 @@
       return {
         currentPage: 'blog',
         sideMenu: config.SIDE_MENU_ITEMS,
+        Menu: config.MENU_ITEMS,
         searchText: ''
       }
     },
@@ -178,32 +179,10 @@
         type: 'check',
         jwtToken: localStorage.getItem('jwtToken')
       })
-
-//      let menu = {}
-//      config.HTTP.get('menu/')
-//        .then(response => {
-//          if (response.status < 400) {
-//            menu = response.data
-//            this.$store.commit({
-//              type: 'loadMenuItems',
-//              menuItems: menu
-//            })
-//          } else {
-//            console.log(response.data)
-//          }
-//        })
-//        .catch(error => {
-//          this.$store.commit({
-//            type: 'loadMenuItems',
-//            menuItems: config.MENU_ITEMS
-//          })
-//          console.log(error.response.data)
-//          console.log(this.menuItems)
-//        })
     },
     computed: {
       ...mapState([
-        'user', 'isLogin', 'menuItems'
+        'user', 'isLogin', 'menuItems', 'sideMenuItems'
       ])
     },
     methods: {

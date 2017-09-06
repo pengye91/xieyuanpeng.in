@@ -7,7 +7,7 @@
         <Card v-else :bordered="false">
           <p slot="title">{{uploadForms[index].title}}</p>
           <p class="card-description">{{uploadForms[index].description}}</p>
-          <p class="card-foot">{{uploadForms[index].published_at}}</p>
+          <p class="card-foot">{{timeConvert(uploadForms[index].published_at)}}</p>
         </Card>
         </Col>
         <Col span="1">
@@ -26,10 +26,17 @@
               </Input>
             </Form-item>
             </Col>
-            <Col span="16">
+            <Col span="10">
             <Form-item prop="description" class="form-item">
               <Input type="text" v-model="uploadForms[index].description" placeholder="简要描述">
               <p slot="prepend">描述</p>
+              </Input>
+            </Form-item>
+            </Col>
+            <Col span="6">
+            <Form-item prop="description" class="form-item">
+              <Input type="text" v-model="uploadForms[index].tags" placeholder="简要描述">
+              <p slot="prepend">标签</p>
               </Input>
             </Form-item>
             </Col>
@@ -69,6 +76,8 @@
   import ObjectId from 'bson-objectid'
   import moment from 'moment'
 
+  moment.locale('zh-cn')
+
   export default {
     name: 'operation-upload',
     props: [
@@ -87,7 +96,8 @@
         uploadList: [],
         uploadForm: {
           title: '',
-          description: ''
+          description: '',
+          tags: ''
         },
         uploadForms: [],
         uploadPicMetas: [],
@@ -99,6 +109,9 @@
       }
     },
     methods: {
+      timeConvert (t) {
+        return moment(t).format('LLL')
+      },
       deleteItemFromUploadList (index) {
         this.withSrcUploadList.splice(index, 1)
         this.uploadList.splice(index, 1)
@@ -138,13 +151,17 @@
           let form = {
             title: file.name.split('.')[file.name.split('.').length - 2],
             description: '',
-            fileName: file.name
+            fileName: file.name,
+            tags: this.$route.params.sideMenu,
+            published_at: moment().format()
           }
+          console.log(form)
           this.uploadForms.push(form)
           // Cool enough
           let realFile = new File([file], file.name, {type: file.type})
           delete realFile.src
           this.uploadList.push(realFile)
+          console.log(realFile)
         }, false)
         if (file) {
           reader.readAsDataURL(file)
@@ -157,9 +174,8 @@
           i.id = String(ObjectId())
           i.path = i.fileName
           if (this.type === 'blogs') {
-            i.tags = []
-            i.tags.push(this.$route.params.sideMenu)
-            i.published_at = moment().format()
+            i.tags = i.tags.split(', ')
+            console.log(i.tags)
           } else {
             i.project = this.$route.params.sideMenu
           }

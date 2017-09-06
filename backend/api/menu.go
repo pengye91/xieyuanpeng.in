@@ -84,91 +84,6 @@ func (this MenuApi) GetAdminSideMenu(ctx *gin.Context) {
 	getMenuItems(ctx, "adminSideMenuItems")
 }
 
-func getMenu(ctx *gin.Context) {
-	Db := db.MgoDb{}
-	Db.Init()
-	defer Db.Close()
-
-	redisConn := cache.GlobalUserRedisPool.Get()
-	defer redisConn.Close()
-
-	var (
-		menu models.Menu
-		//sideMenuItems models.SideMenuItems
-		menuItems = make(map[string]models.MenuItem)
-	)
-
-	reply, getMenuError := redis.Values(redisConn.Do("HMGET", "menu",
-		"menuID",
-		"menuItems",
-	))
-	if getMenuError != nil {
-		log.LoggerSugar.Errorw("menu GetMenu HMGET menu Error",
-			"module", "redis",
-			"error", getMenuError,
-		)
-		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-		return
-	}
-	if reply[1] != nil {
-		// Always Unmarshal to a pointer.
-		unmarshalError := json.Unmarshal(reply[1].([]byte), &menuItems)
-		if unmarshalError != nil {
-			log.LoggerSugar.Errorw("menu GetMenu json.Unmarshal Error",
-				"module", "application",
-				"error", unmarshalError,
-			)
-			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-			return
-		}
-		log.LoggerSugar.Infow("menu GetMenu Get Menu from Redis succeed",
-			"module", "redis",
-		)
-
-		ctx.JSON(http.StatusOK, menuItems)
-		return
-	} else {
-		log.LoggerSugar.Infow("menu GetMenu Get Menu from Redis failed, trying to get from db",
-			"module", "redis",
-		)
-		if getMenuErr := Db.C("menu").Find(nil).One(&menu); getMenuErr != nil {
-			log.LoggerSugar.Errorw("menu GetMenu Error",
-				"module", "mongo",
-				"error", getMenuErr,
-			)
-			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-			return
-		}
-		dbMenuItems, jsonMarshalError := json.Marshal(menu.MenuItems)
-		if jsonMarshalError != nil {
-			log.LoggerSugar.Errorw("menu GetMenu Error: jsonMarshalError",
-				"module", "application json marshal",
-				"error", jsonMarshalError,
-			)
-			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-			return
-		}
-		log.LoggerSugar.Infow("menu GetMenu trying to get menu from db succeed",
-			"module", "mongo",
-		)
-
-		_, hmsetError := redis.String(redisConn.Do("HMSET", "menu",
-			"menuID", menu.Id.Hex(),
-			"menuItems", dbMenuItems,
-		))
-		if hmsetError != nil {
-			log.LoggerSugar.Errorw("menu GetMenu HMSET menu Error",
-				"module", "redis",
-				"error", hmsetError,
-			)
-			ctx.JSON(http.StatusInternalServerError, models.Err("5"))
-			return
-		}
-		ctx.JSON(http.StatusOK, menu.MenuItems)
-		return
-	}
-}
-
 func getMenuItems(ctx *gin.Context, itemType string) {
 	Db := db.MgoDb{}
 	Db.Init()
@@ -455,7 +370,7 @@ func (this MenuApi) PutSideMenuItem(ctx *gin.Context) {
 	log.LoggerSugar.Infow("menu PutAdminSideMenuItem mongo UpdateMenu Success",
 		"info", "update sideMenuItem in menu success.",
 	)
-	ctx.JSON(http.StatusOK, gin.H{"UpdateSideMenu": "OK"})
+	ctx.JSON(http.StatusOK, gin.H{"sideMenuItems": sideMenuItems, "menuItems": cachedMenuItems})
 
 }
 
@@ -562,10 +477,10 @@ func (this MenuApi) PutAdminSideMenuItem(ctx *gin.Context) {
 	log.LoggerSugar.Infow("menu PutAdminSideMenuItem mongo UpdateMenu Success",
 		"info", "update sideMenuItem in menu success.",
 	)
-	ctx.JSON(http.StatusOK, gin.H{"UpdateAdminSideMenu": "OK"})
-
+	ctx.JSON(http.StatusOK, gin.H{"adminSideMenuItems": adminSideMenuItems, "menuItems": cachedMenuItems})
 }
 
+// request body is just one menuItem, not the whole menu.
 func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	Db := db.MgoDb{}
 	Db.Init()
@@ -574,9 +489,10 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	defer Db.Close()
 	defer redisConn.Close()
 	var (
-		cachedSideMenuItems = make(models.SideMenuItems)
-		menuItem            = make(map[string]models.MenuItem)
-		cachedMenuItems     = make(map[string]models.MenuItem)
+		cachedSideMenuItems      = make(models.SideMenuItems)
+		cachedAdminSideMenuItems = make(models.AdminSideMenuItems)
+		menuItem                 = make(map[string]models.MenuItem)
+		cachedMenuItems          = make(map[string]models.MenuItem)
 	)
 	if err := ctx.BindJSON(&menuItem); err != nil {
 		log.LoggerSugar.Errorw("menu PutMenuItem bindJson Error",
@@ -601,6 +517,7 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 		"menuID",
 		"menuItems",
 		"sideMenuItems",
+		"adminSideMenuItems",
 	))
 	if getMenuError != nil {
 		log.LoggerSugar.Errorw("menu PutMenuItem HGET menu Error",
@@ -612,10 +529,13 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	}
 	jsonUnmarshalError := json.Unmarshal(hMgetreply[1].([]byte), &cachedMenuItems)
 	jsonUnmarshalError0 := json.Unmarshal(hMgetreply[2].([]byte), &cachedSideMenuItems)
-	if (jsonUnmarshalError != nil) || (jsonUnmarshalError0 != nil) {
+	jsonUnmarshalError1 := json.Unmarshal(hMgetreply[3].([]byte), &cachedAdminSideMenuItems)
+	if (jsonUnmarshalError != nil) || (jsonUnmarshalError0 != nil) || (jsonUnmarshalError1 != nil) {
 		log.LoggerSugar.Errorw("menu PutMenuItem json.Unmarshal Error",
 			"module", "application: json.Unmarshal",
 			"error", jsonUnmarshalError,
+			"error0", jsonUnmarshalError0,
+			"error1", jsonUnmarshalError1,
 		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
@@ -623,14 +543,17 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 
 	cachedMenuItems[menuItemName] = menuItem[menuItemName]
 	cachedSideMenuItems[menuItemName] = menuItem[menuItemName].SideMenuItems
+	cachedAdminSideMenuItems[menuItemName] = menuItem[menuItemName].AdminSideMenuItems
 
 	updatedMenuItems, jsonMarshalError := json.Marshal(cachedMenuItems)
 	updatedSideMenuItems, jsonMarshalError0 := json.Marshal(cachedSideMenuItems)
-	if (jsonMarshalError != nil) || (jsonMarshalError0 != nil) {
+	updatedAdminSideMenuItems, jsonMarshalError1 := json.Marshal(cachedAdminSideMenuItems)
+	if (jsonMarshalError != nil) || (jsonMarshalError1 != nil) || (jsonMarshalError0 != nil) {
 		log.LoggerSugar.Errorw("menu PutMenuItem json.Marshal Error",
 			"module", "application: json.Marshal",
 			"error", jsonMarshalError,
 			"error0", jsonMarshalError0,
+			"error1", jsonMarshalError1,
 		)
 		ctx.JSON(http.StatusInternalServerError, models.Err("5"))
 		return
@@ -638,6 +561,7 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	_, hmsetError := redis.String(redisConn.Do("HMSET", "menu",
 		"menuItems", updatedMenuItems,
 		"sideMenuItems", updatedSideMenuItems,
+		"adminSideMenuItems", updatedAdminSideMenuItems,
 	))
 	if hmsetError != nil {
 		log.LoggerSugar.Errorw("menu PutMenuItem HMSET menu Error",
@@ -666,8 +590,11 @@ func (this MenuApi) PutMenuItem(ctx *gin.Context) {
 	log.LoggerSugar.Infow("menu PutMenuItem mongo Success",
 		"info", "update MenuItem in menu success.",
 	)
-	ctx.JSON(http.StatusOK, gin.H{"UpdateMenuItem": "OK"})
-
+	ctx.JSON(http.StatusOK, gin.H{
+		"sideMenuItems":      cachedSideMenuItems,
+		"menuItems":          cachedMenuItems,
+		"adminSideMenuItems": cachedAdminSideMenuItems,
+	})
 }
 
 // invoke this api means it's the first time to load a menu.

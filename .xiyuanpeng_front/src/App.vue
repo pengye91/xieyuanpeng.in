@@ -4,8 +4,17 @@
 
 <script>
   import Layout from './components/Layout'
+  import {mapState} from 'vuex'
 
   export default {
-    components: {Layout}
+    components: {Layout},
+    computed: {
+      ...mapState([
+        'menuItems', 'sideMenuItems'
+      ])
+    },
+    mounted: function () {
+      this.$store.dispatch('LOAD_MENU_ITEMS')
+    }
   }
 </script>
