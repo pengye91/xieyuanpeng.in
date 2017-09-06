@@ -4,7 +4,6 @@ import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
-import http from '../config/http-common'
 
 Vue.use(Vuex)
 
@@ -18,23 +17,6 @@ const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzM1N
 let menuItems = {}
 let sideMenuItems = {}
 let adminSideMenuItems = {}
-
-console.log('xixi')
-http.get('menu/')
-  .then((response) => {
-    menuItems = response.data
-  })
-
-http.get('menu/side-menu')
-  .then((response) => {
-    sideMenuItems = response.data
-  })
-
-http.get('menu/admin-side-menu')
-  .then((response) => {
-    adminSideMenuItems = response.data
-  })
-console.log('xixi')
 
 export default new Vuex.Store({
   // TODO: Add all pics here.
