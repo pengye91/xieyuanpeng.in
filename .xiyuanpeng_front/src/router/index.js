@@ -4,7 +4,7 @@ import createSideMenuView from '../utils/createMenuView'
 import photo from '../components/Photo'
 import blogs from '../components/Blogs'
 import blog from '../components/Blog'
-import {config} from '@/config/dev'
+// import {config} from '@/config/dev'
 import {adminRouter} from './admin.js'
 Vue.use(Router)
 
@@ -31,8 +31,8 @@ const keyComponentMap = {
   'contact': photo
 }
 
-let MI = config.MENU_ITEMS
-let sideMI = config.SIDE_MENU_ITEMS
+let MI = JSON.parse(localStorage.getItem('menuItems'))
+let sideMI = JSON.parse(localStorage.getItem('sideMenuItems'))
 
 function firstRouters () {
   let firstRoutes = []
