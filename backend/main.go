@@ -77,11 +77,9 @@ func main() {
 	//	}
 	//}
 	//utils.ReleaseSemaphoreBasedOnTime("testSema", "")
-
+	app.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
 	apiV1 := app.Group("/api/v1")
 	{
-		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
-		apiV1.Static("/md", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/md")
 
 		m := apiV1.Group("/menu")
 		{
