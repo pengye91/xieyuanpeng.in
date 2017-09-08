@@ -24,17 +24,17 @@ const (
 	AWS_REGION          = "ap-northeast-2"
 	AWS_S3_BUCKET       = "xyp-s3"
 	STATIC_S3_STORAGE   = false
-	ALLOW_ORIGINS       = "http://www.xieyuanpeng.com"
-	BASE_MONGOURL       = "localhost = 27017"
+	ALLOW_ORIGINS       = "https://www.xieyuanpeng.com"
+	BASE_MONGOURL       = "localhost:27017"
 	BASE_DOMAIN         = "xieyuanpeng.com"
-	REDIS_URL           = "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com = 6379"
+	REDIS_URL           = "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379"
 	MONGO_AUTH_USERNAME = "xyp"
 	MONGO_AUTH_PASSWORD = "pengye2901307001"
 )
 
 var (
 	AWS_CONFIGS = AwsConfigs{
-		ALLOW_ORIGINS:       "http://www.xieyuanpeng.com",
+		ALLOW_ORIGINS:       "https://www.xieyuanpeng.com",
 		BASE_MONGOURL:       "localhost:27017",
 		BASE_DOMAIN:         "xieyuanpeng.com",
 		REDIS_URL:           "xyp-redis.whqvsp.0001.apn2.cache.amazonaws.com:6379",

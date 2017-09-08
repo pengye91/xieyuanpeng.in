@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-#sudo chmod +x /home/ubuntu/www/xieyuanpeng.in/backend/main
+chmod +x /home/ubuntu/www/xieyuanpeng.in/main
+mv /home/ubuntu/www/xieyuanpeng.in/env /home/ubuntu/www/xieyuanpeng.in/.env
 sudo pkill supervisord
 sudo pkill main
 #echo "xixi"

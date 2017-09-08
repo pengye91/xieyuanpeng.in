@@ -9,6 +9,8 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/middlewares"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/background"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
+	"github.com/pengye91/xieyuanpeng.in/backend/configs"
+	"path/filepath"
 )
 
 var (
@@ -80,7 +82,8 @@ func main() {
 
 	apiV1 := app.Group("/api/v1")
 	{
-		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
+		apiV1.Static("/html", configs.HTML_ROOT)
+		apiV1.Static("/html/imgs", filepath.Join(configs.HTML_ROOT, "imgs"))
 
 		m := apiV1.Group("/menu")
 		{
