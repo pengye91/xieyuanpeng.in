@@ -54,7 +54,7 @@ function secondRouters (key, sideMI) {
     let secondRoute = {}
     let secondRoutePlus = {}
     if (key === 'blog') {
-      secondRoute.path = secondKey
+      secondRoute.path = ':tag'
       secondRoute.name = sideMI[key][secondKey]
       // secondRoute.name = 'blogs'
       secondRoute.component = keyComponentMap[key]
@@ -85,7 +85,7 @@ function firstRouters (MI, sideMI) {
     firstRoute.path = `/${key}`
     firstRoute.name = key
     firstRoute.component = createSideMenuView(key)
-    firstRoute.redirect = {'name': Object.values(sideMI[key])[0]}
+    firstRoute.redirect = {'name': Object.values(sideMI[key])[0], params: {'tag': Object.values(sideMI[key])[0]}}
     firstRoute.children = secondRouters(key, sideMI)
     firstRoutes.push(firstRoute)
   })

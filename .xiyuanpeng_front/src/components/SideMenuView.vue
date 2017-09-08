@@ -12,7 +12,7 @@
         </div>
         <div v-else>
           <MyMenuItem v-for="(item, key) in sideMenuItems[type]" :key="key"
-                      :to="{path: `/${type}/${key}`}" :name="item"
+                      :to="{path: `/${type}/${key}`, params: {'tag': key}}" :name="item"
                       style="margin-top: 5%; width: 100%">
             <Icon type="ios-book" size="16"></Icon>
             {{item}}
