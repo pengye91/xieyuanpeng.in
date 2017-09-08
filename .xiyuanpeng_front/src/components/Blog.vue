@@ -63,7 +63,7 @@
     data () {
       return {
         src: 0,
-        iframeSrc: `${config.BASE_URL}/api/v1/html/`,
+        iframeSrc: `${config.BASE_URL}/html/`,
         baseUrl: `${config.IMAGE_BASE_URL}`,
         cComments: [],
         isHover: false,
