@@ -6,6 +6,7 @@ type Error struct {
 	ErrorNo  uint8  `json:"errorno" bson:"errorno"`
 }
 
+// TODO: Need a more detailed Error model.
 func Err(errIn string) Error {
 	switch errIn {
 	case "1", "Results":
@@ -31,6 +32,12 @@ func Err(errIn string) Error {
 		break
 	case "8", "Session":
 		return Error{Error: "Session not match.", ErrorNo: 8}
+		break
+	case "9", "BadRequest":
+		return Error{Error: "BadRequest", ErrorNo: 9}
+		break
+	case "10", "Forbidden":
+		return Error{Error: "Forbidden", ErrorNo: 10}
 		break
 
 	default:

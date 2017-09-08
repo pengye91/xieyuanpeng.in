@@ -1,22 +1,20 @@
 package models
 
 import (
-	"time"
-
 	"gopkg.in/mgo.v2/bson"
 )
 
+type SideMenuItems map[string]map[string]string
+type AdminSideMenuItems map[string]map[string]string
+
 type MenuItem struct {
-	Id             bson.ObjectId `json:"id" bson:"_id,omitempty"  form:"id"`
-	ById           string        `json:"byId" bson:"by_id"  form:"by_id"`
-	ByName         string        `json:"byName" bson:"byName"  form:"byName"`
-	WordContent    string        `json:"wordContent" bson:"word_content"  form:"word_content"`
-	InternalPath   string        `json:"internalPath" bson:"internalPath"  form:"internalPath"`
-	ContainPicPath string        `json:"containPicPath" bson:"contain_pic_path"  form:"contain_pic_path"`
-	UnderPic       string        `json:"underPic" bson:"under_pic"  form:"under_pic"`
-	SlugUrl        string        `json:"slugUrl" bson:"slug_url" form:"slug_url"`
-	Comments       []Comment     `json:"comments" bson:"comments" form:"comments"`
-	PublishedAt    time.Time     `json:"publishedAt" bson:"published_at" form:"published_at"`
-	CreatedAt      time.Time     `json:"createdAt,omitempty" bson:"created_at" form:"created_at"`
-	ModifiedAt     time.Time     `json:"modifiedAt,omitempty" bson:"modified_at" form:"updated_at"`
+	Ref                string            `json:"ref" bson:"ref" form:"ref"`
+	Name               string            `json:"name" bson:"name" form:"name"`
+	SideMenuItems      map[string]string `json:"sideMenuItems" bson:"sideMenuItems" form:"side_menu_items"`
+	AdminSideMenuItems map[string]string `json:"adminSideMenuItems" bson:"adminSideMenuItems" form:"admin_side_menu_items"`
+}
+
+type Menu struct {
+	Id        bson.ObjectId       `json:"id" bson:"_id,omitempty" form:"id"`
+	MenuItems map[string]MenuItem `json:"menuItems" bson:"menuItems" form:"menu_items"`
 }

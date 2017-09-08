@@ -1,8 +1,9 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type (
@@ -15,6 +16,8 @@ type (
 		CreatedAt time.Time     `json:"created_at,omitempty" bson:"created_at" form:"created_at"`
 		UpdatedAt time.Time     `json:"updated_at,omitempty" bson:"updated_at" form:"updated_at"`
 	}
+
+	VisitorNameId map[bson.ObjectId]string
 
 	Visitor struct {
 		Id       bson.ObjectId `json:"id" bson:"_id"  form:"id"`
