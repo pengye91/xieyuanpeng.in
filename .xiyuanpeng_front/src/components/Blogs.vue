@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="blog-item" v-for="b in blogsWithTag" :key="b.title">
-      <router-link :to="{name: `${tag}-blogPath`, params: {'blogPath': b.title}}" class="active-link">
+      <router-link :to="{path: `${$route.path}/${b.title}`, params: {'blogPath': b.title}}" class="active-link">
         <Card :bordered="false">
           <p slot="title">{{b.title}}</p>
           <p class="card-description">{{b.description}}</p>

@@ -12,6 +12,6 @@ const (
 	RedisPoolMaxIdleNumber  = 20
 	// 0 means never close idle connections
 	RedisPoolIdleTimeout = 0
-	REDIS_URL            = "192.168.2.112:6379"
-	//REDIS_URL            = "localhost:6379"
+	//REDIS_URL            = "192.168.2.112:6379"
+	REDIS_URL            = "192.168.0.106:6379"
 )
