@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div style="height: 100%;">
     <div class="blog-item" v-for="b in blogsWithTag" :key="b.title">
       <router-link :to="{name: `${tag}-blogPath`, params: {'blogPath': b.title}}" class="active-link">
         <Card :bordered="false">
@@ -8,6 +8,8 @@
           <p class="card-foot">{{b.published_at}}</p>
         </Card>
       </router-link>
+    </div>
+    <div style="padding-bottom: 10%">
     </div>
   </div>
 </template>
@@ -20,6 +22,10 @@
   export default{
     name: 'blogs',
     props: ['tag'],
+    metaInfo: {
+      title: 'Blogs',
+      titleTemplate: 'xieyuanpeng.com|%s'
+    },
     watch: {
       '$route' (to, from) {
         config.HTTP.get('/blogs/', {

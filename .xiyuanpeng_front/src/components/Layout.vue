@@ -116,11 +116,11 @@
 <template>
   <div class="layout">
     <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px">
-      <Row type="flex" style="height: 100%;" justify="space-between" align="middle">
+      <Row type="flex" style="height: 100%;" justify="space-between" align="top">
         <Col span="1">
         <div class="layout-logo">
           <router-link :to="'/photography'">
-            <img src="../assets/logo.png" alt="logo" height="40" width="40">
+            <img src="../assets/logo.jpg" alt="logo" height="40" width="40">
           </router-link>
         </div>
         </Col>
@@ -130,7 +130,7 @@
         </Col>
         <Col :span="Math.floor(16/menuItems.length)" v-for="(menuItem, key) in menuItems" :key="key"
              class="layout-nav">
-        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : `/${key}`">
+        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : {path: `/${key}`}">
           {{menuItem.name}}
         </MyMenuItem>
         </Col>
@@ -188,7 +188,6 @@
     methods: {
       menuItemRoute (key) {
         this.currentPage = key
-        console.log(this.currentPage)
       },
       login () {
         this.$router.push('blog')
@@ -199,7 +198,6 @@
       searchNotify (value) {
         this.searchText = value
         EventBus.$emit('search-text', this.searchText)
-        console.log(this.searchText)
       }
     }
   }

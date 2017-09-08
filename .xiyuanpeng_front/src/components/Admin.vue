@@ -186,8 +186,6 @@
               type: 'loadMenuItems',
               menuItems: menu
             })
-          } else {
-            console.log(response.data)
           }
         })
         .catch(error => {
@@ -196,7 +194,6 @@
             menuItems: config.MENU_ITEMS
           })
           console.log(error.response.data)
-          console.log(this.menuItems)
         })
     },
     computed: {
@@ -207,7 +204,6 @@
     methods: {
       menuItemRoute (key) {
         this.currentPage = key
-        console.log(this.currentPage)
       },
       login () {
         this.$router.push('blog')
@@ -218,7 +214,6 @@
       searchNotify (value) {
         this.searchText = value
         EventBus.$emit('search-text', this.searchText)
-        console.log(this.searchText)
       }
     }
   }

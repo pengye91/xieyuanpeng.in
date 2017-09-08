@@ -86,11 +86,15 @@ func main() {
 		m := apiV1.Group("/menu")
 		{
 			m.GET("/", menu.GetMenu)
+			// post hostname/api/v1/menu/ allMenuItems
 			m.POST("/", menu.PostMenu)
+			// PUT hostname/api/v1/menu/ just one menuItem
 			m.PUT("/", menu.PutMenuItem)
 			m.GET("/side-menu", menu.GetSideMenu)
+			// PUT hostname/api/v1/menu/side-menu/ all sideMenuItems
 			m.PUT("/side-menu", menu.PutSideMenuItem)
 			m.GET("/admin-side-menu", menu.GetAdminSideMenu)
+			// PUT hostname/api/v1/menu/admin-side-menu/ all adminSideMenuItems
 			m.PUT("/admin-side-menu", menu.PutAdminSideMenuItem)
 		}
 

@@ -23,6 +23,9 @@
     components: {
       MyMenuItem
     },
+    metaInfo: {
+      title: `xieyuanpeng.com|Admin`
+    },
     props: {
       type: String
     },

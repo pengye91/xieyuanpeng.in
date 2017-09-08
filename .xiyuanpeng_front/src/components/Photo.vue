@@ -61,7 +61,7 @@
     <Row type="flex" justify="center">
       <Col span="24">
       <comments v-if="currentPic" :post="currentPic.id" :comments="cComments" :path="'comments.'"
-                :type="'pics'" style="padding-bottom: 5%"></comments>
+                :type="'pics'" style="padding-bottom: 10%"></comments>
       </Col>
     </Row>
   </div>
@@ -153,6 +153,9 @@
         likeColor: ''
       }
     },
+    metaInfo: {
+      title: 'xieyuanpeng.com|photography'
+    },
     watch: {
       '$route' (to, from) {
         config.HTTP.get('/pics/', {
@@ -231,7 +234,7 @@
       })
         .then((response) => {
           this.imgs = response.data
-          for (let i in this.imgs) {
+          for (let i = 0; i < this.imgs.length; i++) {
             this.urls.push(this.baseUrl + this.imgs[i].path)
           }
           preloader.preload(this.urls)
@@ -245,14 +248,12 @@
     created: function () {
       window.addEventListener('keydown', this.keyDown)
       EventBus.$on('delete-comment', (commentId) => {
-        console.log(this.cComments)
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
           if (value.id !== commentId) {
             return value
           }
           return undefined
         }).replace(/,?null/g, '').replace(/\[,/g, '['))
-        console.log(this.cComments)
       })
       EventBus.$on('edit-comment', (changedComment) => {
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
@@ -262,7 +263,6 @@
             return changedComment
           }
         }))
-        console.log(this.cComments)
       })
     },
     beforeDestroy: function () {
@@ -277,7 +277,6 @@
         })) {
           this.currentPic.like++
           this.currentPic.likedBy.push(userIdName)
-          console.log(this.currentPic.likedBy)
           config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {

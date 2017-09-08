@@ -16,7 +16,6 @@ const anonUser = {
 const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzM1NjcyNzIsImlkIjoiNTk4ZGJiZTIxZDBmYjgzYWI2ZjlmYmQ1Iiwib3JpZ19pYXQiOjE1MDI0NjMyNzIsInVzZXIiOnsiaWQiOiI1OThkYmJlMjFkMGZiODNhYjZmOWZiZDUiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.8SpUE8hjUXRYJ-p6lkRT_SMxA2KmaE1cWM2q80Jtk4Y'
 
 const s = new Vuex.Store({
-  // TODO: Add all pics here.
   state: {
     user: {
       'email': 'anonymous@xyp.com',
@@ -89,10 +88,6 @@ const s = new Vuex.Store({
   },
   actions: {
     LOAD_MENU_ITEMS: function ({ commit }) {
-      config.HTTP.get('menu/')
-        .then((response) => {
-          commit('setMenuItems', {menuItems: response.data})
-        })
       config.HTTP.get('menu/side-menu')
         .then((response) => {
           commit('setSideMenuItems', {sideMenuItems: response.data})
@@ -100,6 +95,10 @@ const s = new Vuex.Store({
       config.HTTP.get('menu/admin-side-menu')
         .then((response) => {
           commit('setAdminSideMenuItems', {adminSideMenuItems: response.data})
+        })
+      config.HTTP.get('menu/')
+        .then((response) => {
+          commit('setMenuItems', {menuItems: response.data})
         })
     },
     UPDATE_SIDE_MENU_ITEMS: function ({ commit }, payload) {

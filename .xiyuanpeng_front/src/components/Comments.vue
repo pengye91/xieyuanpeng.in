@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row v-for="(comment, index) in comments" :key="comment" class="list-group-item">
+    <Row v-for="(comment, index) in comments" :key="index" class="list-group-item">
       <comment :post="post" :comment="comment" :path="path + index" :type="type"></comment>
     </Row>
   </div>

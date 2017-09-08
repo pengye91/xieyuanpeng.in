@@ -1,5 +1,0 @@
-# Caching in Postgres
-
-There are two layer caches in `PostgreSQL`: `PG_shared_buffers` and `OS Page Cache`, all read/write should pass through `OS Page Cache`.
-
-###To be continued ...

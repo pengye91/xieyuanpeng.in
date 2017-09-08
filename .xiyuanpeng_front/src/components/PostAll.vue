@@ -121,7 +121,6 @@
       }
     },
     mounted () {
-//      console.log(this.type)
       config.HTTP.get(`/${this.type}/`)
         .then(response => {
           if (response.status === 200) {

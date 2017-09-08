@@ -56,6 +56,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/garyburd/redigo/redis"
@@ -66,7 +67,6 @@ import (
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2/bson"
-	"fmt"
 )
 
 type MenuApi struct {

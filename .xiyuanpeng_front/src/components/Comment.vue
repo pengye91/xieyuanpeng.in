@@ -11,17 +11,17 @@
         {{commentTime}}
       </div>
       </Col>
-      <Col :span="isTheUser?17:20"
+      <Col :span="isTheUser?15:20"
            style="font-size: 13px; padding: 6px 6px 6px 1%; border-right: 1px solid lightgray; border-left: 1px solid lightgray">
       {{ clickedEdit ? '' : comment.wordContent }}
       <div v-if="clickedEdit">
-        <Row type="flex" align="bottom">
-          <Col span="22">
+        <Row type="flex" align="bottom" justify="center">
+          <Col span="20">
           <Input v-model="comment.wordContent" type="textarea" :autosize="{minRows:3, maxRows:400}"
                  :autofocus="true" @keydown.left.native.stop="" @keydown.right.native.stop="">
           </Input>
           </Col>
-          <Col span="1">
+          <Col span="2">
           <Button type="primary" style="font-size: 13px" @click="realEdit"
                   :disabled="!comment.wordContent">修改
           </Button>
@@ -29,13 +29,13 @@
         </Row>
       </div>
       </Col>
-      <Col span="1" align="center">
+      <Col span="2" align="center">
       <Button type="ghost" @click="clickedReply=!clickedReply">回复</Button>
       </Col>
       <Col v-if="isTheUser" span="2" align="center">
       <Button type="ghost" @click="clickedEdit=!clickedEdit">编辑</Button>
       </Col>
-      <Col v-if="isTheUser" span="1" align="center">
+      <Col v-if="isTheUser" span="2" align="center">
       <Button type="error" @click="deleteComment">删除</Button>
       </Col>
     </Row>
@@ -95,15 +95,11 @@
           `/${this.type}/${this.post}/comments?id=${this.commentId}&internalPath=${this.path.slice(0, -2)}`
         )
           .then(response => {
-            console.log(this.commentId)
             EventBus.$emit('delete-comment', this.commentId)
-            console.log(response.data)
             this.$Message.success('删除成功')
           })
           .catch(error => {
-            console.log(error)
-            console.log(this.commentId)
-            this.$Message.error('删除失败')
+            this.$Message.error('删除失败:' + error.response.data)
           })
       },
       realEdit () {
@@ -119,7 +115,6 @@
           .then(response => {
             let changedComment = response.data
             EventBus.$emit('edit-comment', changedComment)
-            console.log(response.data)
             this.clickedEdit = false
             this.$Message.success('编辑成功')
           })

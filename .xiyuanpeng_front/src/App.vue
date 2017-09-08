@@ -8,14 +8,15 @@
 
   export default {
     components: {Layout},
+    name: 'App',
+    metaInfo: {
+      title: 'xiyuanpeng.com',
+      titleTemplate: null
+    },
     computed: {
       ...mapState([
         'menuItems', 'sideMenuItems'
       ])
-    },
-    beforeCreate: function () {
-      console.log('xixi')
-      this.$store.dispatch('LOAD_MENU_ITEMS')
     }
   }
 </script>

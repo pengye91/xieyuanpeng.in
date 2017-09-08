@@ -165,13 +165,11 @@
             tags: this.$route.params.sideMenu,
             published_at: moment().format()
           }
-          console.log(form)
           this.uploadForms.push(form)
           // Cool enough
           let realFile = new File([file], file.name, {type: file.type})
           delete realFile.src
           this.uploadList.push(realFile)
-          console.log(realFile)
         }, false)
         if (file) {
           reader.readAsDataURL(file)
@@ -180,7 +178,6 @@
       },
       submitAll () {
         let newSideMenuItems = config.SIDE_MENU_ITEMS
-        console.log(newSideMenuItems)
         this.uploadForms.forEach(i => {
           i.comments = []
           i.id = String(ObjectId())

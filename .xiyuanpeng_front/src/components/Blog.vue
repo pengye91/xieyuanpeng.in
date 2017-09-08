@@ -48,7 +48,7 @@
     <Row type="flex" justify="center">
       <Col span="24">
       <comments v-if="curBlog" :post="curBlog.id" :comments="cComments" :path="'comments.'"
-                type="blogs" style="padding-bottom: 5%"></comments>
+                type="blogs" style="padding-bottom: 10%"></comments>
       </Col>
     </Row>
   </div>
@@ -74,6 +74,9 @@
       }
     },
     props: ['blogPath', 'tag'],
+    metaInfo: {
+      title: 'xieyuanpeng.com|blog'
+    },
     computed: {
       likeIconType () {
         let userIdName = {}
@@ -132,14 +135,12 @@
     created: function () {
       window.addEventListener('keydown', this.keyDown)
       EventBus.$on('delete-comment', (commentId) => {
-        console.log(this.cComments)
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
           if (value.id !== commentId) {
             return value
           }
           return undefined
         }).replace(/,?null/g, '').replace(/\[,/g, '['))
-        console.log(this.cComments)
       })
       EventBus.$on('edit-comment', (changedComment) => {
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
@@ -149,7 +150,6 @@
             return changedComment
           }
         }))
-        console.log(this.cComments)
       })
     },
     beforeDestroy: function () {
@@ -164,7 +164,6 @@
         })) {
           this.curBlog.like++
           this.curBlog.likedBy.push(userIdName)
-          console.log(this.curBlog.likedBy)
           config.HTTP.put(
             `/blogs/${this.curBlog.id}/like`,
             {
