@@ -39,7 +39,7 @@ func init() {
 		[]string{"title"},
 	)
 
-	envErr := godotenv.Load("../.env")
+	envErr := godotenv.Load(".env")
 	if envErr != nil {
 		log.LoggerSugar.Errorw("godotenv.Load file Error",
 			"module", "godotenv",
@@ -81,7 +81,6 @@ func main() {
 	apiV1 := app.Group("/api/v1")
 	{
 		apiV1.Static("/html", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/html")
-		apiV1.Static("/md", "/home/xyp/go/src/github.com/pengye91/xieyuanpeng.in/static/md")
 
 		m := apiV1.Group("/menu")
 		{
