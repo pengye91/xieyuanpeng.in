@@ -2,8 +2,8 @@ package db
 
 import (
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
-	"gopkg.in/mgo.v2"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
+	"gopkg.in/mgo.v2"
 )
 
 const (

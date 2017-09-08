@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <div class="blog-item" v-for="b in blogsWithTag" :key="b.title">
-      <router-link :to="{path: `${$route.path}/${b.title}`, params: {'blogPath': b.title}}" class="active-link">
+      <router-link :to="{name: 'postItemsPlus', params: {post: $route.params.post, postItem: $route.params.postItem, postItemPlus: b.title}}" class="active-link">
         <Card :bordered="false">
           <p slot="title">{{b.title}}</p>
           <p class="card-description">{{b.description}}</p>
@@ -28,28 +28,19 @@
     },
     watch: {
       '$route' (to, from) {
-        config.HTTP.get('/blogs/', {
-          params: {
-            tag: to.path.split('/')[to.path.split('/').length - 1]
-          }}
-        )
-          .then(response => {
-            if (response.status === 200) {
-              response.data.forEach(item => {
-                item.published_at = moment(item.published_at).format('LLL')
-              })
-              this.blogsWithTag = response.data
-            }
-          })
-          .catch(error => {
-            console.log(error.data)
-          })
+        this.blogsWithTag = []
+        this.allBlogs.forEach(blog => {
+          if (blog.tags.includes(this.tag)) {
+            this.blogsWithTag.push(blog)
+          }
+        })
       }
     },
     data () {
       return {
         replyToComment: false,
         blogsWithTag: [],
+        allBlogs: [],
         show: true,
         publishedTime: ''
       }
@@ -57,17 +48,13 @@
     methods: {
     },
     mounted () {
-      config.HTTP.get('/blogs/', {
-        params: {
-          tag: this.tag
-        }}
-      )
+      config.HTTP.get('/blogs/')
         .then(response => {
           if (response.status === 200) {
             response.data.forEach(item => {
               item.published_at = moment(item.published_at).format('LLL')
             })
-            this.blogsWithTag = response.data
+            this.allBlogs = response.data
           }
         })
         .catch(error => {

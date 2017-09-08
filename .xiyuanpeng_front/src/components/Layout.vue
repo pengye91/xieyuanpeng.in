@@ -119,7 +119,7 @@
       <Row type="flex" style="height: 100%;" justify="space-between" align="top">
         <Col span="1">
         <div class="layout-logo">
-          <router-link :to="'/photography'">
+          <router-link :to="'/blog'">
             <img src="../assets/logo.jpg" alt="logo" height="40" width="40">
           </router-link>
         </div>
@@ -130,7 +130,7 @@
         </Col>
         <Col :span="Math.floor(16/menuItems.length)" v-for="(menuItem, key) in menuItems" :key="key"
              class="layout-nav">
-        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : {path: `/${key}`}">
+        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : {name: 'posts', params: {post: key}}">
           {{menuItem.name}}
         </MyMenuItem>
         </Col>

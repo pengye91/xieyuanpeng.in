@@ -12,7 +12,7 @@
         </div>
         <div v-else>
           <MyMenuItem v-for="(item, key) in sideMenuItems[type]" :key="key"
-                      :to="{path: `/${type}/${key}`, params: {'tag': key}}" :name="item"
+                      :to="{name: 'postItems', params: {postItem: key, post: type}}" :name="item"
                       style="margin-top: 5%; width: 100%">
             <Icon type="ios-book" size="16"></Icon>
             {{item}}
@@ -33,7 +33,6 @@
   import MyMenuItem from './MyMenuItem'
   import photo from '../components/Photo'
   import blogs from '../components/Blogs'
-  import blog from '../components/Blog'
   import {mapState} from 'vuex'
   //  import {config} from '@/config/dev'
 
@@ -58,33 +57,6 @@
       ...mapState([
         'menuItems', 'sideMenuItems'
       ])
-    },
-    methods: {
-      createSecRoute (key, secondKey, secondValue) {
-        let route = {}
-        let routePlus = {}
-        if (key === 'blog') {
-          route.path = secondKey
-          route.name = secondValue
-          route.component = this.keyComponentMap[key]
-          route.props = {'tag': secondKey}
-          routePlus.path = `${secondKey}/:blogPath`
-          routePlus.name = `${secondKey}-blogPath`
-          routePlus.component = blog
-          routePlus.props = (route) => ({
-            'blogPath': route.params.blogPath,
-            'tag': secondKey
-          })
-          this.$router.addRoutes(key, [route, routePlus])
-        } else {
-          route.path = secondKey
-          route.name = secondValue
-          route.component = this.keyComponentMap[key]
-          this.$router.addRoutes(key, [route])
-        }
-      },
-      createFirstRoute (key, value) {
-      }
     }
   }
 </script>
