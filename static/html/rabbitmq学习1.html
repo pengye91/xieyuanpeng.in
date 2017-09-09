@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Made with Remarkable!
+  </title>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <style type="text/css">
+   h1,h2,h3,h4{color:#6495ed}body,table tr{background-color:#fff}table tr td,table tr th{border:1px solid #ccc;text-align:left;padding:6px 13px;margin:0}pre code,table,table tr{padding:0}body{font-family:Helvetica,Arial,sans-serif}h1,h2{text-align:center}blockquote{background:#f9f9f9;border-left:10px solid #6495ed;margin:1.5em 10px;padding:.5em 10px;font-style:italic}blockquote p{display:inline}hr{clear:both;float:none;width:100%;height:2.5px;margin:1.4em 0;border:none;background:#ddd;background:-webkit-gradient(linear,left bottom,right bottom,color-stop(0,#fff),color-stop(.1,#ddd),color-stop(.9,#ddd),color-stop(1,#fff)) #ddd;background:-moz-linear-gradient(left center,#fff 0,#ddd 10%,#ddd 90%,#fff 100%) #ddd}table tr{border-top:1px solid #ccc;margin:0}table tr:nth-child(2n){background-color:#aaa}table tr th{font-weight:700}table tr td :first-child,table tr th :first-child{margin-top:0}table tr td:last-child,table tr th :last-child{margin-bottom:0}code,tt{margin:0 2px;padding:0 5px;white-space:nowrap;border:1px solid #eaeaea;background-color:#f8f8f8;border-radius:3px}pre code{margin:0;white-space:pre;border:none;background:0 0}.highlight pre,pre{background-color:#f8f8f8;border:1px solid #ccc;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px;border-radius:3px}
+  </style>
+ </head>
+ <body>
+  <h1 id="rabbitmq-1">
+   RabbitMQ学习 1
+  </h1>
+  <p>
+   基本情况
+  </p>
+  <h3 id="channel">
+   信道（
+   <code>
+    channel
+   </code>
+   ）的重要性
+  </h3>
+  <h3 id="message-acknowledgement">
+   Message Acknowledgement
+  </h3>
+  <p>
+   In order to make sure a message is never lost, RabbitMQ supports message acknowledgments. An ack(nowledgement) is sent back by the consumer to tell RabbitMQ that a particular message had been received, processed and that RabbitMQ is free to delete it.
+  </p>
+  <p>
+   <code>
+    Ack
+   </code>
+   机制通过让
+   <code>
+    Consumer
+   </code>
+   处理完任务后返回一个
+   <code>
+    Ack
+   </code>
+   来通知
+   <code>
+    broker
+   </code>
+   ：
+  </p>
+  <ul>
+   <li>
+    如果收到
+    <code>
+     Ack
+    </code>
+    ，则
+    <code>
+     broker
+    </code>
+    可以将任务删除。
+   </li>
+   <li>
+    如果
+    <code>
+     Consumer
+    </code>
+    链接断了，则
+    <code>
+     broker
+    </code>
+    立即将这个任务发送给另一个
+    <code>
+     Consumer
+    </code>
+    。
+   </li>
+  </ul>
+  <p>
+   <strong>
+    重点：
+   </strong>
+  </p>
+  <p>
+   在
+   <code>
+    RabbitMQ
+   </code>
+   中的消息没有
+   <code>
+    timeouts
+   </code>
+   的概念，
+   <code>
+    broker
+   </code>
+   会一直等待，直到对应的
+   <code>
+    Consumer
+   </code>
+   死掉了。
+  </p>
+  <p>
+   <strong>
+    显示调用
+    <code>
+     basic_ack
+    </code>
+    非常重要，如果忘记的话，
+    <code>
+     RabbitMQ
+    </code>
+    会一直保留这个任务，然后占用内存会越来越大。
+   </strong>
+  </p>
+  <p>
+   使用一下命令可以查看所有没有被确认的消息：
+  </p>
+  <pre><code>sudo rabbitmqctl list_queues name messages_ready messages_unacknowledged
+</code></pre>
+  <h3 id="_1">
+   消息持久
+  </h3>
+  <p>
+   <code>
+    message ack
+   </code>
+   可以确保
+   <code>
+    消费者
+   </code>
+   挂掉的情况消息也可以被处理。
+  </p>
+  <p>
+   <code>
+    message durability
+   </code>
+   可以确保
+   <code>
+    broker
+   </code>
+   挂掉的情况，消息也可以被正常处理。
+  </p>
+  <p>
+   消息持久化分成两个部分：
+  </p>
+  <ul>
+   <li>
+    <p>
+     队列
+     <code>
+      queue
+     </code>
+     的持久
+    </p>
+    <ul>
+     <li>
+      <p>
+       在声明队列的时候，就声明持久化：
+      </p>
+      <pre><code>channel.queue_declare(queue='task_queue', durable=True)
+</code></pre>
+      <p>
+       队列的持久化声明需要同时在
+       <code>
+        消费者
+       </code>
+       处和
+       <code>
+        生产者
+       </code>
+       处都进行。
+      </p>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     消息
+     <code>
+      message
+     </code>
+     的持久化
+    </p>
+    <p>
+     <code>
+      生产者
+     </code>
+     在发布消息的时候，给消息加上
+     <code>
+      delivery_mode = 2
+     </code>
+     的属性。
+    </p>
+    <p>
+     <strong>
+      注意
+     </strong>
+    </p>
+    <p>
+     在消息上加
+     <code>
+      delivery_mode
+     </code>
+     属性并不能完全保证所有的消息都被持久化，因为
+     <code>
+      broker
+     </code>
+     会先将消息缓存。
+     <br/>
+     更强的保证可以用
+     <code>
+      publisher confirms
+     </code>
+     模式。
+    </p>
+   </li>
+  </ul>
+  <h3 id="_2">
+   确认机制
+  </h3>
+  <p>
+   消息传递确认机制总的来说可以分为两类(其实就是从消息的接受方向发送方确认)：
+  </p>
+  <ul>
+   <li>
+    <p>
+     从
+     <code>
+      消费者
+     </code>
+     到
+     <code>
+      broker
+     </code>
+     的确认机制：
+     <br/>
+     <strong>
+      前文的
+      <code>
+       Message Ack
+      </code>
+     </strong>
+    </p>
+   </li>
+   <li>
+    <p>
+     从
+     <code>
+      broker
+     </code>
+     到
+     <code>
+      生产者
+     </code>
+     的确认机制：
+     <br/>
+     <strong>
+      publisher confirm
+     </strong>
+    </p>
+   </li>
+  </ul>
+  <h3 id="consumer-confirmation">
+   Consumer confirmation
+  </h3>
+  <p>
+   <strong>
+    针对的都是Channel
+   </strong>
+  </p>
+  <h4 id="delivery-tags">
+   Delivery Tags
+  </h4>
+  <p>
+   <code>
+    Broker
+   </code>
+   将消息发送到
+   <code>
+    消费者
+   </code>
+   的时候会生成一个在本
+   <code>
+    channel
+   </code>
+   内唯一的
+   <code>
+    delivery_tag
+   </code>
+   。
+  </p>
+  <p>
+   客户端通过这个
+   <code>
+    delivery_tag
+   </code>
+   来识别一次发送。
+  </p>
+  <h4 id="multiple">
+   multiple
+  </h4>
+  <p>
+   在参数中设置
+   <code>
+    multiple = True
+   </code>
+   可以使在该delivery_tag之前所有没有ack的消息被Ack掉。
+  </p>
+  <h4 id="qos">
+   QoS
+  </h4>
+  <p>
+   由于天然的异步性质，在消费者返回
+   <code>
+    ACK
+   </code>
+   的时候可能会有一些
+   <code>
+    ACK
+   </code>
+   在路上。
+  </p>
+  <p>
+   为了克服这种不确定性，可以在一条
+   <code>
+    Channel
+   </code>
+   上设置一个允许未被
+   <code>
+    ACK
+   </code>
+   的消息数量 using
+   <code>
+    basic.qos
+   </code>
+   方法。
+  </p>
+  <p>
+   一旦
+   <code>
+    unack
+   </code>
+   的消息数量超过这个值，
+   <code>
+    broker
+   </code>
+   就不会继续发送了，直到有消息被确认了。
+  </p>
+  <p>
+   <strong>
+    注意
+   </strong>
+   <br/>
+   在运行的过程中尽量不要改动
+   <code>
+    QoS
+   </code>
+   的值，可能会引起竞争。
+  </p>
+  <h3 id="publisher-confirmation">
+   Publisher Confirmation
+  </h3>
+  <p>
+   概念和
+   <code>
+    Consumer Confirmation
+   </code>
+   类似，只是发送
+   <code>
+    basic.ack
+   </code>
+   的变成了
+   <code>
+    broker
+   </code>
+   。
+  </p>
+  <p>
+   <strong>
+    针对的都是Channel
+   </strong>
+  </p>
+  <p>
+   当使用了
+   <code>
+    队列持久化
+   </code>
+   技术和
+   <code>
+    消息持久化
+   </code>
+   技术的时候，
+   <code>
+    Publisher Ack
+   </code>
+   只有在消息被写入磁盘的时候才会被
+   <code>
+    broker
+   </code>
+   发送回
+   <code>
+    Publisher
+   </code>
+   。
+  </p>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad();
+  </script>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+   MathJax.Hub.Config({"showProcessingMessages" : false,"messageStyle" : "none","tex2jax": { inlineMath: [ [ "$", "$" ] ] }});
+  </script>
+ </body>
+</html>
