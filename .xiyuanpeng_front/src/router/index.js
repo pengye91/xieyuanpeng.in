@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 // import createSideMenuView from '../utils/createMenuView'
-// import photo from '../components/Photo'
+// import layout from '../components/Layout'
 import sideMenuView from '../components/SideMenuView'
 import postItems from '../components/PostItems'
 // import blogs from '../components/Blogs'
@@ -135,7 +135,8 @@ let firstRoute = {
 // let rootRoute = {
 //   name: 'rootRoute',
 //   path: '/',
-//   redirect: {name: 'posts', params: {post: Object.keys(sideMI)[0]}}
+//   component: layout,
+//   redirect: '/blog'
 // }
 
 const router = new Router({

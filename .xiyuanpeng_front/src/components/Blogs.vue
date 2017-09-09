@@ -55,6 +55,11 @@
               item.published_at = moment(item.published_at).format('LLL')
             })
             this.allBlogs = response.data
+            this.allBlogs.forEach(blog => {
+              if (blog.tags.includes(this.$route.params.postItem)) {
+                this.blogsWithTag.push(blog)
+              }
+            })
           }
         })
         .catch(error => {

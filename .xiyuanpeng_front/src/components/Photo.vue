@@ -150,31 +150,24 @@
         cComments: [],
         isHover: false,
         newPicComment: '',
+        allImages: [],
         likeColor: ''
       }
     },
     metaInfo: {
       title: 'xieyuanpeng.com|photography'
     },
+    props: [
+      'tag'
+    ],
     watch: {
       '$route' (to, from) {
-        config.HTTP.get('/pics/', {
-          params: {
-            'project': to.path.split('/')[to.path.split('/').length - 1]
+        this.imgs = []
+        this.allImages.forEach(image => {
+          if (image.project === this.tag) {
+            this.imgs.push(image)
           }
         })
-          .then((response) => {
-            this.imgs = response.data
-            for (let i in this.imgs) {
-              this.urls.push(this.baseUrl + this.imgs[i].path)
-            }
-            preloader.preload(this.urls)
-              .then(function (status) {
-              })
-          })
-          .catch((error) => {
-            console.log(error)
-          })
         this.src = 1
       }
     },
@@ -227,15 +220,16 @@
       ])
     },
     mounted () {
-      config.HTTP.get('/pics/', {
-        params: {
-          'project': this.$route.path.split('/')[this.$route.path.split('/').length - 1]
-        }
-      })
+      config.HTTP.get('/pics/')
         .then((response) => {
-          this.imgs = response.data
-          for (let i = 0; i < this.imgs.length; i++) {
-            this.urls.push(this.baseUrl + this.imgs[i].path)
+          this.allImages = response.data
+          this.allImages.forEach(image => {
+            if (image.project === this.$route.params.postItem) {
+              this.imgs.push(image)
+            }
+          })
+          for (let i = 0; i < this.allImages.length; i++) {
+            this.urls.push(this.baseUrl + this.allImages[i].path)
           }
           preloader.preload(this.urls)
             .then(function (status) {
