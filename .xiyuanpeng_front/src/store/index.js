@@ -46,6 +46,24 @@ const s = new Vuex.Store({
       state.isLogin = loginInfo.isLogin
       state.jwtToken = localStorage.getItem('jwtToken')
     },
+    setAllMenu (state) {
+      config.HTTP.get('menu/')
+        .then((response) => {
+          state.menuItems = response.data
+          localStorage.setItem('menuItems', JSON.stringify(response.data))
+        })
+      config.HTTP.get('menu/side-menu')
+        .then((response) => {
+          state.sideMenuItems = response.data
+          console.log(state.sideMenuItems)
+          localStorage.setItem('sideMenuItems', JSON.stringify(response.data))
+        })
+      config.HTTP.get('menu/admin-side-menu')
+        .then((response) => {
+          state.adminSideMenuItems = response.data
+          localStorage.setItem('adminSideMenu', JSON.stringify(response.data))
+        })
+    },
     setMenuItems (state, { menuItems }) {
       state.menuItems = menuItems
       localStorage.setItem('menuItems', JSON.stringify(menuItems))
@@ -119,7 +137,7 @@ const s = new Vuex.Store({
         })
     }
   },
-  strict: debug,
+  strict: false,
   plugins: debug ? [createLogger()] : []
 })
 

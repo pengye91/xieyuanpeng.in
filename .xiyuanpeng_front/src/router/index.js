@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import createSideMenuView from '../utils/createMenuView'
-// import layout from '../components/Layout'
 import sideMenuView from '../components/SideMenuView'
 import postItems from '../components/PostItems'
 // import blogs from '../components/Blogs'

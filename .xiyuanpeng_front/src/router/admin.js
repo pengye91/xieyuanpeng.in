@@ -4,13 +4,16 @@
 import Operations from '../components/Operations'
 import SideMenuView from '../components/SideMenuView'
 import AllUploads from '../components/AllUploads'
-import {config} from '@/config/dev'
+import store from '../store/index'
+// import {config} from '@/config/dev'
+
+store.commit('setAllMenu')
 
 let defaultDest = {
   name: 'operation',
   params: {
-    post: Object.keys(config.SIDE_MENU_ITEMS)[0],
-    sideMenu: Object.keys(config.SIDE_MENU_ITEMS[Object.keys(config.SIDE_MENU_ITEMS)[0]])[0],
+    // post: Object.keys(JSON.parse(localStorage.getItem('sideMenuItems')))[0],
+    // sideMenu: Object.keys(JSON.parse(localStorage.getItem('sideMenuItems'))[Object.keys(JSON.parse(localStorage.getItem('sideMenuItems')))[0]])[0],
     operation: 'all'
   }
 }
@@ -30,7 +33,7 @@ export const adminRouter = [
         name: 'operation',
         params: {
           post: to.params.post,
-          sideMenu: Object.keys(config.SIDE_MENU_ITEMS[to.params.post])[0],
+          sideMenu: Object.keys(JSON.parse(localStorage.getItem('sideMenuItems'))[to.params.post])[0],
           operation: 'all'
         }
       }
