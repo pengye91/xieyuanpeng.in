@@ -43,10 +43,9 @@ http.interceptors.request.use(config => {
 
 export const config = {
   HTTP: http,
-  BASE_URL: `http://localhost:8000`,
-  // BASE_URL: `https://www.xieyuanpeng.com`,
+  // BASE_URL: `http://localhost:8000`,
+  BASE_URL: `https://www.xieyuanpeng.com`,
   IMAGE_BASE_URL: 'https://www.xieyuanpeng.com/static/images/',
-  // IMAGE_BASE_URL: 'http://localhost:8000/static/images/',
 
 // TODO: this should be put into store/state
   MENU_ITEMS: JSON.parse(localStorage.getItem('menuItems')) === null ? defaultMenuItem : JSON.parse(localStorage.getItem('menuItems')),
