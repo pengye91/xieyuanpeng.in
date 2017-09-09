@@ -19,6 +19,7 @@
 .glide/
 
 logs/
+vendor
 
 /xieyuanpeng.in/.xiyuanpeng_front/node_modules/
 /xieyuanpeng.in/.xiyuanpeng_front/build/
