@@ -43,8 +43,8 @@ http.interceptors.request.use(config => {
 
 export const config = {
   HTTP: http,
-  // BASE_URL: `http://localhost:8000`,
-  BASE_URL: `https://www.xieyuanpeng.com`,
+  BASE_URL: `http://localhost:8000`,
+  // BASE_URL: `https://www.xieyuanpeng.com`,
   IMAGE_BASE_URL: 'https://www.xieyuanpeng.com/static/images/',
   // IMAGE_BASE_URL: 'http://localhost:8000/static/images/',
 
