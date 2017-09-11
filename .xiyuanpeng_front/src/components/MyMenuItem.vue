@@ -9,12 +9,12 @@
   const prefixCls = 'ivu-menu'
 
   export default {
-    name: 'MenuItem',
+    name: 'MyMenuItem',
     mixins: [Emitter],
     props: {
       name: {
         type: [String, Number],
-        required: true
+        required: false
       },
       to: {
         type: [String, Object],

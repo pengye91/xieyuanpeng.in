@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/pengye91/xieyuanpeng.in/backend/configs"
+	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
 	"gopkg.in/mgo.v2"
 )
 
@@ -28,12 +29,15 @@ func init() {
 
 	if mainSession == nil {
 		url := "mongodb://" + AuthUserName + ":" + AuthPassword + "@" + Host + "/" + AuthDatabase
-		//url := "mongodb://" + Host + "/" + AuthDatabase
 
 		var err error
 		mainSession, err = mgo.Dial(url)
 
 		if err != nil {
+			log.LoggerSugar.Errorw("Dial Mongo Error",
+				"module", "mongo",
+				"error", err,
+			)
 			panic(err)
 		}
 		mainSession.SetMode(mgo.Monotonic, true)
@@ -84,11 +88,13 @@ func (this *MgoDb) Index(collection string, keys []string) bool {
 	}
 	err := this.Db.C(collection).EnsureIndex(index)
 	if err != nil {
-		panic(err)
-
+		log.LoggerSugar.Errorw("Mongo EnsureIndex Error",
+			"module", "mongo",
+			"error", err,
+		)
+		//panic(err)
 		return false
 	}
-
 	return true
 }
 

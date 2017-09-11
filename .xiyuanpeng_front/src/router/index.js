@@ -1,8 +1,24 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import createSideMenuView from '../utils/createMenuView'
-import photo from '../components/Photo'
+import sideMenuView from '../components/SideMenuView'
+import postItems from '../components/PostItems'
+// import blogs from '../components/Blogs'
+import blog from '../components/Blog'
+import store from '../store/index'
+import {config} from '../config/dev'
+import {adminRouter} from './admin.js'
+import Meta from 'vue-meta'
+
 Vue.use(Router)
+Vue.use(Meta)
+
+store.dispatch('LOAD_MENU_ITEMS')
+
+// const keyComponentMap = {
+//   'blog': blogs,
+//   'photography': photo,
+//   'contact': photo
+// }
 
 const scrollBehavior = (to, from, savedPosition) => {
   if (savedPosition) {
@@ -10,7 +26,6 @@ const scrollBehavior = (to, from, savedPosition) => {
   } else {
     let position = {}
     if (to.hash) {
-      console.log(to, from)
       position.selector = to.hash
     }
 
@@ -18,78 +33,118 @@ const scrollBehavior = (to, from, savedPosition) => {
       position.x = 0
       position.y = 0
     }
-    console.log(position)
     return position
   }
 }
 
-export default new Router({
+// let MI = config.MENU_ITEMS
+let sideMI = config.SIDE_MENU_ITEMS
+
+// store.watch(
+//   (state) => { return [state.menuItems, state.sideMenuItems] },
+//   (newMenu) => {
+//     mi = newMenu[0]
+//     smi = newMenu[1]
+//   },
+// )
+//
+// function secondRouters (key, sideMI) {
+//   let secondRoutes = []
+//   Object.keys(sideMI[key]).forEach((secondKey) => {
+//     let secondRoute = {}
+//     let secondRoutePlus = {}
+//     if (key === 'blog') {
+//       secondRoute.path = ':tag'
+//       // secondRoute.name = sideMI[key][secondKey]
+//       secondRoute.name = 'postItems'
+//       secondRoute.component = keyComponentMap[key]
+//       secondRoute.props = (route) => ({'tag': secondKey})
+//       secondRoutePlus.path = `${secondKey}/:blogPath`
+//       secondRoutePlus.name = `${secondKey}-blogPath`
+//       secondRoutePlus.component = blog
+//       secondRoutePlus.props = (route) => ({
+//         'blogPath': route.params.blogPath,
+//         'tag': secondKey
+//       })
+//       secondRoutes.push(secondRoute, secondRoutePlus)
+//     } else {
+//       secondRoute.path = secondKey
+//       // secondRoute.name = sideMI[key][secondKey]
+//       secondRoute.name = 'postItems'
+//       secondRoute.component = keyComponentMap[key]
+//       secondRoutes.push(secondRoute)
+//     }
+//   })
+//   return secondRoutes
+// }
+//
+// function firstRouters (MI, sideMI) {
+//   let firstRoutes = []
+//   Object.keys(MI).forEach((key) => {
+//     let firstRoute = {}
+//     firstRoute.path = `/${key}`
+//     firstRoute.name = key
+//     firstRoute.component = createSideMenuView(key)
+//     firstRoute.redirect = {'name': Object.values(sideMI[key])[0], params: {'tag': Object.values(sideMI[key])[0]}}
+//     firstRoute.children = secondRouters(key, sideMI)
+//     firstRoutes.push(firstRoute)
+//   })
+//   return firstRoutes
+// }
+
+let secondRoute = {
+  name: 'postItems',
+  path: ':postItem',
+  component: postItems,
+  props: (route) => ({
+    'type': route.params.post,
+    'tag': route.params.postItem
+  })
+}
+
+let secondRoutePlus = {
+  name: 'postItemsPlus',
+  path: ':postItem/:postItemPlus',
+  component: blog,
+  props: (route) => ({
+    'tag': route.params.postItem
+  })
+}
+
+let firstRoute = {
+  name: 'posts',
+  path: '/:post',
+  component: sideMenuView,
+  props: (route) => ({
+    'type': route.params.post
+  }),
+  redirect: to => {
+    return {
+      name: 'postItems',
+      params: {
+        'postItem': Object.keys(sideMI[to.params.post])[0],
+        'post': to.params.post
+      }
+    }
+  },
+  children: [secondRoute, secondRoutePlus]
+}
+
+// let rootRoute = {
+//   name: 'rootRoute',
+//   path: '/',
+//   component: layout,
+//   redirect: '/blog'
+// }
+
+const router = new Router({
   mode: 'history',
   scrollBehavior,
   routes: [
-    {
-      path: '/blog',
-      name: 'blog',
-      component: createSideMenuView('blog'),
-      redirect: {'name': 'python'},
-      children: [
-        {
-          path: 'python',
-          name: 'python',
-          component: photo
-        },
-        {
-          path: 'golang',
-          name: 'golang',
-          component: photo
-        },
-        {
-          path: '杂',
-          name: '杂',
-          component: photo
-        },
-        {
-          path: 'django',
-          name: 'django',
-          component: photo
-        }
-      ]
-    },
-    {
-      path: '/photography',
-      name: 'photographs',
-      component: createSideMenuView('photography'),
-      redirect: {'name': '项目1'},
-      children: [
-        {
-          path: '1',
-          name: '项目1',
-          component: photo
-        },
-        {
-          path: '2',
-          name: '项目2',
-          component: photo
-        }
-      ]
-    },
-    {
-      path: '/contact-me',
-      name: 'contact-me',
-      component: createSideMenuView('contact-me'),
-      redirect: {'name': 'github'},
-      children: [
-        {
-          path: 'wechat',
-          name: 'wechat',
-          component: photo
-        },
-        {
-          path: 'github',
-          name: 'github',
-          component: photo
-        }
-      ]
-    }
+    ...adminRouter,
+    // rootRoute,
+    firstRoute
   ]
 })
+
+export default router

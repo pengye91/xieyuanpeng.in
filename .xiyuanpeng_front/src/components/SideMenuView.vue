@@ -3,11 +3,19 @@
     <Row type="flex" style="height: 100%">
       <Col span="3">
       <Menu style="height: 100%; border-top: 1px solid lightgray; width: 100%;">
-        <div style="position: fixed; width: 12.5%;">
-          <MyMenuItem v-for="item in sideMenu[type]" :name="item" :key="item" :to="{name: item}"
+        <div style="position: fixed; width: 12.5%;" v-if="$route.path.startsWith('/admin')">
+          <MyMenuItem v-for="(item, key) in sideMenuItems[$route.params.post]" :name="key"
+                      :key="key" :to="{name: 'sideMenu', params: {'sideMenu': key, 'post': $route.params.post}}"
+                      style="margin-top: 5%; width: 100%">
+            {{item}}
+          </MyMenuItem>
+        </div>
+        <div v-else>
+          <MyMenuItem v-for="(item, key) in sideMenuItems[type]" :key="key"
+                      :to="{name: 'postItems', params: {postItem: key, post: type}}" :name="item"
                       style="margin-top: 5%; width: 100%">
             <Icon type="ios-book" size="16"></Icon>
-            {{ item }}
+            {{item}}
           </MyMenuItem>
         </div>
       </Menu>
@@ -22,44 +30,33 @@
 </template>
 
 <script>
-  import {EventBus} from '../store/EventBus'
-  import Login from './Login'
-  import Register from './Register'
   import MyMenuItem from './MyMenuItem'
+  import photo from '../components/Photo'
+  import blogs from '../components/Blogs'
+  import {mapState} from 'vuex'
+  //  import {config} from '@/config/dev'
+
   export default {
     components: {
-      Login, Register, MyMenuItem
+      MyMenuItem
     },
     props: {
       type: String
     },
     data () {
       return {
-        currentPage: 'blog',
-        sideMenu: {
-          'blog': ['python', 'golang', 'django', '杂'],
-          'photography': ['项目1', '项目2'],
-          'contact-me': ['github', 'wechat']
-        },
-        searchText: ''
+        searchText: '',
+        keyComponentMap: {
+          'blog': blogs,
+          'photography': photo,
+          'contact': photo
+        }
       }
     },
-    methods: {
-      menuItemRoute (key) {
-        this.currentPage = key
-        console.log(this.currentPage)
-      },
-      login () {
-        this.$router.push('blog')
-      },
-      register () {
-        this.$router.push('blog')
-      },
-      searchNotify (value) {
-        this.searchText = value
-        EventBus.$emit('search-text', this.searchText)
-        console.log(this.searchText)
-      }
+    computed: {
+      ...mapState([
+        'menuItems', 'sideMenuItems'
+      ])
     }
   }
 </script>

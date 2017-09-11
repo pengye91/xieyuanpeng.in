@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as actions from './actions'
 import jwtDecode from 'jwt-decode'
 import createLogger from 'vuex/dist/logger'
 import ObjectId from 'bson-objectid'
+import {config} from '../config/dev'
 
 Vue.use(Vuex)
 
@@ -13,13 +13,9 @@ const anonUser = {
   'id': ObjectId(),
   'name': '匿名用户'
 }
-const anonUserJwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-eyJleHAiOjE4MTE1ODY1MjUsImlkIjoiT2JqZWN0SWRIZXgoXCI1OTcwNTc3YWQ2YWU
-yNTA1ZjE4NGVhOGZcIikiLCJvcmlnX2lhdCI6MTUwMDU0NjUyNSwidXNlciI6eyJpZCI6IjU5
-NzA1NzdhZDZhZTI1MDVmMTg0ZWE4ZiIsIm5hbWUiOiLljL_lkI3nlKjmiLciLCJlbWFpbCI6ImFub255bW91c0B4eXAuY29tIn19.
-et6Z9XJDfXn_rSIOZsutMYBeNvy-8BAQMPN_2axi7Fc`
+const anonUserJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzM1NjcyNzIsImlkIjoiNTk4ZGJiZTIxZDBmYjgzYWI2ZjlmYmQ1Iiwib3JpZ19pYXQiOjE1MDI0NjMyNzIsInVzZXIiOnsiaWQiOiI1OThkYmJlMjFkMGZiODNhYjZmOWZiZDUiLCJuYW1lIjoi5Yy_5ZCN55So5oi3IiwiZW1haWwiOiJhbm9ueW1vdXNAeHlwLmNvbSJ9fQ.8SpUE8hjUXRYJ-p6lkRT_SMxA2KmaE1cWM2q80Jtk4Y'
 
-export default new Vuex.Store({
+const s = new Vuex.Store({
   state: {
     user: {
       'email': 'anonymous@xyp.com',
@@ -27,8 +23,16 @@ export default new Vuex.Store({
       'name': '匿名用户'
     },
     isLogin: false,
-    jwtToken: localStorage.getItem('jwtToken'),
-    anonUserJwtToken: anonUserJwtToken
+    jwtToken: anonUserJwtToken,
+    anonUserJwtToken: anonUserJwtToken,
+    menuItems: {},
+    sideMenuItems: {},
+    adminSideMenuItems: {}
+  },
+  getters: {
+    getMenuItems: state => {
+      return state.menuItems
+    }
   },
   mutations: {
     logout (state) {
@@ -42,9 +46,38 @@ export default new Vuex.Store({
       state.isLogin = loginInfo.isLogin
       state.jwtToken = localStorage.getItem('jwtToken')
     },
+    setAllMenu (state) {
+      config.HTTP.get('menu/')
+        .then((response) => {
+          state.menuItems = response.data
+          localStorage.setItem('menuItems', JSON.stringify(response.data))
+        })
+      config.HTTP.get('menu/side-menu')
+        .then((response) => {
+          state.sideMenuItems = response.data
+          console.log(state.sideMenuItems)
+          localStorage.setItem('sideMenuItems', JSON.stringify(response.data))
+        })
+      config.HTTP.get('menu/admin-side-menu')
+        .then((response) => {
+          state.adminSideMenuItems = response.data
+          localStorage.setItem('adminSideMenu', JSON.stringify(response.data))
+        })
+    },
+    setMenuItems (state, { menuItems }) {
+      state.menuItems = menuItems
+      localStorage.setItem('menuItems', JSON.stringify(menuItems))
+    },
+    setSideMenuItems (state, { sideMenuItems }) {
+      state.sideMenuItems = sideMenuItems
+      localStorage.setItem('sideMenuItems', JSON.stringify(sideMenuItems))
+    },
+    setAdminSideMenuItems (state, { adminSideMenuItems }) {
+      state.adminSideMenuItems = adminSideMenuItems
+      localStorage.setItem('adminSideMenu', JSON.stringify(adminSideMenuItems))
+    },
     check (state, payload) {
       let jwtToken = payload.jwtToken
-      console.log(jwtToken)
       if (jwtToken) {
         let jwtPayload
         try {
@@ -71,8 +104,41 @@ export default new Vuex.Store({
       }
     }
   },
-  actions,
-  strict: debug,
+  actions: {
+    LOAD_MENU_ITEMS: function ({ commit }) {
+      config.HTTP.get('menu/side-menu')
+        .then((response) => {
+          commit('setSideMenuItems', {sideMenuItems: response.data})
+        })
+      config.HTTP.get('menu/admin-side-menu')
+        .then((response) => {
+          commit('setAdminSideMenuItems', {adminSideMenuItems: response.data})
+        })
+      config.HTTP.get('menu/')
+        .then((response) => {
+          commit('setMenuItems', {menuItems: response.data})
+        })
+    },
+    UPDATE_SIDE_MENU_ITEMS: function ({ commit }, payload) {
+      config.HTTP.put('menu/side-menu',
+        payload.newSideMenuItems, {
+          params: {
+            'menu-item': payload.menuItem
+          }
+        })
+        .then(response => {
+          if (response.status === 200) {
+            commit('setSideMenuItems', {sideMenuItems: response.data.sideMenuItems})
+            commit('setMenuItems', {menuItems: response.data.menuItems})
+          }
+        })
+        .catch(error => {
+          console.error(error.response.data)
+        })
+    }
+  },
+  strict: false,
   plugins: debug ? [createLogger()] : []
 })
 
+export default s

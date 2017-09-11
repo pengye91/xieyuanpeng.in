@@ -89,8 +89,7 @@
                 if (response.status === 200) {
                   this.modal = false
                   this.$Message.success('登录成功!')
-                  let user
-                  user = jwtDecode(response.data.token).user
+                  let user = jwtDecode(response.data.token).user
                   // this must be the former one
                   localStorage.setItem('jwtToken', response.data.token)
                   this.login({user: user, isLogin: true})

@@ -6,18 +6,18 @@
               size="large" @click="pre" class="pre-button"></Button>
       </Col>
       <Col span="20" style="height: 100%; display: flex; align-items: center; justify-content: center;">
-      <img :src="imgSrc" :alt="src" class="img" @click="openImg">
+      <img v-if="imgs[src - 1] !== undefined" :src="imgSrc" :alt="imgs[src - 1].path" class="img" @click="openImg">
       </Col>
       <Col span="2" style="height: 100%">
       <Button type="text" icon="ios-arrow-right" size="large" :disabled="rightDisabled"
               @click="next" class="next-button"></Button>
       </Col>
     </Row>
-    <Row style="height: 16%; display: flex; align-items: center; justify-content: center;" >
-      <Col v-for="img in sliderImgs" :key="img" span="2"
+    <Row style="height: 16%; display: flex; align-items: center; justify-content: center;">
+      <Col v-for="(img, index) in sliderImgs" :key="index" span="2"
            style="height: 100%; display: flex; align-items: flex-end;justify-content: center; margin: 0 0.5%">
-      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=Number(img.title)}"
-           class="slider-img" :class="{'is-src': img.title == src}">
+      <img :src="baseUrl + img.path" :alt="img.path" @click="()=>{src=imgs.indexOf(img)+1}"
+           class="slider-img" :class="{'is-src': img.path == imgs[src - 1].path}">
       </Col>
     </Row>
     <Row type="flex" justify="start" align="bottom" style="height: 0">
@@ -60,8 +60,8 @@
     </Row>
     <Row type="flex" justify="center">
       <Col span="24">
-      <comments v-if="currentPic" :picture="currentPic.id" :comments="cComments" :path="'comments.'"
-                style="padding-bottom: 5%"></comments>
+      <comments v-if="currentPic" :post="currentPic.id" :comments="cComments" :path="'comments.'"
+                :type="'pics'" style="padding-bottom: 10%"></comments>
       </Col>
     </Row>
   </div>
@@ -145,20 +145,44 @@
         src: 1,
         images: [],
         urls: [],
-        baseUrl: 'http://www.xieyuanpeng.com/static/images/',
+        baseUrl: `${config.IMAGE_BASE_URL}`,
         imgs: [],
         cComments: [],
         isHover: false,
         newPicComment: '',
+        allImages: [],
         likeColor: ''
+      }
+    },
+    metaInfo: {
+      title: 'xieyuanpeng.com|photography'
+    },
+    props: [
+      'tag'
+    ],
+    watch: {
+      '$route' (to, from) {
+        this.imgs = []
+        this.allImages.forEach(image => {
+          if (image.project === this.tag) {
+            this.imgs.push(image)
+          }
+        })
+        this.src = 1
       }
     },
     computed: {
       likeIconType () {
-        return this.currentPic.likedBy.includes(this.user.id) ? 'ios-heart' : 'ios-heart-outline'
+        let userIdName = {}
+        userIdName[this.user.id] = this.user.name
+        return this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        }) ? 'ios-heart' : 'ios-heart-outline'
       },
       color () {
-        return this.currentPic.likedBy.includes(this.user.id) ? '#CE0000' : ''
+        return this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        }) ? '#CE0000' : ''
       },
       leftDisabled () {
         return this.src === 1
@@ -173,7 +197,9 @@
         return this.imgs.length === this.src
       },
       imgSrc () {
-        return this.baseUrl + this.src.toString() + '.jpg'
+        if (this.imgs[this.src - 1] !== undefined) {
+          return this.baseUrl + this.imgs[this.src - 1].path
+        }
       },
       commentIsEmpty () {
         return this.newPicComment === ''
@@ -190,19 +216,23 @@
         return this.imgs.slice(base - 4, base + 3)
       },
       ...mapState([
-        'user', 'isLogin'
+        'user', 'isLogin', 'jwtToken'
       ])
     },
     mounted () {
       config.HTTP.get('/pics/')
         .then((response) => {
-          this.imgs = response.data
-          for (let i in this.imgs) {
-            this.urls.push(this.baseUrl + this.imgs[i].path)
+          this.allImages = response.data
+          this.allImages.forEach(image => {
+            if (image.project === this.$route.params.postItem) {
+              this.imgs.push(image)
+            }
+          })
+          for (let i = 0; i < this.allImages.length; i++) {
+            this.urls.push(this.baseUrl + this.allImages[i].path)
           }
           preloader.preload(this.urls)
             .then(function (status) {
-              console.log('all done!', status)
             })
         })
         .catch((error) => {
@@ -212,14 +242,12 @@
     created: function () {
       window.addEventListener('keydown', this.keyDown)
       EventBus.$on('delete-comment', (commentId) => {
-        console.log(this.cComments)
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
           if (value.id !== commentId) {
             return value
           }
           return undefined
         }).replace(/,?null/g, '').replace(/\[,/g, '['))
-        console.log(this.cComments)
       })
       EventBus.$on('edit-comment', (changedComment) => {
         this.cComments = JSON.parse(JSON.stringify(this.cComments, (key, value) => {
@@ -229,7 +257,6 @@
             return changedComment
           }
         }))
-        console.log(this.cComments)
       })
     },
     beforeDestroy: function () {
@@ -237,25 +264,29 @@
     },
     methods: {
       likePic () {
-        if (!this.currentPic.likedBy.includes(this.user.id)) {
+        let userIdName = {}
+        userIdName[this.user.id] = this.user.name
+        if (!this.currentPic.likedBy.some(i => {
+          return i[this.user.id] !== undefined
+        })) {
           this.currentPic.like++
-          this.currentPic.likedBy.push(this.user.id)
+          this.currentPic.likedBy.push(userIdName)
           config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$push',
               'increase': 1,
-              'likedBy': this.user.id
+              'likedBy': userIdName
             })
         } else {
           this.currentPic.like--
-          this.currentPic.likedBy.splice(this.currentPic.likedBy.indexOf(this.user.id), 1)
+          this.currentPic.likedBy.splice(this.currentPic.likedBy.findIndex(i => i[this.user.id] !== undefined), 1)
           config.HTTP.put(
             `/pics/${this.currentPic.id}/like`,
             {
               'likeType': '$pull',
               'increase': -1,
-              'likedBy': this.user.id
+              'likedBy': userIdName
             })
         }
       },
@@ -274,6 +305,11 @@
             'byName': this.user.name,
             'comments': [],
             'internalPath': ''
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.jwtToken}`
+            }
           }
         )
           .then(response => {

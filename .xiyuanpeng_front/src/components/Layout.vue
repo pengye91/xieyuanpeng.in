@@ -115,30 +115,24 @@
 
 <template>
   <div class="layout">
-    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px"
-          @on-select="menuItemRoute">
-      <Row>
-        <Col span="1" offset="1">
+    <Menu mode="horizontal" theme="light" style="width: 100%; position: fixed; z-index: 10; top: 0; height: 40px">
+      <Row type="flex" style="height: 100%;" justify="space-between" align="top">
+        <Col span="1">
         <div class="layout-logo">
-          <img src="../assets/logo.png" alt="logo" height="40" width="40">
+          <router-link :to="'/blog'">
+            <img src="../assets/logo.jpg" alt="logo" height="40" width="40">
+          </router-link>
         </div>
         </Col>
         <Col span="3" offset="1">
         <Input size="large" icon="search"
                placeholder="请输入搜索内容..." :value="searchText" @input="searchNotify"></Input>
         </Col>
-        <Col span="14" offset="1">
-        <div class="layout-nav">
-          <MyMenuItem name="blog" to="/blog">
-            技术博客
-          </MyMenuItem>
-          <MyMenuItem name="photography" to="/photography">
-            摄影作品
-          </MyMenuItem>
-          <MyMenuItem name="contact-me" to="/contact-me">
-            联系我
-          </MyMenuItem>
-        </div>
+        <Col :span="Math.floor(16/menuItems.length)" v-for="(menuItem, key) in menuItems" :key="key"
+             class="layout-nav">
+        <MyMenuItem :to="$route.path.startsWith('/admin') ? {name: 'post', params: {post: key}} : {name: 'posts', params: {post: key}}">
+          {{menuItem.name}}
+        </MyMenuItem>
         </Col>
         <Col span="3">
         <div v-if="!isLogin" class="register-login">
@@ -154,7 +148,7 @@
     </Menu>
     <router-view></router-view>
     <div class="layout-copy">
-      &copy; XieYuanpeng.in
+      &copy; xieyuanpeng.com
     </div>
   </div>
 </template>
@@ -167,6 +161,7 @@
   import Logout from './Logout.vue'
   import MyMenuItem from './MyMenuItem'
   import {mapState} from 'vuex'
+  import {config} from '@/config/dev'
 
   export default {
     components: {
@@ -175,11 +170,8 @@
     data () {
       return {
         currentPage: 'blog',
-        sideMenu: {
-          'blog': ['python', 'golang', 'django', '杂'],
-          'photography': ['项目1', '项目2'],
-          'contact-me': ['github', 'wechat']
-        },
+        sideMenu: config.SIDE_MENU_ITEMS,
+        Menu: config.MENU_ITEMS,
         searchText: ''
       }
     },
@@ -191,13 +183,12 @@
     },
     computed: {
       ...mapState([
-        'user', 'isLogin'
+        'user', 'isLogin', 'menuItems', 'sideMenuItems'
       ])
     },
     methods: {
       menuItemRoute (key) {
         this.currentPage = key
-        console.log(this.currentPage)
       },
       login () {
         this.$router.push('blog')
@@ -208,7 +199,6 @@
       searchNotify (value) {
         this.searchText = value
         EventBus.$emit('search-text', this.searchText)
-        console.log(this.searchText)
       }
     }
   }
