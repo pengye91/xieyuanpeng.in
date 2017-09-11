@@ -6,6 +6,10 @@
 *.so
 *.dylib
 .idea/
+.vscode/
+.env
+env
+appspec.yml
 
 # Test binary, build with `go test -c`
 *.test
@@ -17,11 +21,14 @@
 .glide/
 
 logs/
+*/vendor/
 
-/xieyuanpeng.in/xiyuanpeng_front/node_modules/*
-/xieyuanpeng.in/xiyuanpeng_front/build/*
-/xieyuanpeng.in/xiyuanpeng_front/config/*
-/xieyuanpeng.in/xiyuanpeng_front/vendors/*
+.xiyuanpeng_front/node_modules/
+.xiyuanpeng_front/vendors/
 /xieyuanpeng.in/backend/db/db.go
-*/vendors
-*/node_modules
+/xieyuanpeng.in/static/
+/xieyuanpeng.in/index.html
+*/vendors/
+*/node_modules/
+backend/utils/ip_scripts/
+
