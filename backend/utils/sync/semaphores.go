@@ -1,9 +1,9 @@
 package sync
 
 import (
+	"errors"
 	"time"
 
-	"errors"
 	"github.com/garyburd/redigo/redis"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/cache"
 	"github.com/pengye91/xieyuanpeng.in/backend/utils/log"
